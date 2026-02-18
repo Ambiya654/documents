@@ -1,3 +1,170 @@
+@{
+    Layout = "~/Views/Shared/_ABCLayout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="@Url.Action("Dashboard", "Home", new { area = "ABC" })">Activity-Based Consolidation</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Add Category</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="main-body-card masters">
+            <div class="card-header justify-content-between">
+                <div class="d-flex">
+                    <h2 class="main-title">Add Category</h2>
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })" class="btn btn-outline-secondary">Back</a>
+                    <button type="button" class="btn btn-success" id="btnSubmitCategory">Submit</button>
+                    <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEdit">Cancel Edit</button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="main-body-card">
+
+                    <!-- Hidden fields for edit mode -->
+                    <input type="hidden" id="hdnEditCategoryId"   value="0" />
+                    <input type="hidden" id="hdnEditCategoryCode" value="" />
+                    <input type="hidden" id="hdnEditMode"         value="false" />
+
+                    <!-- Form Row -->
+                    <div class="row row-cols-lg-4 mb-3">
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Company</label>
+                                <input type="text" class="form-control" id="txtCompany" readonly />
+                                <input type="hidden" id="hdnCompanyCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" class="form-control" id="txtDepartment" readonly />
+                                <input type="hidden" id="hdnDepartmentCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Sub Process</label>
+                                <input type="text" class="form-control" id="txtSubProcess" readonly />
+                                <input type="hidden" id="hdnSubProcessCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label" id="lblCategory">Category <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtCategory"
+                                       placeholder="Enter category name" maxlength="200" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category List Table -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-style-1">
+                                    <thead>
+                                        <tr>
+                                            <th width="60" class="text-center">Sr.No</th>
+                                            <th>Company</th>
+                                            <th>Department</th>
+                                            <th>Subprocess</th>
+                                            <th>Category</th>
+                                            <th width="80" class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblCategoryData">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Loading...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SUCCESS MODAL                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="modal fade icon-modal" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                <h5 class="main-text mt-3 mb-2" id="successModalMessage">Operation successful!</h5>
+                <button type="button" class="btn btn-success mt-2" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ERROR MODAL                                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="modal fade icon-modal" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>
+                <h5 class="main-text mt-3 mb-2" id="errorModalMessage">Something went wrong!</h5>
+                <button type="button" class="btn btn-danger mt-2" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- DELETE CONFIRMATION MODAL                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="modal fade icon-modal" id="deleteCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                <input type="hidden" id="deleteCategoryId" />
+                <i class="bi bi-trash3 text-danger" style="font-size: 3rem;"></i>
+                <h5 class="main-text mb-2 mt-3">Are you sure you want to delete?</h5>
+                <h6 class="mb-2 fw-bold" id="deleteCategoryNameDisplay"></h6>
+                <p class="text-muted small mb-4">All associated data will be lost.</p>
+                <button type="button" class="btn btn-danger" id="btnConfirmDeleteCategory">Yes, Delete</button>
+                <button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/areas/ABC/assets/js/custom/addcategory.js"></script>
+}
+
+
+
+
+
+
+
 $(document).ready(function () {
     initializePage();
     bindEvents();
@@ -12,7 +179,6 @@ function bindEvents() {
     $('#btnSubmitCategory').on('click',  onSubmitCategoryClick);
     $('#btnCancelEdit').on('click',      onCancelEditClick);
 
-    // Event delegation — dynamically generated rows
     $(document).on('click', '.edit-category-btn',        onEditCategoryClick);
     $(document).on('click', '.delete-category-btn',      onDeleteCategoryClick);
     $(document).on('click', '#btnConfirmDeleteCategory', onConfirmDeleteClick);
@@ -54,28 +220,39 @@ function parseUrlParameters() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Switch UI to EDIT mode
+// SUCCESS MODAL
+// ─────────────────────────────────────────────────────────────
+function showSuccess(message) {
+    $('#successModalMessage').text(message);
+    new bootstrap.Modal(document.getElementById('successModal')).show();
+}
+
+// ─────────────────────────────────────────────────────────────
+// ERROR MODAL
+// ─────────────────────────────────────────────────────────────
+function showError(message) {
+    $('#errorModalMessage').text(message);
+    new bootstrap.Modal(document.getElementById('errorModal')).show();
+}
+
+// ─────────────────────────────────────────────────────────────
+// Enter EDIT mode — same top txtCategory textbox use karo
 // ─────────────────────────────────────────────────────────────
 function enterEditMode(categoryId, categoryName, categoryCode) {
-    // Hidden fields set karo
     $('#hdnEditCategoryId').val(categoryId);
     $('#hdnEditCategoryCode').val(categoryCode);
     $('#hdnEditMode').val('true');
 
-    // Textbox mein category name set karo aur focus karo
     $('#txtCategory').val(categoryName).focus().select();
-
-    // Label aur button text change karo
     $('#lblCategory').html('Edit Category <span class="text-danger">*</span>');
     $('#btnSubmitCategory').text('Update');
     $('#btnCancelEdit').removeClass('d-none');
 
-    // Page ke top pe scroll karo taki user textbox dekh sake
     $('html, body').animate({ scrollTop: $('#txtCategory').offset().top - 100 }, 300);
 }
 
 // ─────────────────────────────────────────────────────────────
-// Switch UI back to INSERT mode
+// Enter INSERT mode — form reset
 // ─────────────────────────────────────────────────────────────
 function enterInsertMode() {
     $('#hdnEditCategoryId').val('0');
@@ -84,14 +261,13 @@ function enterInsertMode() {
 
     $('#txtCategory').val('');
     $('#lblCategory').html('Category <span class="text-danger">*</span>');
-    $('#btnSubmitCategory').text('Submit');
+    $('#btnSubmitCategory').text('Submit').prop('disabled', false);
     $('#btnCancelEdit').addClass('d-none');
 }
 
 // ─────────────────────────────────────────────────────────────
 // LOAD CATEGORY LIST
 // GET: /ABC/ABCMaster/GetCategoryList
-// Params: companyCode, departmentCode, subprocessCode
 // ─────────────────────────────────────────────────────────────
 function loadCategoryList() {
     if (!currentCompanyCode || !currentDepartmentCode || !currentSubProcessCode) {
@@ -128,6 +304,9 @@ function loadCategoryList() {
 }
 
 // ─────────────────────────────────────────────────────────────
+// POPULATE TABLE
+// Dropdown order: Edit → Delete → Add Sub Category → Add Activity
+// ─────────────────────────────────────────────────────────────
 function populateCategoryTable(categories) {
     const $tbody = $('#tblCategoryData');
     $tbody.empty();
@@ -138,6 +317,7 @@ function populateCategoryTable(categories) {
     }
 
     $.each(categories, function (index, category) {
+
         const addSubCategoryUrl = `/ABC/ABCMaster/AddSubCategory?` +
             `categoryId=${category.categoryId || ''}&` +
             `categoryName=${encodeURIComponent(category.categoryName || '')}&` +
@@ -162,10 +342,10 @@ function populateCategoryTable(categories) {
         const rowHtml = `
             <tr id="row-category-${category.categoryId}">
                 <td class="text-center">${index + 1}</td>
-                <td>${escapeHtml(category.company_Name || '')}</td>
+                <td>${escapeHtml(category.company_Name    || '')}</td>
                 <td>${escapeHtml(category.department_Name || '')}</td>
                 <td>${escapeHtml(category.subProcess_Name || '')}</td>
-                <td>${escapeHtml(category.categoryName || '')}</td>
+                <td>${escapeHtml(category.categoryName    || '')}</td>
                 <td class="text-center action-col">
                     <a href="javascript:;" class="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-three-dots"></i>
@@ -176,17 +356,16 @@ function populateCategoryTable(categories) {
                                data-id="${category.categoryId}"
                                data-name="${escapeHtml(category.categoryName || '')}"
                                data-code="${escapeHtml(category.categoryCode || '')}">
-                                <i class="bi bi-pencil me-2"></i>Edit Category
+                                <i class="bi bi-pencil me-2"></i>Edit
                             </a>
                         </li>
                         <li>
                             <a href="javascript:;" class="dropdown-item text-danger delete-category-btn"
                                data-id="${category.categoryId}"
                                data-name="${escapeHtml(category.categoryName || '')}">
-                                <i class="bi bi-trash3 me-2"></i>Delete Category
+                                <i class="bi bi-trash3 me-2"></i>Delete
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
                             <a href="${addSubCategoryUrl}" class="dropdown-item">
                                 <i class="bi bi-plus-circle me-2"></i>Add Sub Category
@@ -206,41 +385,26 @@ function populateCategoryTable(categories) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// EDIT button click — same top textbox mein category name daalo
-// ─────────────────────────────────────────────────────────────
-function onEditCategoryClick() {
-    const categoryId   = $(this).data('id');
-    const categoryName = $(this).data('name');
-    const categoryCode = $(this).data('code');
-
-    enterEditMode(categoryId, categoryName, categoryCode);
-}
-
-// ─────────────────────────────────────────────────────────────
-// Cancel Edit
-// ─────────────────────────────────────────────────────────────
-function onCancelEditClick() {
-    enterInsertMode();
-}
-
-// ─────────────────────────────────────────────────────────────
-// SUBMIT button — Insert ya Update decide karta hai hdnEditMode se
+// SUBMIT — Insert ya Update decide karta hai hdnEditMode se
 // ─────────────────────────────────────────────────────────────
 function onSubmitCategoryClick() {
-    const isEditMode = $('#hdnEditMode').val() === 'true';
-
-    if (isEditMode) {
+    if ($('#hdnEditMode').val() === 'true') {
         doUpdateCategory();
     } else {
         doInsertCategory();
     }
 }
 
+function onCancelEditClick() {
+    enterInsertMode();
+}
+
 // ─────────────────────────────────────────────────────────────
 // INSERT CATEGORY
 // POST: /ABC/ABCMaster/InsertCategory
-// API Model: { CategoryName, CategoryCode, CompanyCode, DepartmentCode, SubprocessCode, CreatedBy, CreatedIPAddress }
-// CreatedBy & CreatedIPAddress — Web Controller session se set karta hai
+// Web Model: ABCCategoryInsertModel
+// { categoryName, categoryCode, companyCode, departmentCode, subprocessCode }
+// createdBy & createdIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
 function doInsertCategory() {
     const categoryName   = $('#txtCategory').val().trim();
@@ -259,14 +423,12 @@ function doInsertCategory() {
         return;
     }
 
-    // Web Model: ABCCategoryInsertModel
     const categoryData = {
         categoryName:   categoryName,
-        categoryCode:   null,          // SP auto-generate karta hai
+        categoryCode:   null,
         companyCode:    companyCode,
         departmentCode: departmentCode,
         subprocessCode: subprocessCode
-        // createdBy & createdIPAddress: Web Controller session se set karega
     };
 
     $('#btnSubmitCategory').prop('disabled', true).text('Saving...');
@@ -307,8 +469,9 @@ function doInsertCategory() {
 // ─────────────────────────────────────────────────────────────
 // UPDATE CATEGORY
 // POST: /ABC/ABCMaster/UpdateCategory
-// API Model: { CategoryId, CategoryName, CategoryCode, CompanyCode, DepartmentCode, SubprocessCode, ModifiedBy, ModifiedIPAddress }
-// ModifiedBy & ModifiedIPAddress — Web Controller session se set karta hai
+// Web Model: ABCCategoryUpdateModel
+// { categoryId, categoryName, categoryCode, companyCode, departmentCode, subprocessCode }
+// modifiedBy & modifiedIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
 function doUpdateCategory() {
     const categoryId     = parseInt($('#hdnEditCategoryId').val());
@@ -329,7 +492,6 @@ function doUpdateCategory() {
         return;
     }
 
-    // Web Model: ABCCategoryUpdateModel
     const updateData = {
         categoryId:     categoryId,
         categoryName:   categoryName,
@@ -337,14 +499,13 @@ function doUpdateCategory() {
         companyCode:    companyCode,
         departmentCode: departmentCode,
         subprocessCode: subprocessCode
-        // modifiedBy & modifiedIPAddress: Web Controller session se set karega
     };
 
     $('#btnSubmitCategory').prop('disabled', true).text('Updating...');
 
     $.ajax({
         url: '/ABC/ABCMaster/UpdateCategory',
-        type: 'POST',   // ✅ API [HttpPost] — PUT nahi
+        type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(updateData),
         dataType: 'json',
@@ -355,10 +516,11 @@ function doUpdateCategory() {
             }
             if (response && response.isSucceeded) {
                 showSuccess('Category updated successfully!');
-                enterInsertMode();   // Form reset karo
-                loadCategoryList();  // Table reload karo
+                enterInsertMode();
+                loadCategoryList();
             } else {
                 showError(response.errorMessage || 'Failed to update category');
+                $('#btnSubmitCategory').prop('disabled', false).text('Update');
             }
         },
         error: function (xhr) {
@@ -368,15 +530,23 @@ function doUpdateCategory() {
             } catch (e) {
                 showError('Error updating category');
             }
-        },
-        complete: function () {
             $('#btnSubmitCategory').prop('disabled', false).text('Update');
         }
     });
 }
 
 // ─────────────────────────────────────────────────────────────
-// DELETE — Bootstrap modal open karo
+// EDIT button click — top textbox mein category name daalo
+// ─────────────────────────────────────────────────────────────
+function onEditCategoryClick() {
+    const categoryId   = $(this).data('id');
+    const categoryName = $(this).data('name');
+    const categoryCode = $(this).data('code');
+    enterEditMode(categoryId, categoryName, categoryCode);
+}
+
+// ─────────────────────────────────────────────────────────────
+// DELETE — confirmation modal open karo
 // ─────────────────────────────────────────────────────────────
 function onDeleteCategoryClick() {
     const categoryId   = $(this).data('id');
@@ -384,10 +554,16 @@ function onDeleteCategoryClick() {
 
     $('#deleteCategoryId').val(categoryId);
     $('#deleteCategoryNameDisplay').text(categoryName);
-
     new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
 }
 
+// ─────────────────────────────────────────────────────────────
+// CONFIRM DELETE
+// POST: /ABC/ABCMaster/DeleteCategory
+// Web Model: ABCCategoryDeleteModel
+// { categoryId }
+// deletedBy & deletedIPAddress — Web Controller session se set karta hai
+// ─────────────────────────────────────────────────────────────
 function onConfirmDeleteClick() {
     const categoryId = parseInt($('#deleteCategoryId').val());
 
@@ -396,33 +572,32 @@ function onConfirmDeleteClick() {
         return;
     }
 
-    // Web Model: ABCCategoryDeleteModel
     const deleteData = {
         categoryId: categoryId
-        // deletedBy & deletedIPAddress: Web Controller session se set karega
     };
 
     $('#btnConfirmDeleteCategory').prop('disabled', true).text('Deleting...');
 
     $.ajax({
         url: '/ABC/ABCMaster/DeleteCategory',
-        type: 'POST',   // ✅ API [HttpPost] — DELETE method nahi
+        type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(deleteData),
         dataType: 'json',
         success: function (response) {
             bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
+
             if (response && response.isSessionTimeout) {
                 window.location.href = response.returnUrlAfterLogout;
                 return;
             }
             if (response && response.isSucceeded) {
-                showSuccess('Category deleted successfully!');
-                // Agar abhi edit mode mein usi category ka edit tha toh reset karo
+                // Agar deleted category ka edit chal raha tha toh reset karo
                 if ($('#hdnEditMode').val() === 'true' &&
                     parseInt($('#hdnEditCategoryId').val()) === categoryId) {
                     enterInsertMode();
                 }
+                showSuccess('Category deleted successfully!');
                 loadCategoryList();
             } else {
                 showError(response.errorMessage || 'Failed to delete category');
@@ -448,156 +623,4 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-}
-
-function showError(message) {
-    alert('Error: ' + message);
-    console.error(message);
-}
-
-function showSuccess(message) {
-    alert(message);
-    console.log(message);
-}
-
-
-
-
-@{
-    Layout = "~/Views/Shared/_ABCLayout.cshtml";
-}
-
-<div class="content-body">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="@Url.Action("Dashboard", "Home", new { area = "ABC" })">Activity-Based Consolidation</a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">Add Category</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
-        <div class="main-body-card masters">
-            <div class="card-header justify-content-between">
-                <div class="d-flex">
-                    <h2 class="main-title">Add Category</h2>
-                </div>
-                <div class="d-flex gap-3">
-                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })" class="btn btn-outline-secondary">Back</a>
-
-                    {{-- Submit button: Insert mode mein "Submit", Edit mode mein "Update" --}}
-                    <button type="button" class="btn btn-success" id="btnSubmitCategory">Submit</button>
-
-                    {{-- Cancel Edit button: sirf edit mode mein dikhega --}}
-                    <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEdit">Cancel Edit</button>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="main-body-card">
-
-                    <!-- Hidden fields for edit mode -->
-                    <input type="hidden" id="hdnEditCategoryId" value="0" />
-                    <input type="hidden" id="hdnEditCategoryCode" value="" />
-                    <input type="hidden" id="hdnEditMode" value="false" />
-
-                    <!-- Form Row -->
-                    <div class="row row-cols-lg-4 mb-3">
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <label class="form-label">Company</label>
-                                <input type="text" class="form-control" id="txtCompany" readonly />
-                                <input type="hidden" id="hdnCompanyCode" />
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <label class="form-label">Department</label>
-                                <input type="text" class="form-control" id="txtDepartment" readonly />
-                                <input type="hidden" id="hdnDepartmentCode" />
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <label class="form-label">Sub Process</label>
-                                <input type="text" class="form-control" id="txtSubProcess" readonly />
-                                <input type="hidden" id="hdnSubProcessCode" />
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <!-- Label dynamically changes: "Category" or "Edit Category" -->
-                                <label class="form-label" id="lblCategory">
-                                    Category <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" id="txtCategory"
-                                       placeholder="Enter category name" maxlength="200" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Category List Table -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="table-responsive">
-                                <table class="table table-style-1">
-                                    <thead>
-                                        <tr>
-                                            <th width="60" class="text-center">Sr.No</th>
-                                            <th>Company</th>
-                                            <th>Department</th>
-                                            <th>Subprocess</th>
-                                            <th>Category</th>
-                                            <th width="80" class="text-center">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tblCategoryData">
-                                        <tr>
-                                            <td colspan="6" class="text-center">Loading...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- DELETE CONFIRMATION MODAL -->
-<div class="modal fade icon-modal" id="deleteCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center py-4">
-                <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
-                        data-bs-dismiss="modal" aria-label="Close"></button>
-
-                <input type="hidden" id="deleteCategoryId" />
-
-                <i class="bi bi-trash3 text-danger" style="font-size: 3rem;"></i>
-                <h5 class="main-text mb-2 mt-3">Are you sure you want to delete?</h5>
-                <h6 class="mb-2 fw-bold" id="deleteCategoryNameDisplay"></h6>
-                <p class="text-muted small mb-4">All associated data will be lost.</p>
-
-                <button type="button" class="btn btn-danger" id="btnConfirmDeleteCategory">Yes, Delete</button>
-                <button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script src="~/areas/ABC/assets/js/custom/addcategory.js"></script>
 }
