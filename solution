@@ -1,3 +1,259 @@
+// ─────────────────────────────────────────────────────────────
+// INSERT SUBCATEGORY
+// POST: /ABC/ABCMaster/InsertSubCategory
+// Web Model: ABCSubCategoryInsertModel
+// { subCategoryName, subCategoryCode, categoryCode }
+// createdBy & createdIPAddress — session se set hota hai
+// ─────────────────────────────────────────────────────────────
+[HttpPost]
+public async Task<IActionResult> InsertSubCategory([FromBody] ABCSubCategoryInsertModel model)
+{
+    var responseObj = new ABCSubCategoryInsertResponseModel
+    {
+        isSucceeded          = false,
+        isSessionTimeout     = false,
+        returnUrlAfterLogout = "",
+        errorMessage         = "",
+        data                 = new ABCSubCategoryInsertResponseData()
+    };
+
+    if (_workflowSession?.LoggedInUser == null)
+    {
+        responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+        responseObj.isSessionTimeout     = true;
+        return Json(responseObj);
+    }
+
+    try
+    {
+        if (model == null)
+        {
+            responseObj.errorMessage = "Request body cannot be null";
+            return Json(responseObj);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.SubCategoryName))
+        {
+            responseObj.errorMessage = "SubCategory name is required";
+            return Json(responseObj);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.CategoryCode))
+        {
+            responseObj.errorMessage = "Category code is required";
+            return Json(responseObj);
+        }
+
+        // Session se set karo
+        model.CreatedBy        = _workflowSession.LoggedInUser.EmployeeCode;
+        model.CreatedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+        _logger.LogInformation($"Calling API InsertSubCategory: {HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertSubCategory}");
+
+        var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+        var apiResponse = await httpClient.PostAsJsonAsync(
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertSubCategory,
+            model
+        );
+
+        if (apiResponse.IsSuccessStatusCode)
+        {
+            var result  = await apiResponse.Content.ReadAsStringAsync();
+            var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+
+            if (apiData != null)
+            {
+                responseObj.isSucceeded  = apiData.Status == 1;
+                responseObj.data         = apiData;
+                responseObj.errorMessage = apiData.Message;
+            }
+            else
+            {
+                responseObj.errorMessage = "Failed to insert subcategory";
+            }
+        }
+        else
+        {
+            var errorContent         = await apiResponse.Content.ReadAsStringAsync();
+            responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+            _logger.LogError($"InsertSubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "InsertSubCategory Exception");
+        responseObj.errorMessage = ex.Message;
+    }
+
+    return Json(responseObj);
+}
+
+// ─────────────────────────────────────────────────────────────
+// UPDATE SUBCATEGORY
+// POST: /ABC/ABCMaster/UpdateSubCategory
+// Web Model: ABCSubCategoryUpdateModel
+// { subCategoryId, subCategoryName, subCategoryCode, categoryCode }
+// modifiedBy & modifiedIPAddress — session se set hota hai
+// ─────────────────────────────────────────────────────────────
+[HttpPost]
+public async Task<IActionResult> UpdateSubCategory([FromBody] ABCSubCategoryUpdateModel model)
+{
+    var responseObj = new ABCSubCategoryUpdateResponseModel
+    {
+        isSucceeded          = false,
+        isSessionTimeout     = false,
+        returnUrlAfterLogout = "",
+        errorMessage         = "",
+        data                 = new ABCSubCategoryInsertResponseData()
+    };
+
+    if (_workflowSession?.LoggedInUser == null)
+    {
+        responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+        responseObj.isSessionTimeout     = true;
+        return Json(responseObj);
+    }
+
+    try
+    {
+        if (model == null || model.SubCategoryId <= 0)
+        {
+            responseObj.errorMessage = "Valid SubCategory ID is required";
+            return Json(responseObj);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.SubCategoryName))
+        {
+            responseObj.errorMessage = "SubCategory name is required";
+            return Json(responseObj);
+        }
+
+        // Session se set karo
+        model.ModifiedBy        = _workflowSession.LoggedInUser.EmployeeCode;
+        model.ModifiedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+        _logger.LogInformation($"Calling API UpdateSubCategory for SubCategoryId: {model.SubCategoryId}");
+
+        var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+        var apiResponse = await httpClient.PostAsJsonAsync(  // ✅ POST — PutAsJsonAsync nahi
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateSubCategory,
+            model
+        );
+
+        if (apiResponse.IsSuccessStatusCode)
+        {
+            var result  = await apiResponse.Content.ReadAsStringAsync();
+            var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+
+            if (apiData != null)
+            {
+                responseObj.isSucceeded  = apiData.Status == 1;
+                responseObj.data         = apiData;
+                responseObj.errorMessage = apiData.Message;
+            }
+            else
+            {
+                responseObj.errorMessage = "Failed to update subcategory";
+            }
+        }
+        else
+        {
+            var errorContent         = await apiResponse.Content.ReadAsStringAsync();
+            responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+            _logger.LogError($"UpdateSubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "UpdateSubCategory Exception");
+        responseObj.errorMessage = ex.Message;
+    }
+
+    return Json(responseObj);
+}
+
+// ─────────────────────────────────────────────────────────────
+// DELETE SUBCATEGORY
+// POST: /ABC/ABCMaster/DeleteSubCategory
+// Web Model: ABCSubCategoryDeleteModel
+// { subCategoryId }
+// deletedBy & deletedIPAddress — session se set hota hai
+// ─────────────────────────────────────────────────────────────
+[HttpPost]
+public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDeleteModel model)
+{
+    var responseObj = new ABCSubCategoryDeleteResponseModel
+    {
+        isSucceeded          = false,
+        isSessionTimeout     = false,
+        returnUrlAfterLogout = "",
+        errorMessage         = "",
+        data                 = new ABCSubCategoryInsertResponseData()
+    };
+
+    if (_workflowSession?.LoggedInUser == null)
+    {
+        responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+        responseObj.isSessionTimeout     = true;
+        return Json(responseObj);
+    }
+
+    try
+    {
+        if (model == null || model.SubCategoryId <= 0)
+        {
+            responseObj.errorMessage = "Valid SubCategory ID is required";
+            return Json(responseObj);
+        }
+
+        // Session se set karo
+        model.DeletedBy        = _workflowSession.LoggedInUser.EmployeeCode;
+        model.DeletedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+        _logger.LogInformation($"Calling API DeleteSubCategory for SubCategoryId: {model.SubCategoryId}");
+
+        var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+        var apiResponse = await httpClient.PostAsJsonAsync(  // ✅ POST — HttpMethod.Delete nahi
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteSubCategory,
+            model
+        );
+
+        if (apiResponse.IsSuccessStatusCode)
+        {
+            var result  = await apiResponse.Content.ReadAsStringAsync();
+            var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+
+            if (apiData != null)
+            {
+                responseObj.isSucceeded  = apiData.Status == 1;
+                responseObj.data         = apiData;
+                responseObj.errorMessage = apiData.Message;
+            }
+            else
+            {
+                responseObj.errorMessage = "Failed to delete subcategory";
+            }
+        }
+        else
+        {
+            var errorContent         = await apiResponse.Content.ReadAsStringAsync();
+            responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+            _logger.LogError($"DeleteSubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "DeleteSubCategory Exception");
+        responseObj.errorMessage = ex.Message;
+    }
+
+    return Json(responseObj);
+}
+
+
+
+
+
 @{
     Layout = "~/Views/Shared/_ABCLayout.cshtml";
 }
@@ -14,7 +270,7 @@
                         <li class="breadcrumb-item">
                             <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Add Category</li>
+                        <li class="breadcrumb-item active" aria-current="page">Add SubCategory</li>
                     </ol>
                 </nav>
             </div>
@@ -23,11 +279,11 @@
         <div class="main-body-card masters">
             <div class="card-header justify-content-between">
                 <div class="d-flex">
-                    <h2 class="main-title">Add Category</h2>
+                    <h2 class="main-title">Add SubCategory</h2>
                 </div>
                 <div class="d-flex gap-3">
-                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })" class="btn btn-outline-secondary">Back</a>
-                    <button type="button" class="btn btn-success" id="btnSubmitCategory">Submit</button>
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary">Back</a>
+                    <button type="button" class="btn btn-success" id="btnSubmitSubCategory">Submit</button>
                     <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEdit">Cancel Edit</button>
                 </div>
             </div>
@@ -36,43 +292,45 @@
                 <div class="main-body-card">
 
                     <!-- Hidden fields for edit mode -->
-                    <input type="hidden" id="hdnEditCategoryId"   value="0" />
-                    <input type="hidden" id="hdnEditCategoryCode" value="" />
-                    <input type="hidden" id="hdnEditMode"         value="false" />
+                    <input type="hidden" id="hdnEditSubCategoryId"   value="0" />
+                    <input type="hidden" id="hdnEditSubCategoryCode" value="" />
+                    <input type="hidden" id="hdnEditMode"            value="false" />
 
-                    <!-- Form Row -->
-                    <div class="row row-cols-lg-4 mb-3">
+                    <div class="row row-cols-lg-5 mb-3">
                         <div class="col-md-6 col-lg">
                             <div class="mb-3">
                                 <label class="form-label">Company</label>
                                 <input type="text" class="form-control" id="txtCompany" readonly />
-                                <input type="hidden" id="hdnCompanyCode" />
                             </div>
                         </div>
                         <div class="col-md-6 col-lg">
                             <div class="mb-3">
                                 <label class="form-label">Department</label>
                                 <input type="text" class="form-control" id="txtDepartment" readonly />
-                                <input type="hidden" id="hdnDepartmentCode" />
                             </div>
                         </div>
                         <div class="col-md-6 col-lg">
                             <div class="mb-3">
                                 <label class="form-label">Sub Process</label>
                                 <input type="text" class="form-control" id="txtSubProcess" readonly />
-                                <input type="hidden" id="hdnSubProcessCode" />
                             </div>
                         </div>
                         <div class="col-md-6 col-lg">
                             <div class="mb-3">
-                                <label class="form-label" id="lblCategory">Category <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="txtCategory"
-                                       placeholder="Enter category name" maxlength="200" />
+                                <label class="form-label">Category</label>
+                                <input type="text" class="form-control" id="txtCategory" readonly />
+                                <input type="hidden" id="hdnCategoryCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label" id="lblSubCategory">SubCategory <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtSubCategory"
+                                       placeholder="Enter subcategory name" maxlength="200" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- Category List Table -->
                     <div class="row">
                         <div class="col-12">
                             <div class="table-responsive">
@@ -84,12 +342,13 @@
                                             <th>Department</th>
                                             <th>Subprocess</th>
                                             <th>Category</th>
-                                            <th width="80" class="text-center">Action</th>
+                                            <th>SubCategory</th>
+                                            <th width="100" class="text-center">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tblCategoryData">
+                                    <tbody id="tblSubCategoryData">
                                         <tr>
-                                            <td colspan="6" class="text-center">Loading...</td>
+                                            <td colspan="7" class="text-center">Loading...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -136,19 +395,19 @@
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- DELETE CONFIRMATION MODAL                              -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div class="modal fade icon-modal" id="deleteCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false"
+<div class="modal fade icon-modal" id="deleteSubCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body text-center py-4">
                 <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
                         data-bs-dismiss="modal" aria-label="Close"></button>
-                <input type="hidden" id="deleteCategoryId" />
+                <input type="hidden" id="deleteSubCategoryId" />
                 <i class="bi bi-trash3 text-danger" style="font-size: 3rem;"></i>
                 <h5 class="main-text mb-2 mt-3">Are you sure you want to delete?</h5>
-                <h6 class="mb-2 fw-bold" id="deleteCategoryNameDisplay"></h6>
+                <h6 class="mb-2 fw-bold" id="deleteSubCategoryNameDisplay"></h6>
                 <p class="text-muted small mb-4">All associated data will be lost.</p>
-                <button type="button" class="btn btn-danger" id="btnConfirmDeleteCategory">Yes, Delete</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmDeleteSubCategory">Yes, Delete</button>
                 <button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -156,67 +415,71 @@
 </div>
 
 @section Scripts {
-    <script src="~/areas/ABC/assets/js/custom/addcategory.js"></script>
+    <script src="~/areas/ABC/assets/js/custom/addsubcategory.js"></script>
 }
-
-
-
 
 
 
 
 $(document).ready(function () {
-    initializePage();
-    bindEvents();
+    initializeAddSubCategoryPage();
+    bindAddSubCategoryEvents();
 });
 
-var currentCompanyCode    = '';
-var currentDepartmentCode = '';
-var currentSubProcessCode = '';
+var selectedCategoryCode    = '';
+var selectedCategoryName    = '';
+var selectedCompanyCode     = '';
+var selectedCompanyName     = '';
+var selectedDepartmentCode  = '';
+var selectedDepartmentName  = '';
+var selectedSubProcessCode  = '';
+var selectedSubProcessName  = '';
 
 // ─────────────────────────────────────────────────────────────
-function bindEvents() {
-    $('#btnSubmitCategory').on('click',  onSubmitCategoryClick);
-    $('#btnCancelEdit').on('click',      onCancelEditClick);
+function bindAddSubCategoryEvents() {
+    $('#btnSubmitSubCategory').on('click', onSubmitSubCategoryClick);
+    $('#btnCancelEdit').on('click',        onCancelEditClick);
 
-    $(document).on('click', '.edit-category-btn',        onEditCategoryClick);
-    $(document).on('click', '.delete-category-btn',      onDeleteCategoryClick);
-    $(document).on('click', '#btnConfirmDeleteCategory', onConfirmDeleteClick);
+    $(document).on('click', '.edit-subcategory-btn',        onEditSubCategoryClick);
+    $(document).on('click', '.delete-subcategory-btn',      onDeleteSubCategoryClick);
+    $(document).on('click', '#btnConfirmDeleteSubCategory', onConfirmDeleteClick);
 }
 
 // ─────────────────────────────────────────────────────────────
-function initializePage() {
-    parseUrlParameters();
-    loadCategoryList();
-}
-
-// ─────────────────────────────────────────────────────────────
-function parseUrlParameters() {
+function initializeAddSubCategoryPage() {
     const urlParams = new URLSearchParams(window.location.search);
 
-    const companyName    = urlParams.get('companyName')    || '';
+    const categoryCode   = urlParams.get('categoryCode')   || '';
+    const categoryName   = urlParams.get('categoryName')   || '';
     const companyCode    = urlParams.get('companyCode')    || '';
-    const departmentName = urlParams.get('departmentName') || '';
+    const companyName    = urlParams.get('companyName')    || '';
     const departmentCode = urlParams.get('departmentCode') || '';
-    const subprocessName = urlParams.get('subprocessName') || '';
+    const departmentName = urlParams.get('departmentName') || '';
     const subprocessCode = urlParams.get('subprocessCode') || '';
+    const subprocessName = urlParams.get('subprocessName') || '';
+
+    if (!categoryCode) {
+        showError('Missing required parameters. Please select a category from the list.');
+        setTimeout(function () { window.history.back(); }, 2000);
+        return;
+    }
 
     $('#txtCompany').val(companyName);
-    $('#hdnCompanyCode').val(companyCode);
-    currentCompanyCode = companyCode;
-
     $('#txtDepartment').val(departmentName);
-    $('#hdnDepartmentCode').val(departmentCode);
-    currentDepartmentCode = departmentCode;
-
     $('#txtSubProcess').val(subprocessName);
-    $('#hdnSubProcessCode').val(subprocessCode);
-    currentSubProcessCode = subprocessCode;
+    $('#txtCategory').val(categoryName);
+    $('#hdnCategoryCode').val(categoryCode);
 
-    if (!companyCode || !departmentCode || !subprocessCode) {
-        showError('Invalid parameters. Please select from master page.');
-        $('#btnSubmitCategory').prop('disabled', true);
-    }
+    selectedCategoryCode   = categoryCode;
+    selectedCategoryName   = categoryName;
+    selectedCompanyCode    = companyCode;
+    selectedCompanyName    = companyName;
+    selectedDepartmentCode = departmentCode;
+    selectedDepartmentName = departmentName;
+    selectedSubProcessCode = subprocessCode;
+    selectedSubProcessName = subprocessName;
+
+    loadSubCategoryList();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -236,144 +499,110 @@ function showError(message) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Enter EDIT mode — same top txtCategory textbox use karo
+// Enter EDIT mode — same top txtSubCategory textbox use karo
 // ─────────────────────────────────────────────────────────────
-function enterEditMode(categoryId, categoryName, categoryCode) {
-    $('#hdnEditCategoryId').val(categoryId);
-    $('#hdnEditCategoryCode').val(categoryCode);
+function enterEditMode(subCategoryId, subCategoryName, subCategoryCode) {
+    $('#hdnEditSubCategoryId').val(subCategoryId);
+    $('#hdnEditSubCategoryCode').val(subCategoryCode);
     $('#hdnEditMode').val('true');
 
-    $('#txtCategory').val(categoryName).focus().select();
-    $('#lblCategory').html('Edit Category <span class="text-danger">*</span>');
-    $('#btnSubmitCategory').text('Update');
+    $('#txtSubCategory').val(subCategoryName).focus().select();
+    $('#lblSubCategory').html('Edit SubCategory <span class="text-danger">*</span>');
+    $('#btnSubmitSubCategory').text('Update');
     $('#btnCancelEdit').removeClass('d-none');
 
-    $('html, body').animate({ scrollTop: $('#txtCategory').offset().top - 100 }, 300);
+    $('html, body').animate({ scrollTop: $('#txtSubCategory').offset().top - 100 }, 300);
 }
 
 // ─────────────────────────────────────────────────────────────
 // Enter INSERT mode — form reset
 // ─────────────────────────────────────────────────────────────
 function enterInsertMode() {
-    $('#hdnEditCategoryId').val('0');
-    $('#hdnEditCategoryCode').val('');
+    $('#hdnEditSubCategoryId').val('0');
+    $('#hdnEditSubCategoryCode').val('');
     $('#hdnEditMode').val('false');
 
-    $('#txtCategory').val('');
-    $('#lblCategory').html('Category <span class="text-danger">*</span>');
-    $('#btnSubmitCategory').text('Submit').prop('disabled', false);
+    $('#txtSubCategory').val('');
+    $('#lblSubCategory').html('SubCategory <span class="text-danger">*</span>');
+    $('#btnSubmitSubCategory').text('Submit').prop('disabled', false);
     $('#btnCancelEdit').addClass('d-none');
 }
 
 // ─────────────────────────────────────────────────────────────
-// LOAD CATEGORY LIST
-// GET: /ABC/ABCMaster/GetCategoryList
+// LOAD SUBCATEGORY LIST
+// GET: /ABC/ABCMaster/GetSubCategoryList
+// Params: categoryCode
 // ─────────────────────────────────────────────────────────────
-function loadCategoryList() {
-    if (!currentCompanyCode || !currentDepartmentCode || !currentSubProcessCode) {
-        $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">No data available</td></tr>');
+function loadSubCategoryList() {
+    if (!selectedCategoryCode) {
+        $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">No category selected</td></tr>');
         return;
     }
 
-    $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">Loading...</td></tr>');
+    $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">Loading...</td></tr>');
 
     $.ajax({
-        url: '/ABC/ABCMaster/GetCategoryList',
+        url: '/ABC/ABCMaster/GetSubCategoryList',
         type: 'GET',
-        data: {
-            companyCode:    currentCompanyCode,
-            departmentCode: currentDepartmentCode,
-            subprocessCode: currentSubProcessCode
-        },
+        data: { categoryCode: selectedCategoryCode },
         dataType: 'json',
         success: function (response) {
             if (response && response.isSessionTimeout) {
                 window.location.href = response.returnUrlAfterLogout;
                 return;
             }
-            if (response && response.isSucceeded && response.data && response.data.categoryList) {
-                populateCategoryTable(response.data.categoryList);
+            if (response && response.isSucceeded && response.data && response.data.subCategoryList) {
+                populateSubCategoryTable(response.data.subCategoryList);
             } else {
-                $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">No categories found</td></tr>');
+                $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">No subcategories found</td></tr>');
             }
         },
         error: function () {
-            $('#tblCategoryData').html('<tr><td colspan="6" class="text-center text-danger">Error loading categories</td></tr>');
+            $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center text-danger">Error loading subcategories</td></tr>');
         }
     });
 }
 
 // ─────────────────────────────────────────────────────────────
 // POPULATE TABLE
-// Dropdown order: Edit → Delete → Add Sub Category → Add Activity
+// Action col: Edit icon | Delete icon (same as category page style)
 // ─────────────────────────────────────────────────────────────
-function populateCategoryTable(categories) {
-    const $tbody = $('#tblCategoryData');
+function populateSubCategoryTable(subCategories) {
+    const $tbody = $('#tblSubCategoryData');
     $tbody.empty();
 
-    if (!categories || categories.length === 0) {
-        $tbody.html('<tr><td colspan="6" class="text-center">No categories found</td></tr>');
+    if (!subCategories || subCategories.length === 0) {
+        $tbody.html('<tr><td colspan="7" class="text-center">No subcategories found for this category</td></tr>');
         return;
     }
 
-    $.each(categories, function (index, category) {
-
-        const addSubCategoryUrl = `/ABC/ABCMaster/AddSubCategory?` +
-            `categoryId=${category.categoryId || ''}&` +
-            `categoryName=${encodeURIComponent(category.categoryName || '')}&` +
-            `categoryCode=${encodeURIComponent(category.categoryCode || '')}&` +
-            `companyCode=${encodeURIComponent(category.companyCode || '')}&` +
-            `companyName=${encodeURIComponent(category.company_Name || '')}&` +
-            `departmentCode=${encodeURIComponent(category.departmentCode || '')}&` +
-            `departmentName=${encodeURIComponent(category.department_Name || '')}&` +
-            `subprocessCode=${encodeURIComponent(category.subprocessCode || '')}&` +
-            `subprocessName=${encodeURIComponent(category.subProcess_Name || '')}`;
-
-        const addActivityUrl = `/ABC/ABCMaster/AddActivity?` +
-            `categoryCode=${encodeURIComponent(category.categoryCode || '')}&` +
-            `categoryName=${encodeURIComponent(category.categoryName || '')}&` +
-            `companyCode=${encodeURIComponent(category.companyCode || '')}&` +
-            `companyName=${encodeURIComponent(category.company_Name || '')}&` +
-            `departmentCode=${encodeURIComponent(category.departmentCode || '')}&` +
-            `departmentName=${encodeURIComponent(category.department_Name || '')}&` +
-            `subprocessCode=${encodeURIComponent(category.subprocessCode || '')}&` +
-            `subprocessName=${encodeURIComponent(category.subProcess_Name || '')}`;
-
+    $.each(subCategories, function (index, sc) {
         const rowHtml = `
-            <tr id="row-category-${category.categoryId}">
+            <tr id="row-subcategory-${sc.subCategoryId}">
                 <td class="text-center">${index + 1}</td>
-                <td>${escapeHtml(category.company_Name    || '')}</td>
-                <td>${escapeHtml(category.department_Name || '')}</td>
-                <td>${escapeHtml(category.subProcess_Name || '')}</td>
-                <td>${escapeHtml(category.categoryName    || '')}</td>
+                <td>${escapeHtml(sc.company_Name    || '')}</td>
+                <td>${escapeHtml(sc.department_Name || '')}</td>
+                <td>${escapeHtml(sc.subProcess_Name || '')}</td>
+                <td>${escapeHtml(sc.categoryName    || '')}</td>
+                <td>${escapeHtml(sc.subCategoryName || '')}</td>
                 <td class="text-center action-col">
                     <a href="javascript:;" class="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-three-dots"></i>
                     </a>
                     <ul class="dropdown-menu mt-2">
                         <li>
-                            <a href="javascript:;" class="dropdown-item edit-category-btn"
-                               data-id="${category.categoryId}"
-                               data-name="${escapeHtml(category.categoryName || '')}"
-                               data-code="${escapeHtml(category.categoryCode || '')}">
+                            <a href="javascript:;" class="dropdown-item edit-subcategory-btn"
+                               data-id="${sc.subCategoryId}"
+                               data-name="${escapeHtml(sc.subCategoryName || '')}"
+                               data-code="${escapeHtml(sc.subCategoryCode || '')}">
                                 <i class="bi bi-pencil me-2"></i>Edit
                             </a>
                         </li>
                         <li>
-                            <a href="javascript:;" class="dropdown-item text-danger delete-category-btn"
-                               data-id="${category.categoryId}"
-                               data-name="${escapeHtml(category.categoryName || '')}">
+                            <a href="javascript:;" class="dropdown-item text-danger delete-subcategory-btn"
+                               data-id="${sc.subCategoryId}"
+                               data-name="${escapeHtml(sc.subCategoryName || '')}">
                                 <i class="bi bi-trash3 me-2"></i>Delete
-                            </a>
-                        </li>
-                        <li>
-                            <a href="${addSubCategoryUrl}" class="dropdown-item">
-                                <i class="bi bi-plus-circle me-2"></i>Add Sub Category
-                            </a>
-                        </li>
-                        <li>
-                            <a href="${addActivityUrl}" class="dropdown-item">
-                                <i class="bi bi-plus-circle me-2"></i>Add Activity
                             </a>
                         </li>
                     </ul>
@@ -387,11 +616,11 @@ function populateCategoryTable(categories) {
 // ─────────────────────────────────────────────────────────────
 // SUBMIT — Insert ya Update decide karta hai hdnEditMode se
 // ─────────────────────────────────────────────────────────────
-function onSubmitCategoryClick() {
+function onSubmitSubCategoryClick() {
     if ($('#hdnEditMode').val() === 'true') {
-        doUpdateCategory();
+        doUpdateSubCategory();
     } else {
-        doInsertCategory();
+        doInsertSubCategory();
     }
 }
 
@@ -400,44 +629,40 @@ function onCancelEditClick() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// INSERT CATEGORY
-// POST: /ABC/ABCMaster/InsertCategory
-// Web Model: ABCCategoryInsertModel
-// { categoryName, categoryCode, companyCode, departmentCode, subprocessCode }
+// INSERT SUBCATEGORY
+// POST: /ABC/ABCMaster/InsertSubCategory
+// Web Model: ABCSubCategoryInsertModel
+// { subCategoryName, subCategoryCode, categoryCode }
 // createdBy & createdIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
-function doInsertCategory() {
-    const categoryName   = $('#txtCategory').val().trim();
-    const companyCode    = $('#hdnCompanyCode').val();
-    const departmentCode = $('#hdnDepartmentCode').val();
-    const subprocessCode = $('#hdnSubProcessCode').val();
+function doInsertSubCategory() {
+    const subCategoryName = $('#txtSubCategory').val().trim();
 
-    if (!categoryName) {
-        showError('Please enter category name');
-        $('#txtCategory').focus();
+    if (!subCategoryName) {
+        showError('Please enter subcategory name');
+        $('#txtSubCategory').focus();
         return;
     }
 
-    if (!companyCode || !departmentCode || !subprocessCode) {
-        showError('Invalid company, department or subprocess');
+    if (!selectedCategoryCode) {
+        showError('Missing category information. Please go back and select again.');
         return;
     }
 
-    const categoryData = {
-        categoryName:   categoryName,
-        categoryCode:   null,
-        companyCode:    companyCode,
-        departmentCode: departmentCode,
-        subprocessCode: subprocessCode
+    const insertData = {
+        subCategoryName: subCategoryName,
+        subCategoryCode: null,              // SP auto-generate karta hai
+        categoryCode:    selectedCategoryCode
+        // createdBy & createdIPAddress: Web Controller session se set karega
     };
 
-    $('#btnSubmitCategory').prop('disabled', true).text('Saving...');
+    $('#btnSubmitSubCategory').prop('disabled', true).text('Saving...');
 
     $.ajax({
-        url: '/ABC/ABCMaster/InsertCategory',
+        url: '/ABC/ABCMaster/InsertSubCategory',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify(categoryData),
+        data: JSON.stringify(insertData),
         dataType: 'json',
         success: function (response) {
             if (response && response.isSessionTimeout) {
@@ -445,11 +670,11 @@ function doInsertCategory() {
                 return;
             }
             if (response && response.isSucceeded) {
-                showSuccess('Category added successfully!');
-                $('#txtCategory').val('');
-                loadCategoryList();
+                showSuccess('SubCategory added successfully!');
+                $('#txtSubCategory').val('');
+                loadSubCategoryList();
             } else {
-                showError(response.errorMessage || 'Failed to add category');
+                showError(response.errorMessage || 'Failed to add subcategory');
             }
         },
         error: function (xhr) {
@@ -457,54 +682,50 @@ function doInsertCategory() {
                 const err = JSON.parse(xhr.responseText);
                 showError(err.error || err.message || 'Error occurred');
             } catch (e) {
-                showError('Error adding category');
+                showError('Error adding subcategory');
             }
         },
         complete: function () {
-            $('#btnSubmitCategory').prop('disabled', false).text('Submit');
+            $('#btnSubmitSubCategory').prop('disabled', false).text('Submit');
         }
     });
 }
 
 // ─────────────────────────────────────────────────────────────
-// UPDATE CATEGORY
-// POST: /ABC/ABCMaster/UpdateCategory
-// Web Model: ABCCategoryUpdateModel
-// { categoryId, categoryName, categoryCode, companyCode, departmentCode, subprocessCode }
+// UPDATE SUBCATEGORY
+// POST: /ABC/ABCMaster/UpdateSubCategory
+// Web Model: ABCSubCategoryUpdateModel
+// { subCategoryId, subCategoryName, subCategoryCode, categoryCode }
 // modifiedBy & modifiedIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
-function doUpdateCategory() {
-    const categoryId     = parseInt($('#hdnEditCategoryId').val());
-    const categoryName   = $('#txtCategory').val().trim();
-    const categoryCode   = $('#hdnEditCategoryCode').val() || '';
-    const companyCode    = $('#hdnCompanyCode').val()      || '';
-    const departmentCode = $('#hdnDepartmentCode').val()   || '';
-    const subprocessCode = $('#hdnSubProcessCode').val()   || '';
+function doUpdateSubCategory() {
+    const subCategoryId   = parseInt($('#hdnEditSubCategoryId').val());
+    const subCategoryName = $('#txtSubCategory').val().trim();
+    const subCategoryCode = $('#hdnEditSubCategoryCode').val() || '';
 
-    if (!categoryName) {
-        showError('Category name cannot be empty');
-        $('#txtCategory').focus();
+    if (!subCategoryName) {
+        showError('SubCategory name cannot be empty');
+        $('#txtSubCategory').focus();
         return;
     }
 
-    if (!categoryId || categoryId <= 0) {
-        showError('Invalid Category ID');
+    if (!subCategoryId || subCategoryId <= 0) {
+        showError('Invalid SubCategory ID');
         return;
     }
 
     const updateData = {
-        categoryId:     categoryId,
-        categoryName:   categoryName,
-        categoryCode:   categoryCode,
-        companyCode:    companyCode,
-        departmentCode: departmentCode,
-        subprocessCode: subprocessCode
+        subCategoryId:   subCategoryId,
+        subCategoryName: subCategoryName,
+        subCategoryCode: subCategoryCode,
+        categoryCode:    selectedCategoryCode
+        // modifiedBy & modifiedIPAddress: Web Controller session se set karega
     };
 
-    $('#btnSubmitCategory').prop('disabled', true).text('Updating...');
+    $('#btnSubmitSubCategory').prop('disabled', true).text('Updating...');
 
     $.ajax({
-        url: '/ABC/ABCMaster/UpdateCategory',
+        url: '/ABC/ABCMaster/UpdateSubCategory',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(updateData),
@@ -515,12 +736,12 @@ function doUpdateCategory() {
                 return;
             }
             if (response && response.isSucceeded) {
-                showSuccess('Category updated successfully!');
+                showSuccess('SubCategory updated successfully!');
                 enterInsertMode();
-                loadCategoryList();
+                loadSubCategoryList();
             } else {
-                showError(response.errorMessage || 'Failed to update category');
-                $('#btnSubmitCategory').prop('disabled', false).text('Update');
+                showError(response.errorMessage || 'Failed to update subcategory');
+                $('#btnSubmitSubCategory').prop('disabled', false).text('Update');
             }
         },
         error: function (xhr) {
@@ -528,92 +749,93 @@ function doUpdateCategory() {
                 const err = JSON.parse(xhr.responseText);
                 showError(err.error || err.errorMessage || 'Error occurred');
             } catch (e) {
-                showError('Error updating category');
+                showError('Error updating subcategory');
             }
-            $('#btnSubmitCategory').prop('disabled', false).text('Update');
+            $('#btnSubmitSubCategory').prop('disabled', false).text('Update');
         }
     });
 }
 
 // ─────────────────────────────────────────────────────────────
-// EDIT button click — top textbox mein category name daalo
+// EDIT button click — same top txtSubCategory textbox mein naam daalo
 // ─────────────────────────────────────────────────────────────
-function onEditCategoryClick() {
-    const categoryId   = $(this).data('id');
-    const categoryName = $(this).data('name');
-    const categoryCode = $(this).data('code');
-    enterEditMode(categoryId, categoryName, categoryCode);
+function onEditSubCategoryClick() {
+    const subCategoryId   = $(this).data('id');
+    const subCategoryName = $(this).data('name');
+    const subCategoryCode = $(this).data('code');
+    enterEditMode(subCategoryId, subCategoryName, subCategoryCode);
 }
 
 // ─────────────────────────────────────────────────────────────
 // DELETE — confirmation modal open karo
 // ─────────────────────────────────────────────────────────────
-function onDeleteCategoryClick() {
-    const categoryId   = $(this).data('id');
-    const categoryName = $(this).data('name');
+function onDeleteSubCategoryClick() {
+    const subCategoryId   = $(this).data('id');
+    const subCategoryName = $(this).data('name');
 
-    $('#deleteCategoryId').val(categoryId);
-    $('#deleteCategoryNameDisplay').text(categoryName);
-    new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
+    $('#deleteSubCategoryId').val(subCategoryId);
+    $('#deleteSubCategoryNameDisplay').text(subCategoryName);
+    new bootstrap.Modal(document.getElementById('deleteSubCategoryModal')).show();
 }
 
 // ─────────────────────────────────────────────────────────────
 // CONFIRM DELETE
-// POST: /ABC/ABCMaster/DeleteCategory
-// Web Model: ABCCategoryDeleteModel
-// { categoryId }
+// POST: /ABC/ABCMaster/DeleteSubCategory
+// Web Model: ABCSubCategoryDeleteModel
+// { subCategoryId }
 // deletedBy & deletedIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
 function onConfirmDeleteClick() {
-    const categoryId = parseInt($('#deleteCategoryId').val());
+    const subCategoryId = parseInt($('#deleteSubCategoryId').val());
 
-    if (!categoryId || categoryId <= 0) {
-        showError('Invalid Category ID');
+    if (!subCategoryId || subCategoryId <= 0) {
+        showError('Invalid SubCategory ID');
         return;
     }
 
     const deleteData = {
-        categoryId: categoryId
+        subCategoryId: subCategoryId
+        // deletedBy & deletedIPAddress: Web Controller session se set karega
     };
 
-    $('#btnConfirmDeleteCategory').prop('disabled', true).text('Deleting...');
+    $('#btnConfirmDeleteSubCategory').prop('disabled', true).text('Deleting...');
 
     $.ajax({
-        url: '/ABC/ABCMaster/DeleteCategory',
-        type: 'POST',
+        url: '/ABC/ABCMaster/DeleteSubCategory',
+        type: 'POST',   // ✅ POST — API [HttpPost] expect karta hai
         contentType: 'application/json',
         data: JSON.stringify(deleteData),
         dataType: 'json',
         success: function (response) {
-            bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('deleteSubCategoryModal')).hide();
 
             if (response && response.isSessionTimeout) {
                 window.location.href = response.returnUrlAfterLogout;
                 return;
             }
             if (response && response.isSucceeded) {
-                // Agar deleted category ka edit chal raha tha toh reset karo
+                // Agar deleted subcategory ka edit chal raha tha toh reset karo
                 if ($('#hdnEditMode').val() === 'true' &&
-                    parseInt($('#hdnEditCategoryId').val()) === categoryId) {
+                    parseInt($('#hdnEditSubCategoryId').val()) === subCategoryId) {
                     enterInsertMode();
                 }
-                showSuccess('Category deleted successfully!');
-                loadCategoryList();
+                showSuccess('SubCategory deleted successfully!');
+                loadSubCategoryList();
             } else {
-                showError(response.errorMessage || 'Failed to delete category');
+                showError(response.errorMessage || 'Failed to delete subcategory');
             }
         },
         error: function (xhr) {
-            bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('deleteSubCategoryModal')).hide();
             try {
                 const err = JSON.parse(xhr.responseText);
                 showError(err.error || err.errorMessage || 'Error occurred');
             } catch (e) {
-                showError('Error deleting category');
+                showError('Error deleting subcategory');
             }
         },
         complete: function () {
-            $('#btnConfirmDeleteCategory').prop('disabled', false).text('Yes, Delete');
+            $('#btnConfirmDeleteSubCategory').prop('disabled', false).text('Yes, Delete');
         }
     });
 }
