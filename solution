@@ -1,632 +1,245 @@
-
-solution:
-
-
-// UpdateCategory mein replace karo:
-var status = data.Rows[0]["Status"].ToString();
-returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
-returnData.Message = data.Rows[0]["Message"].ToString();
-
-// DeleteCategory mein bhi same fix:
-var status = data.Rows[0]["Status"].ToString();
-returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
-returnData.Message = data.Rows[0]["Message"].ToString();
-
-
-// UpdateCategory mein:
-// ❌ httpClient.PutAsJsonAsync(...)
-// ✅ 
-var apiResponse = await httpClient.PostAsJsonAsync(
-    HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateCategory, model);
-
-// DeleteCategory mein:
-// ❌ HttpMethod.Delete
-// ✅
-var apiResponse = await httpClient.PostAsJsonAsync(
-    HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteCategory, model);
-
-
-
-
-$(document).ready(function () {
-    initializePage();
-    bindEvents();
-});
-
-var currentCompanyCode    = '';
-var currentDepartmentCode = '';
-var currentSubProcessCode = '';
-
-// ─────────────────────────────────────────────────────────────
-function bindEvents() {
-    $('#btnSubmitCategory').on('click',  onSubmitCategoryClick);
-    $('#btnCancelEdit').on('click',      onCancelEditClick);
-
-    // Event delegation — dynamically generated rows
-    $(document).on('click', '.edit-category-btn',        onEditCategoryClick);
-    $(document).on('click', '.delete-category-btn',      onDeleteCategoryClick);
-    $(document).on('click', '#btnConfirmDeleteCategory', onConfirmDeleteClick);
-}
-
-// ─────────────────────────────────────────────────────────────
-function initializePage() {
-    parseUrlParameters();
-    loadCategoryList();
-}
-
-// ─────────────────────────────────────────────────────────────
-function parseUrlParameters() {
-    const urlParams = new URLSearchParams(window.location.search);
-
-    const companyName    = urlParams.get('companyName')    || '';
-    const companyCode    = urlParams.get('companyCode')    || '';
-    const departmentName = urlParams.get('departmentName') || '';
-    const departmentCode = urlParams.get('departmentCode') || '';
-    const subprocessName = urlParams.get('subprocessName') || '';
-    const subprocessCode = urlParams.get('subprocessCode') || '';
-
-    $('#txtCompany').val(companyName);
-    $('#hdnCompanyCode').val(companyCode);
-    currentCompanyCode = companyCode;
-
-    $('#txtDepartment').val(departmentName);
-    $('#hdnDepartmentCode').val(departmentCode);
-    currentDepartmentCode = departmentCode;
-
-    $('#txtSubProcess').val(subprocessName);
-    $('#hdnSubProcessCode').val(subprocessCode);
-    currentSubProcessCode = subprocessCode;
-
-    if (!companyCode || !departmentCode || !subprocessCode) {
-        showError('Invalid parameters. Please select from master page.');
-        $('#btnSubmitCategory').prop('disabled', true);
-    }
-}
-
-// ─────────────────────────────────────────────────────────────
-// Switch UI to EDIT mode
-// ─────────────────────────────────────────────────────────────
-function enterEditMode(categoryId, categoryName, categoryCode) {
-    // Hidden fields set karo
-    $('#hdnEditCategoryId').val(categoryId);
-    $('#hdnEditCategoryCode').val(categoryCode);
-    $('#hdnEditMode').val('true');
-
-    // Textbox mein category name set karo aur focus karo
-    $('#txtCategory').val(categoryName).focus().select();
-
-    // Label aur button text change karo
-    $('#lblCategory').html('Edit Category <span class="text-danger">*</span>');
-    $('#btnSubmitCategory').text('Update');
-    $('#btnCancelEdit').removeClass('d-none');
-
-    // Page ke top pe scroll karo taki user textbox dekh sake
-    $('html, body').animate({ scrollTop: $('#txtCategory').offset().top - 100 }, 300);
-}
-
-// ─────────────────────────────────────────────────────────────
-// Switch UI back to INSERT mode
-// ─────────────────────────────────────────────────────────────
-function enterInsertMode() {
-    $('#hdnEditCategoryId').val('0');
-    $('#hdnEditCategoryCode').val('');
-    $('#hdnEditMode').val('false');
-
-    $('#txtCategory').val('');
-    $('#lblCategory').html('Category <span class="text-danger">*</span>');
-    $('#btnSubmitCategory').text('Submit');
-    $('#btnCancelEdit').addClass('d-none');
-}
-
-// ─────────────────────────────────────────────────────────────
-// LOAD CATEGORY LIST
-// GET: /ABC/ABCMaster/GetCategoryList
-// Params: companyCode, departmentCode, subprocessCode
-// ─────────────────────────────────────────────────────────────
-function loadCategoryList() {
-    if (!currentCompanyCode || !currentDepartmentCode || !currentSubProcessCode) {
-        $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">No data available</td></tr>');
-        return;
-    }
-
-    $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">Loading...</td></tr>');
-
-    $.ajax({
-        url: '/ABC/ABCMaster/GetCategoryList',
-        type: 'GET',
-        data: {
-            companyCode:    currentCompanyCode,
-            departmentCode: currentDepartmentCode,
-            subprocessCode: currentSubProcessCode
-        },
-        dataType: 'json',
-        success: function (response) {
-            if (response && response.isSessionTimeout) {
-                window.location.href = response.returnUrlAfterLogout;
-                return;
-            }
-            if (response && response.isSucceeded && response.data && response.data.categoryList) {
-                populateCategoryTable(response.data.categoryList);
-            } else {
-                $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">No categories found</td></tr>');
-            }
-        },
-        error: function () {
-            $('#tblCategoryData').html('<tr><td colspan="6" class="text-center text-danger">Error loading categories</td></tr>');
-        }
-    });
-}
-
-// ─────────────────────────────────────────────────────────────
-function populateCategoryTable(categories) {
-    const $tbody = $('#tblCategoryData');
-    $tbody.empty();
-
-    if (!categories || categories.length === 0) {
-        $tbody.html('<tr><td colspan="6" class="text-center">No categories found</td></tr>');
-        return;
-    }
-
-    $.each(categories, function (index, category) {
-        const addSubCategoryUrl = `/ABC/ABCMaster/AddSubCategory?` +
-            `categoryId=${category.categoryId || ''}&` +
-            `categoryName=${encodeURIComponent(category.categoryName || '')}&` +
-            `categoryCode=${encodeURIComponent(category.categoryCode || '')}&` +
-            `companyCode=${encodeURIComponent(category.companyCode || '')}&` +
-            `companyName=${encodeURIComponent(category.company_Name || '')}&` +
-            `departmentCode=${encodeURIComponent(category.departmentCode || '')}&` +
-            `departmentName=${encodeURIComponent(category.department_Name || '')}&` +
-            `subprocessCode=${encodeURIComponent(category.subprocessCode || '')}&` +
-            `subprocessName=${encodeURIComponent(category.subProcess_Name || '')}`;
-
-        const addActivityUrl = `/ABC/ABCMaster/AddActivity?` +
-            `categoryCode=${encodeURIComponent(category.categoryCode || '')}&` +
-            `categoryName=${encodeURIComponent(category.categoryName || '')}&` +
-            `companyCode=${encodeURIComponent(category.companyCode || '')}&` +
-            `companyName=${encodeURIComponent(category.company_Name || '')}&` +
-            `departmentCode=${encodeURIComponent(category.departmentCode || '')}&` +
-            `departmentName=${encodeURIComponent(category.department_Name || '')}&` +
-            `subprocessCode=${encodeURIComponent(category.subprocessCode || '')}&` +
-            `subprocessName=${encodeURIComponent(category.subProcess_Name || '')}`;
-
-        const rowHtml = `
-            <tr id="row-category-${category.categoryId}">
-                <td class="text-center">${index + 1}</td>
-                <td>${escapeHtml(category.company_Name || '')}</td>
-                <td>${escapeHtml(category.department_Name || '')}</td>
-                <td>${escapeHtml(category.subProcess_Name || '')}</td>
-                <td>${escapeHtml(category.categoryName || '')}</td>
-                <td class="text-center action-col">
-                    <a href="javascript:;" class="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-three-dots"></i>
-                    </a>
-                    <ul class="dropdown-menu mt-2">
-                        <li>
-                            <a href="javascript:;" class="dropdown-item edit-category-btn"
-                               data-id="${category.categoryId}"
-                               data-name="${escapeHtml(category.categoryName || '')}"
-                               data-code="${escapeHtml(category.categoryCode || '')}">
-                                <i class="bi bi-pencil me-2"></i>Edit Category
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:;" class="dropdown-item text-danger delete-category-btn"
-                               data-id="${category.categoryId}"
-                               data-name="${escapeHtml(category.categoryName || '')}">
-                                <i class="bi bi-trash3 me-2"></i>Delete Category
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a href="${addSubCategoryUrl}" class="dropdown-item">
-                                <i class="bi bi-plus-circle me-2"></i>Add Sub Category
-                            </a>
-                        </li>
-                        <li>
-                            <a href="${addActivityUrl}" class="dropdown-item">
-                                <i class="bi bi-plus-circle me-2"></i>Add Activity
-                            </a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        `;
-        $tbody.append(rowHtml);
-    });
-}
-
-// ─────────────────────────────────────────────────────────────
-// EDIT button click — same top textbox mein category name daalo
-// ─────────────────────────────────────────────────────────────
-function onEditCategoryClick() {
-    const categoryId   = $(this).data('id');
-    const categoryName = $(this).data('name');
-    const categoryCode = $(this).data('code');
-
-    enterEditMode(categoryId, categoryName, categoryCode);
-}
-
-// ─────────────────────────────────────────────────────────────
-// Cancel Edit
-// ─────────────────────────────────────────────────────────────
-function onCancelEditClick() {
-    enterInsertMode();
-}
-
-// ─────────────────────────────────────────────────────────────
-// SUBMIT button — Insert ya Update decide karta hai hdnEditMode se
-// ─────────────────────────────────────────────────────────────
-function onSubmitCategoryClick() {
-    const isEditMode = $('#hdnEditMode').val() === 'true';
-
-    if (isEditMode) {
-        doUpdateCategory();
-    } else {
-        doInsertCategory();
-    }
-}
-
 // ─────────────────────────────────────────────────────────────
 // INSERT CATEGORY
 // POST: /ABC/ABCMaster/InsertCategory
-// API Model: { CategoryName, CategoryCode, CompanyCode, DepartmentCode, SubprocessCode, CreatedBy, CreatedIPAddress }
-// CreatedBy & CreatedIPAddress — Web Controller session se set karta hai
+// Web Model: ABCCategoryInsertModel
+// API Model: ABCCategoryInsertModel (same fields)
+// CreatedBy & CreatedIPAddress — session se set hota hai
 // ─────────────────────────────────────────────────────────────
-function doInsertCategory() {
-    const categoryName   = $('#txtCategory').val().trim();
-    const companyCode    = $('#hdnCompanyCode').val();
-    const departmentCode = $('#hdnDepartmentCode').val();
-    const subprocessCode = $('#hdnSubProcessCode').val();
-
-    if (!categoryName) {
-        showError('Please enter category name');
-        $('#txtCategory').focus();
-        return;
-    }
-
-    if (!companyCode || !departmentCode || !subprocessCode) {
-        showError('Invalid company, department or subprocess');
-        return;
-    }
-
-    // Web Model: ABCCategoryInsertModel
-    const categoryData = {
-        categoryName:   categoryName,
-        categoryCode:   null,          // SP auto-generate karta hai
-        companyCode:    companyCode,
-        departmentCode: departmentCode,
-        subprocessCode: subprocessCode
-        // createdBy & createdIPAddress: Web Controller session se set karega
+[HttpPost]
+public async Task<IActionResult> InsertCategory([FromBody] ABCCategoryInsertModel model)
+{
+    var responseObj = new ABCCategoryInsertResponseModel
+    {
+        isSucceeded          = false,
+        isSessionTimeout     = false,
+        returnUrlAfterLogout = "",
+        errorMessage         = "",
+        data                 = new ABCCategoryInsertResponseData()
     };
 
-    $('#btnSubmitCategory').prop('disabled', true).text('Saving...');
+    if (_workflowSession?.LoggedInUser == null)
+    {
+        responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+        responseObj.isSessionTimeout     = true;
+        return Json(responseObj);
+    }
 
-    $.ajax({
-        url: '/ABC/ABCMaster/InsertCategory',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(categoryData),
-        dataType: 'json',
-        success: function (response) {
-            if (response && response.isSessionTimeout) {
-                window.location.href = response.returnUrlAfterLogout;
-                return;
-            }
-            if (response && response.isSucceeded) {
-                showSuccess('Category added successfully!');
-                $('#txtCategory').val('');
-                loadCategoryList();
-            } else {
-                showError(response.errorMessage || 'Failed to add category');
-            }
-        },
-        error: function (xhr) {
-            try {
-                const err = JSON.parse(xhr.responseText);
-                showError(err.error || err.message || 'Error occurred');
-            } catch (e) {
-                showError('Error adding category');
-            }
-        },
-        complete: function () {
-            $('#btnSubmitCategory').prop('disabled', false).text('Submit');
+    try
+    {
+        if (model == null)
+        {
+            responseObj.errorMessage = "Request body cannot be null";
+            return Json(responseObj);
         }
-    });
+
+        if (string.IsNullOrWhiteSpace(model.CategoryName))
+        {
+            responseObj.errorMessage = "Category name is required";
+            return Json(responseObj);
+        }
+
+        // Session se set karo
+        model.CreatedBy        = _workflowSession.LoggedInUser.EmployeeCode;
+        model.CreatedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+        _logger.LogInformation($"Calling API InsertCategory: {HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertCategory}");
+
+        var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+        var apiResponse = await httpClient.PostAsJsonAsync(
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertCategory,
+            model
+        );
+
+        if (apiResponse.IsSuccessStatusCode)
+        {
+            var result  = await apiResponse.Content.ReadAsStringAsync();
+            var apiData = JsonConvert.DeserializeObject<ABCCategoryInsertResponseData>(result);
+
+            if (apiData != null)
+            {
+                responseObj.isSucceeded  = apiData.Status == 1;
+                responseObj.data         = apiData;
+                responseObj.errorMessage = apiData.Message;
+            }
+            else
+            {
+                responseObj.errorMessage = "Failed to insert category";
+            }
+        }
+        else
+        {
+            var errorContent     = await apiResponse.Content.ReadAsStringAsync();
+            responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+            _logger.LogError($"InsertCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "InsertCategory Exception");
+        responseObj.errorMessage = ex.Message;
+    }
+
+    return Json(responseObj);
 }
 
 // ─────────────────────────────────────────────────────────────
 // UPDATE CATEGORY
 // POST: /ABC/ABCMaster/UpdateCategory
-// API Model: { CategoryId, CategoryName, CategoryCode, CompanyCode, DepartmentCode, SubprocessCode, ModifiedBy, ModifiedIPAddress }
-// ModifiedBy & ModifiedIPAddress — Web Controller session se set karta hai
+// Web Model: ABCCategoryUpdateModel
+// API Model: ABCCategoryUpdateModel (same fields)
+// ModifiedBy & ModifiedIPAddress — session se set hota hai
 // ─────────────────────────────────────────────────────────────
-function doUpdateCategory() {
-    const categoryId     = parseInt($('#hdnEditCategoryId').val());
-    const categoryName   = $('#txtCategory').val().trim();
-    const categoryCode   = $('#hdnEditCategoryCode').val() || '';
-    const companyCode    = $('#hdnCompanyCode').val()      || '';
-    const departmentCode = $('#hdnDepartmentCode').val()   || '';
-    const subprocessCode = $('#hdnSubProcessCode').val()   || '';
-
-    if (!categoryName) {
-        showError('Category name cannot be empty');
-        $('#txtCategory').focus();
-        return;
-    }
-
-    if (!categoryId || categoryId <= 0) {
-        showError('Invalid Category ID');
-        return;
-    }
-
-    // Web Model: ABCCategoryUpdateModel
-    const updateData = {
-        categoryId:     categoryId,
-        categoryName:   categoryName,
-        categoryCode:   categoryCode,
-        companyCode:    companyCode,
-        departmentCode: departmentCode,
-        subprocessCode: subprocessCode
-        // modifiedBy & modifiedIPAddress: Web Controller session se set karega
+[HttpPost]
+public async Task<IActionResult> UpdateCategory([FromBody] ABCCategoryUpdateModel model)
+{
+    var responseObj = new ABCCategoryUpdateResponseModel
+    {
+        isSucceeded          = false,
+        isSessionTimeout     = false,
+        returnUrlAfterLogout = "",
+        errorMessage         = "",
+        data                 = new ABCCategoryInsertResponseData()
     };
 
-    $('#btnSubmitCategory').prop('disabled', true).text('Updating...');
-
-    $.ajax({
-        url: '/ABC/ABCMaster/UpdateCategory',
-        type: 'POST',   // ✅ API [HttpPost] — PUT nahi
-        contentType: 'application/json',
-        data: JSON.stringify(updateData),
-        dataType: 'json',
-        success: function (response) {
-            if (response && response.isSessionTimeout) {
-                window.location.href = response.returnUrlAfterLogout;
-                return;
-            }
-            if (response && response.isSucceeded) {
-                showSuccess('Category updated successfully!');
-                enterInsertMode();   // Form reset karo
-                loadCategoryList();  // Table reload karo
-            } else {
-                showError(response.errorMessage || 'Failed to update category');
-            }
-        },
-        error: function (xhr) {
-            try {
-                const err = JSON.parse(xhr.responseText);
-                showError(err.error || err.errorMessage || 'Error occurred');
-            } catch (e) {
-                showError('Error updating category');
-            }
-        },
-        complete: function () {
-            $('#btnSubmitCategory').prop('disabled', false).text('Update');
-        }
-    });
-}
-
-// ─────────────────────────────────────────────────────────────
-// DELETE — Bootstrap modal open karo
-// ─────────────────────────────────────────────────────────────
-function onDeleteCategoryClick() {
-    const categoryId   = $(this).data('id');
-    const categoryName = $(this).data('name');
-
-    $('#deleteCategoryId').val(categoryId);
-    $('#deleteCategoryNameDisplay').text(categoryName);
-
-    new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
-}
-
-function onConfirmDeleteClick() {
-    const categoryId = parseInt($('#deleteCategoryId').val());
-
-    if (!categoryId || categoryId <= 0) {
-        showError('Invalid Category ID');
-        return;
+    if (_workflowSession?.LoggedInUser == null)
+    {
+        responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+        responseObj.isSessionTimeout     = true;
+        return Json(responseObj);
     }
 
-    // Web Model: ABCCategoryDeleteModel
-    const deleteData = {
-        categoryId: categoryId
-        // deletedBy & deletedIPAddress: Web Controller session se set karega
-    };
-
-    $('#btnConfirmDeleteCategory').prop('disabled', true).text('Deleting...');
-
-    $.ajax({
-        url: '/ABC/ABCMaster/DeleteCategory',
-        type: 'POST',   // ✅ API [HttpPost] — DELETE method nahi
-        contentType: 'application/json',
-        data: JSON.stringify(deleteData),
-        dataType: 'json',
-        success: function (response) {
-            bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
-            if (response && response.isSessionTimeout) {
-                window.location.href = response.returnUrlAfterLogout;
-                return;
-            }
-            if (response && response.isSucceeded) {
-                showSuccess('Category deleted successfully!');
-                // Agar abhi edit mode mein usi category ka edit tha toh reset karo
-                if ($('#hdnEditMode').val() === 'true' &&
-                    parseInt($('#hdnEditCategoryId').val()) === categoryId) {
-                    enterInsertMode();
-                }
-                loadCategoryList();
-            } else {
-                showError(response.errorMessage || 'Failed to delete category');
-            }
-        },
-        error: function (xhr) {
-            bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
-            try {
-                const err = JSON.parse(xhr.responseText);
-                showError(err.error || err.errorMessage || 'Error occurred');
-            } catch (e) {
-                showError('Error deleting category');
-            }
-        },
-        complete: function () {
-            $('#btnConfirmDeleteCategory').prop('disabled', false).text('Yes, Delete');
+    try
+    {
+        if (model == null || model.CategoryId <= 0)
+        {
+            responseObj.errorMessage = "Valid Category ID is required";
+            return Json(responseObj);
         }
-    });
+
+        if (string.IsNullOrWhiteSpace(model.CategoryName))
+        {
+            responseObj.errorMessage = "Category name is required";
+            return Json(responseObj);
+        }
+
+        // Session se set karo
+        model.ModifiedBy        = _workflowSession.LoggedInUser.EmployeeCode;
+        model.ModifiedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+        _logger.LogInformation($"Calling API UpdateCategory for CategoryId: {model.CategoryId}");
+
+        var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+        var apiResponse = await httpClient.PostAsJsonAsync(   // ✅ POST — API [HttpPost] expect karta hai
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateCategory,
+            model
+        );
+
+        if (apiResponse.IsSuccessStatusCode)
+        {
+            var result  = await apiResponse.Content.ReadAsStringAsync();
+            var apiData = JsonConvert.DeserializeObject<ABCCategoryInsertResponseData>(result);
+
+            if (apiData != null)
+            {
+                responseObj.isSucceeded  = apiData.Status == 1;
+                responseObj.data         = apiData;
+                responseObj.errorMessage = apiData.Message;
+            }
+            else
+            {
+                responseObj.errorMessage = "Failed to update category";
+            }
+        }
+        else
+        {
+            var errorContent         = await apiResponse.Content.ReadAsStringAsync();
+            responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+            _logger.LogError($"UpdateCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "UpdateCategory Exception");
+        responseObj.errorMessage = ex.Message;
+    }
+
+    return Json(responseObj);
 }
 
 // ─────────────────────────────────────────────────────────────
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+// DELETE CATEGORY
+// POST: /ABC/ABCMaster/DeleteCategory
+// Web Model: ABCCategoryDeleteModel
+// API Model: ABCCategoryDeleteModel (same fields)
+// DeletedBy & DeletedIPAddress — session se set hota hai
+// ─────────────────────────────────────────────────────────────
+[HttpPost]
+public async Task<IActionResult> DeleteCategory([FromBody] ABCCategoryDeleteModel model)
+{
+    var responseObj = new ABCCategoryDeleteResponseModel
+    {
+        isSucceeded          = false,
+        isSessionTimeout     = false,
+        returnUrlAfterLogout = "",
+        errorMessage         = "",
+        data                 = new ABCCategoryInsertResponseData()
+    };
+
+    if (_workflowSession?.LoggedInUser == null)
+    {
+        responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+        responseObj.isSessionTimeout     = true;
+        return Json(responseObj);
+    }
+
+    try
+    {
+        if (model == null || model.CategoryId <= 0)
+        {
+            responseObj.errorMessage = "Valid Category ID is required";
+            return Json(responseObj);
+        }
+
+        // Session se set karo
+        model.DeletedBy        = _workflowSession.LoggedInUser.EmployeeCode;
+        model.DeletedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+        _logger.LogInformation($"Calling API DeleteCategory for CategoryId: {model.CategoryId}");
+
+        var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+        var apiResponse = await httpClient.PostAsJsonAsync(   // ✅ POST — HttpMethod.Delete nahi
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteCategory,
+            model
+        );
+
+        if (apiResponse.IsSuccessStatusCode)
+        {
+            var result  = await apiResponse.Content.ReadAsStringAsync();
+            var apiData = JsonConvert.DeserializeObject<ABCCategoryInsertResponseData>(result);
+
+            if (apiData != null)
+            {
+                responseObj.isSucceeded  = apiData.Status == 1;
+                responseObj.data         = apiData;
+                responseObj.errorMessage = apiData.Message;
+            }
+            else
+            {
+                responseObj.errorMessage = "Failed to delete category";
+            }
+        }
+        else
+        {
+            var errorContent         = await apiResponse.Content.ReadAsStringAsync();
+            responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+            _logger.LogError($"DeleteCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "DeleteCategory Exception");
+        responseObj.errorMessage = ex.Message;
+    }
+
+    return Json(responseObj);
 }
-
-function showError(message) {
-    alert('Error: ' + message);
-    console.error(message);
-}
-
-function showSuccess(message) {
-    alert(message);
-    console.log(message);
-}
-
-
-@{
-    Layout = "~/Views/Shared/_ABCLayout.cshtml";
-}
-
-<div class="content-body">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="@Url.Action("Dashboard", "Home", new { area = "ABC" })">Activity-Based Consolidation</a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">Add Category</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
-        <div class="main-body-card masters">
-            <div class="card-header justify-content-between">
-                <div class="d-flex">
-                    <h2 class="main-title">Add Category</h2>
-                </div>
-                <div class="d-flex gap-3">
-                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })" class="btn btn-outline-secondary">Back</a>
-
-                    {{-- Submit button: Insert mode mein "Submit", Edit mode mein "Update" --}}
-                    <button type="button" class="btn btn-success" id="btnSubmitCategory">Submit</button>
-
-                    {{-- Cancel Edit button: sirf edit mode mein dikhega --}}
-                    <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEdit">Cancel Edit</button>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="main-body-card">
-
-                    <!-- Hidden fields for edit mode -->
-                    <input type="hidden" id="hdnEditCategoryId" value="0" />
-                    <input type="hidden" id="hdnEditCategoryCode" value="" />
-                    <input type="hidden" id="hdnEditMode" value="false" />
-
-                    <!-- Form Row -->
-                    <div class="row row-cols-lg-4 mb-3">
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <label class="form-label">Company</label>
-                                <input type="text" class="form-control" id="txtCompany" readonly />
-                                <input type="hidden" id="hdnCompanyCode" />
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <label class="form-label">Department</label>
-                                <input type="text" class="form-control" id="txtDepartment" readonly />
-                                <input type="hidden" id="hdnDepartmentCode" />
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <label class="form-label">Sub Process</label>
-                                <input type="text" class="form-control" id="txtSubProcess" readonly />
-                                <input type="hidden" id="hdnSubProcessCode" />
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg">
-                            <div class="mb-3">
-                                <!-- Label dynamically changes: "Category" or "Edit Category" -->
-                                <label class="form-label" id="lblCategory">
-                                    Category <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" id="txtCategory"
-                                       placeholder="Enter category name" maxlength="200" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Category List Table -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="table-responsive">
-                                <table class="table table-style-1">
-                                    <thead>
-                                        <tr>
-                                            <th width="60" class="text-center">Sr.No</th>
-                                            <th>Company</th>
-                                            <th>Department</th>
-                                            <th>Subprocess</th>
-                                            <th>Category</th>
-                                            <th width="80" class="text-center">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tblCategoryData">
-                                        <tr>
-                                            <td colspan="6" class="text-center">Loading...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- DELETE CONFIRMATION MODAL -->
-<div class="modal fade icon-modal" id="deleteCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center py-4">
-                <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
-                        data-bs-dismiss="modal" aria-label="Close"></button>
-
-                <input type="hidden" id="deleteCategoryId" />
-
-                <i class="bi bi-trash3 text-danger" style="font-size: 3rem;"></i>
-                <h5 class="main-text mb-2 mt-3">Are you sure you want to delete?</h5>
-                <h6 class="mb-2 fw-bold" id="deleteCategoryNameDisplay"></h6>
-                <p class="text-muted small mb-4">All associated data will be lost.</p>
-
-                <button type="button" class="btn btn-danger" id="btnConfirmDeleteCategory">Yes, Delete</button>
-                <button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script src="~/areas/ABC/assets/js/custom/addcategory.js"></script>
-}
-
