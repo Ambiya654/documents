@@ -1,0 +1,13 @@
+
+solution:
+
+
+// UpdateCategory mein replace karo:
+var status = data.Rows[0]["Status"].ToString();
+returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+returnData.Message = data.Rows[0]["Message"].ToString();
+
+// DeleteCategory mein bhi same fix:
+var status = data.Rows[0]["Status"].ToString();
+returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+returnData.Message = data.Rows[0]["Message"].ToString();
