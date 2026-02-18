@@ -1,20 +1,20 @@
 // ─────────────────────────────────────────────────────────────
-// INSERT SUBCATEGORY
-// POST: /ABC/ABCMaster/InsertSubCategory
-// Web Model: ABCSubCategoryInsertModel
-// { subCategoryName, subCategoryCode, categoryCode }
+// INSERT ACTIVITY
+// POST: /ABC/ABCMaster/InsertActivity
+// Web Model: ABCActivityInsertModel
+// { activityName, activityCode, categoryCode }
 // createdBy & createdIPAddress — session se set hota hai
 // ─────────────────────────────────────────────────────────────
 [HttpPost]
-public async Task<IActionResult> InsertSubCategory([FromBody] ABCSubCategoryInsertModel model)
+public async Task<IActionResult> InsertActivity([FromBody] ABCActivityInsertModel model)
 {
-    var responseObj = new ABCSubCategoryInsertResponseModel
+    var responseObj = new ABCActivityInsertResponseModel
     {
         isSucceeded          = false,
         isSessionTimeout     = false,
         returnUrlAfterLogout = "",
         errorMessage         = "",
-        data                 = new ABCSubCategoryInsertResponseData()
+        data                 = new ABCActivityInsertResponseData()
     };
 
     if (_workflowSession?.LoggedInUser == null)
@@ -32,15 +32,9 @@ public async Task<IActionResult> InsertSubCategory([FromBody] ABCSubCategoryInse
             return Json(responseObj);
         }
 
-        if (string.IsNullOrWhiteSpace(model.SubCategoryName))
+        if (string.IsNullOrWhiteSpace(model.ActivityName))
         {
-            responseObj.errorMessage = "SubCategory name is required";
-            return Json(responseObj);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.CategoryCode))
-        {
-            responseObj.errorMessage = "Category code is required";
+            responseObj.errorMessage = "Activity name is required";
             return Json(responseObj);
         }
 
@@ -48,18 +42,18 @@ public async Task<IActionResult> InsertSubCategory([FromBody] ABCSubCategoryInse
         model.CreatedBy        = _workflowSession.LoggedInUser.EmployeeCode;
         model.CreatedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
-        _logger.LogInformation($"Calling API InsertSubCategory: {HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertSubCategory}");
+        _logger.LogInformation($"Calling API InsertActivity: {HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertActivity}");
 
         var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
         var apiResponse = await httpClient.PostAsJsonAsync(
-            HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertSubCategory,
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertActivity,
             model
         );
 
         if (apiResponse.IsSuccessStatusCode)
         {
             var result  = await apiResponse.Content.ReadAsStringAsync();
-            var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+            var apiData = JsonConvert.DeserializeObject<ABCActivityInsertResponseData>(result);
 
             if (apiData != null)
             {
@@ -69,19 +63,19 @@ public async Task<IActionResult> InsertSubCategory([FromBody] ABCSubCategoryInse
             }
             else
             {
-                responseObj.errorMessage = "Failed to insert subcategory";
+                responseObj.errorMessage = "Failed to insert activity";
             }
         }
         else
         {
             var errorContent         = await apiResponse.Content.ReadAsStringAsync();
             responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
-            _logger.LogError($"InsertSubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+            _logger.LogError($"InsertActivity API Error: {apiResponse.StatusCode} - {errorContent}");
         }
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, "InsertSubCategory Exception");
+        _logger.LogError(ex, "InsertActivity Exception");
         responseObj.errorMessage = ex.Message;
     }
 
@@ -89,22 +83,22 @@ public async Task<IActionResult> InsertSubCategory([FromBody] ABCSubCategoryInse
 }
 
 // ─────────────────────────────────────────────────────────────
-// UPDATE SUBCATEGORY
-// POST: /ABC/ABCMaster/UpdateSubCategory
-// Web Model: ABCSubCategoryUpdateModel
-// { subCategoryId, subCategoryName, subCategoryCode, categoryCode }
+// UPDATE ACTIVITY
+// POST: /ABC/ABCMaster/UpdateActivity
+// Web Model: ABCActivityUpdateModel
+// { activityId, activityName, activityCode, categoryCode, subCategoryCode }
 // modifiedBy & modifiedIPAddress — session se set hota hai
 // ─────────────────────────────────────────────────────────────
 [HttpPost]
-public async Task<IActionResult> UpdateSubCategory([FromBody] ABCSubCategoryUpdateModel model)
+public async Task<IActionResult> UpdateActivity([FromBody] ABCActivityUpdateModel model)
 {
-    var responseObj = new ABCSubCategoryUpdateResponseModel
+    var responseObj = new ABCActivityUpdateResponseModel
     {
         isSucceeded          = false,
         isSessionTimeout     = false,
         returnUrlAfterLogout = "",
         errorMessage         = "",
-        data                 = new ABCSubCategoryInsertResponseData()
+        data                 = new ABCActivityInsertResponseData()
     };
 
     if (_workflowSession?.LoggedInUser == null)
@@ -116,15 +110,15 @@ public async Task<IActionResult> UpdateSubCategory([FromBody] ABCSubCategoryUpda
 
     try
     {
-        if (model == null || model.SubCategoryId <= 0)
+        if (model == null || model.ActivityId <= 0)
         {
-            responseObj.errorMessage = "Valid SubCategory ID is required";
+            responseObj.errorMessage = "Valid Activity ID is required";
             return Json(responseObj);
         }
 
-        if (string.IsNullOrWhiteSpace(model.SubCategoryName))
+        if (string.IsNullOrWhiteSpace(model.ActivityName))
         {
-            responseObj.errorMessage = "SubCategory name is required";
+            responseObj.errorMessage = "Activity name is required";
             return Json(responseObj);
         }
 
@@ -132,18 +126,18 @@ public async Task<IActionResult> UpdateSubCategory([FromBody] ABCSubCategoryUpda
         model.ModifiedBy        = _workflowSession.LoggedInUser.EmployeeCode;
         model.ModifiedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
-        _logger.LogInformation($"Calling API UpdateSubCategory for SubCategoryId: {model.SubCategoryId}");
+        _logger.LogInformation($"Calling API UpdateActivity for ActivityId: {model.ActivityId}");
 
         var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
         var apiResponse = await httpClient.PostAsJsonAsync(  // ✅ POST — PutAsJsonAsync nahi
-            HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateSubCategory,
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateActivity,
             model
         );
 
         if (apiResponse.IsSuccessStatusCode)
         {
             var result  = await apiResponse.Content.ReadAsStringAsync();
-            var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+            var apiData = JsonConvert.DeserializeObject<ABCActivityInsertResponseData>(result);
 
             if (apiData != null)
             {
@@ -153,19 +147,19 @@ public async Task<IActionResult> UpdateSubCategory([FromBody] ABCSubCategoryUpda
             }
             else
             {
-                responseObj.errorMessage = "Failed to update subcategory";
+                responseObj.errorMessage = "Failed to update activity";
             }
         }
         else
         {
             var errorContent         = await apiResponse.Content.ReadAsStringAsync();
             responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
-            _logger.LogError($"UpdateSubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+            _logger.LogError($"UpdateActivity API Error: {apiResponse.StatusCode} - {errorContent}");
         }
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, "UpdateSubCategory Exception");
+        _logger.LogError(ex, "UpdateActivity Exception");
         responseObj.errorMessage = ex.Message;
     }
 
@@ -173,22 +167,22 @@ public async Task<IActionResult> UpdateSubCategory([FromBody] ABCSubCategoryUpda
 }
 
 // ─────────────────────────────────────────────────────────────
-// DELETE SUBCATEGORY
-// POST: /ABC/ABCMaster/DeleteSubCategory
-// Web Model: ABCSubCategoryDeleteModel
-// { subCategoryId }
+// DELETE ACTIVITY
+// POST: /ABC/ABCMaster/DeleteActivity
+// Web Model: ABCActivityDeleteModel
+// { activityId }
 // deletedBy & deletedIPAddress — session se set hota hai
 // ─────────────────────────────────────────────────────────────
 [HttpPost]
-public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDeleteModel model)
+public async Task<IActionResult> DeleteActivity([FromBody] ABCActivityDeleteModel model)
 {
-    var responseObj = new ABCSubCategoryDeleteResponseModel
+    var responseObj = new ABCActivityDeleteResponseModel
     {
         isSucceeded          = false,
         isSessionTimeout     = false,
         returnUrlAfterLogout = "",
         errorMessage         = "",
-        data                 = new ABCSubCategoryInsertResponseData()
+        data                 = new ABCActivityInsertResponseData()
     };
 
     if (_workflowSession?.LoggedInUser == null)
@@ -200,9 +194,9 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
 
     try
     {
-        if (model == null || model.SubCategoryId <= 0)
+        if (model == null || model.ActivityId <= 0)
         {
-            responseObj.errorMessage = "Valid SubCategory ID is required";
+            responseObj.errorMessage = "Valid Activity ID is required";
             return Json(responseObj);
         }
 
@@ -210,18 +204,18 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
         model.DeletedBy        = _workflowSession.LoggedInUser.EmployeeCode;
         model.DeletedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
-        _logger.LogInformation($"Calling API DeleteSubCategory for SubCategoryId: {model.SubCategoryId}");
+        _logger.LogInformation($"Calling API DeleteActivity for ActivityId: {model.ActivityId}");
 
         var httpClient  = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
         var apiResponse = await httpClient.PostAsJsonAsync(  // ✅ POST — HttpMethod.Delete nahi
-            HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteSubCategory,
+            HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteActivity,
             model
         );
 
         if (apiResponse.IsSuccessStatusCode)
         {
             var result  = await apiResponse.Content.ReadAsStringAsync();
-            var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+            var apiData = JsonConvert.DeserializeObject<ABCActivityInsertResponseData>(result);
 
             if (apiData != null)
             {
@@ -231,19 +225,19 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
             }
             else
             {
-                responseObj.errorMessage = "Failed to delete subcategory";
+                responseObj.errorMessage = "Failed to delete activity";
             }
         }
         else
         {
             var errorContent         = await apiResponse.Content.ReadAsStringAsync();
             responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
-            _logger.LogError($"DeleteSubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+            _logger.LogError($"DeleteActivity API Error: {apiResponse.StatusCode} - {errorContent}");
         }
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, "DeleteSubCategory Exception");
+        _logger.LogError(ex, "DeleteActivity Exception");
         responseObj.errorMessage = ex.Message;
     }
 
@@ -270,7 +264,7 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
                         <li class="breadcrumb-item">
                             <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Add SubCategory</li>
+                        <li class="breadcrumb-item active" aria-current="page">Add Activity</li>
                     </ol>
                 </nav>
             </div>
@@ -279,11 +273,11 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
         <div class="main-body-card masters">
             <div class="card-header justify-content-between">
                 <div class="d-flex">
-                    <h2 class="main-title">Add SubCategory</h2>
+                    <h2 class="main-title">Add Activity</h2>
                 </div>
                 <div class="d-flex gap-3">
                     <a href="javascript:history.back()" class="btn btn-outline-secondary">Back</a>
-                    <button type="button" class="btn btn-success" id="btnSubmitSubCategory">Submit</button>
+                    <button type="button" class="btn btn-success" id="btnSubmitActivity">Submit</button>
                     <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEdit">Cancel Edit</button>
                 </div>
             </div>
@@ -292,11 +286,12 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
                 <div class="main-body-card">
 
                     <!-- Hidden fields for edit mode -->
-                    <input type="hidden" id="hdnEditSubCategoryId"   value="0" />
+                    <input type="hidden" id="hdnEditActivityId"   value="0" />
+                    <input type="hidden" id="hdnEditActivityCode" value="" />
                     <input type="hidden" id="hdnEditSubCategoryCode" value="" />
-                    <input type="hidden" id="hdnEditMode"            value="false" />
+                    <input type="hidden" id="hdnEditMode"         value="false" />
 
-                    <div class="row row-cols-lg-5 mb-3">
+                    <div class="row row-cols-lg-5 gx-3 mb-3">
                         <div class="col-md-6 col-lg">
                             <div class="mb-3">
                                 <label class="form-label">Company</label>
@@ -324,9 +319,9 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
                         </div>
                         <div class="col-md-6 col-lg">
                             <div class="mb-3">
-                                <label class="form-label" id="lblSubCategory">SubCategory <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="txtSubCategory"
-                                       placeholder="Enter subcategory name" maxlength="200" />
+                                <label class="form-label" id="lblActivity">Activity <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtActivity"
+                                       placeholder="Enter activity name" maxlength="200" />
                             </div>
                         </div>
                     </div>
@@ -342,11 +337,11 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
                                             <th>Department</th>
                                             <th>Subprocess</th>
                                             <th>Category</th>
-                                            <th>SubCategory</th>
-                                            <th width="100" class="text-center">Action</th>
+                                            <th>Activity</th>
+                                            <th width="80" class="text-center">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tblSubCategoryData">
+                                    <tbody id="tblActivityData">
                                         <tr>
                                             <td colspan="7" class="text-center">Loading...</td>
                                         </tr>
@@ -395,19 +390,19 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- DELETE CONFIRMATION MODAL                              -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div class="modal fade icon-modal" id="deleteSubCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false"
+<div class="modal fade icon-modal" id="deleteActivityModal" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body text-center py-4">
                 <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
                         data-bs-dismiss="modal" aria-label="Close"></button>
-                <input type="hidden" id="deleteSubCategoryId" />
+                <input type="hidden" id="deleteActivityId" />
                 <i class="bi bi-trash3 text-danger" style="font-size: 3rem;"></i>
                 <h5 class="main-text mb-2 mt-3">Are you sure you want to delete?</h5>
-                <h6 class="mb-2 fw-bold" id="deleteSubCategoryNameDisplay"></h6>
+                <h6 class="mb-2 fw-bold" id="deleteActivityNameDisplay"></h6>
                 <p class="text-muted small mb-4">All associated data will be lost.</p>
-                <button type="button" class="btn btn-danger" id="btnConfirmDeleteSubCategory">Yes, Delete</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmDeleteActivity">Yes, Delete</button>
                 <button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -415,38 +410,36 @@ public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDele
 </div>
 
 @section Scripts {
-    <script src="~/areas/ABC/assets/js/custom/addsubcategory.js"></script>
+    <script src="~/areas/ABC/assets/js/custom/addactivity.js"></script>
 }
-
-
 
 
 $(document).ready(function () {
-    initializeAddSubCategoryPage();
-    bindAddSubCategoryEvents();
+    initializeAddActivityPage();
+    bindAddActivityEvents();
 });
 
-var selectedCategoryCode    = '';
-var selectedCategoryName    = '';
-var selectedCompanyCode     = '';
-var selectedCompanyName     = '';
-var selectedDepartmentCode  = '';
-var selectedDepartmentName  = '';
-var selectedSubProcessCode  = '';
-var selectedSubProcessName  = '';
+var selectedCategoryCode   = '';
+var selectedCategoryName   = '';
+var selectedCompanyCode    = '';
+var selectedCompanyName    = '';
+var selectedDepartmentCode = '';
+var selectedDepartmentName = '';
+var selectedSubProcessCode = '';
+var selectedSubProcessName = '';
 
 // ─────────────────────────────────────────────────────────────
-function bindAddSubCategoryEvents() {
-    $('#btnSubmitSubCategory').on('click', onSubmitSubCategoryClick);
-    $('#btnCancelEdit').on('click',        onCancelEditClick);
+function bindAddActivityEvents() {
+    $('#btnSubmitActivity').on('click', onSubmitActivityClick);
+    $('#btnCancelEdit').on('click',     onCancelEditClick);
 
-    $(document).on('click', '.edit-subcategory-btn',        onEditSubCategoryClick);
-    $(document).on('click', '.delete-subcategory-btn',      onDeleteSubCategoryClick);
-    $(document).on('click', '#btnConfirmDeleteSubCategory', onConfirmDeleteClick);
+    $(document).on('click', '.edit-activity-btn',        onEditActivityClick);
+    $(document).on('click', '.delete-activity-btn',      onDeleteActivityClick);
+    $(document).on('click', '#btnConfirmDeleteActivity', onConfirmDeleteClick);
 }
 
 // ─────────────────────────────────────────────────────────────
-function initializeAddSubCategoryPage() {
+function initializeAddActivityPage() {
     const urlParams = new URLSearchParams(window.location.search);
 
     const categoryCode   = urlParams.get('categoryCode')   || '';
@@ -479,7 +472,7 @@ function initializeAddSubCategoryPage() {
     selectedSubProcessCode = subprocessCode;
     selectedSubProcessName = subprocessName;
 
-    loadSubCategoryList();
+    loadActivityList();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -499,109 +492,115 @@ function showError(message) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Enter EDIT mode — same top txtSubCategory textbox use karo
+// Enter EDIT mode — same top txtActivity textbox use karo
 // ─────────────────────────────────────────────────────────────
-function enterEditMode(subCategoryId, subCategoryName, subCategoryCode) {
-    $('#hdnEditSubCategoryId').val(subCategoryId);
-    $('#hdnEditSubCategoryCode').val(subCategoryCode);
+function enterEditMode(activityId, activityName, activityCode, subCategoryCode) {
+    $('#hdnEditActivityId').val(activityId);
+    $('#hdnEditActivityCode').val(activityCode);
+    $('#hdnEditSubCategoryCode').val(subCategoryCode || '');
     $('#hdnEditMode').val('true');
 
-    $('#txtSubCategory').val(subCategoryName).focus().select();
-    $('#lblSubCategory').html('Edit SubCategory <span class="text-danger">*</span>');
-    $('#btnSubmitSubCategory').text('Update');
+    $('#txtActivity').val(activityName).focus().select();
+    $('#lblActivity').html('Edit Activity <span class="text-danger">*</span>');
+    $('#btnSubmitActivity').text('Update');
     $('#btnCancelEdit').removeClass('d-none');
 
-    $('html, body').animate({ scrollTop: $('#txtSubCategory').offset().top - 100 }, 300);
+    $('html, body').animate({ scrollTop: $('#txtActivity').offset().top - 100 }, 300);
 }
 
 // ─────────────────────────────────────────────────────────────
 // Enter INSERT mode — form reset
 // ─────────────────────────────────────────────────────────────
 function enterInsertMode() {
-    $('#hdnEditSubCategoryId').val('0');
+    $('#hdnEditActivityId').val('0');
+    $('#hdnEditActivityCode').val('');
     $('#hdnEditSubCategoryCode').val('');
     $('#hdnEditMode').val('false');
 
-    $('#txtSubCategory').val('');
-    $('#lblSubCategory').html('SubCategory <span class="text-danger">*</span>');
-    $('#btnSubmitSubCategory').text('Submit').prop('disabled', false);
+    $('#txtActivity').val('');
+    $('#lblActivity').html('Activity <span class="text-danger">*</span>');
+    $('#btnSubmitActivity').text('Submit').prop('disabled', false);
     $('#btnCancelEdit').addClass('d-none');
 }
 
 // ─────────────────────────────────────────────────────────────
-// LOAD SUBCATEGORY LIST
-// GET: /ABC/ABCMaster/GetSubCategoryList
-// Params: categoryCode
+// LOAD ACTIVITY LIST
+// GET: /ABC/ABCMaster/GetActivityList
+// Params: categoryCode, subCategoryCode
 // ─────────────────────────────────────────────────────────────
-function loadSubCategoryList() {
+function loadActivityList() {
     if (!selectedCategoryCode) {
-        $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">No category selected</td></tr>');
+        $('#tblActivityData').html('<tr><td colspan="7" class="text-center">No category selected</td></tr>');
         return;
     }
 
-    $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">Loading...</td></tr>');
+    $('#tblActivityData').html('<tr><td colspan="7" class="text-center">Loading...</td></tr>');
 
     $.ajax({
-        url: '/ABC/ABCMaster/GetSubCategoryList',
+        url: '/ABC/ABCMaster/GetActivityList',
         type: 'GET',
-        data: { categoryCode: selectedCategoryCode },
+        data: {
+            categoryCode:    selectedCategoryCode,
+            subCategoryCode: null
+        },
         dataType: 'json',
         success: function (response) {
             if (response && response.isSessionTimeout) {
                 window.location.href = response.returnUrlAfterLogout;
                 return;
             }
-            if (response && response.isSucceeded && response.data && response.data.subCategoryList) {
-                populateSubCategoryTable(response.data.subCategoryList);
+            if (response && response.isSucceeded && response.data && response.data.activityList) {
+                populateActivityTable(response.data.activityList);
             } else {
-                $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">No subcategories found</td></tr>');
+                $('#tblActivityData').html('<tr><td colspan="7" class="text-center">No activities found</td></tr>');
             }
         },
         error: function () {
-            $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center text-danger">Error loading subcategories</td></tr>');
+            $('#tblActivityData').html('<tr><td colspan="7" class="text-center text-danger">Error loading activities</td></tr>');
         }
     });
 }
 
 // ─────────────────────────────────────────────────────────────
 // POPULATE TABLE
-// Action col: Edit icon | Delete icon (same as category page style)
+// Dropdown: Edit | Delete
 // ─────────────────────────────────────────────────────────────
-function populateSubCategoryTable(subCategories) {
-    const $tbody = $('#tblSubCategoryData');
+function populateActivityTable(activities) {
+    const $tbody = $('#tblActivityData');
     $tbody.empty();
 
-    if (!subCategories || subCategories.length === 0) {
-        $tbody.html('<tr><td colspan="7" class="text-center">No subcategories found for this category</td></tr>');
+    if (!activities || activities.length === 0) {
+        $tbody.html('<tr><td colspan="7" class="text-center">No activities found</td></tr>');
         return;
     }
 
-    $.each(subCategories, function (index, sc) {
+    $.each(activities, function (index, activity) {
         const rowHtml = `
-            <tr id="row-subcategory-${sc.subCategoryId}">
+            <tr id="row-activity-${activity.activityId}">
                 <td class="text-center">${index + 1}</td>
-                <td>${escapeHtml(sc.company_Name    || '')}</td>
-                <td>${escapeHtml(sc.department_Name || '')}</td>
-                <td>${escapeHtml(sc.subProcess_Name || '')}</td>
-                <td>${escapeHtml(sc.categoryName    || '')}</td>
-                <td>${escapeHtml(sc.subCategoryName || '')}</td>
+                <td>${escapeHtml(activity.company_Name    || '')}</td>
+                <td>${escapeHtml(activity.department_Name || '')}</td>
+                <td>${escapeHtml(activity.subProcess_Name || '')}</td>
+                <td>${escapeHtml(activity.categoryName    || '')}</td>
+                <td>${escapeHtml(activity.activityName    || '')}</td>
                 <td class="text-center action-col">
                     <a href="javascript:;" class="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-three-dots"></i>
                     </a>
                     <ul class="dropdown-menu mt-2">
                         <li>
-                            <a href="javascript:;" class="dropdown-item edit-subcategory-btn"
-                               data-id="${sc.subCategoryId}"
-                               data-name="${escapeHtml(sc.subCategoryName || '')}"
-                               data-code="${escapeHtml(sc.subCategoryCode || '')}">
+                            <a href="javascript:;" class="dropdown-item edit-activity-btn"
+                               data-id="${activity.activityId}"
+                               data-name="${escapeHtml(activity.activityName || '')}"
+                               data-code="${escapeHtml(activity.activityCode || '')}"
+                               data-subcategory="${escapeHtml(activity.subCategoryCode || '')}">
                                 <i class="bi bi-pencil me-2"></i>Edit
                             </a>
                         </li>
                         <li>
-                            <a href="javascript:;" class="dropdown-item text-danger delete-subcategory-btn"
-                               data-id="${sc.subCategoryId}"
-                               data-name="${escapeHtml(sc.subCategoryName || '')}">
+                            <a href="javascript:;" class="dropdown-item text-danger delete-activity-btn"
+                               data-id="${activity.activityId}"
+                               data-name="${escapeHtml(activity.activityName || '')}">
                                 <i class="bi bi-trash3 me-2"></i>Delete
                             </a>
                         </li>
@@ -616,11 +615,11 @@ function populateSubCategoryTable(subCategories) {
 // ─────────────────────────────────────────────────────────────
 // SUBMIT — Insert ya Update decide karta hai hdnEditMode se
 // ─────────────────────────────────────────────────────────────
-function onSubmitSubCategoryClick() {
+function onSubmitActivityClick() {
     if ($('#hdnEditMode').val() === 'true') {
-        doUpdateSubCategory();
+        doUpdateActivity();
     } else {
-        doInsertSubCategory();
+        doInsertActivity();
     }
 }
 
@@ -629,18 +628,18 @@ function onCancelEditClick() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// INSERT SUBCATEGORY
-// POST: /ABC/ABCMaster/InsertSubCategory
-// Web Model: ABCSubCategoryInsertModel
-// { subCategoryName, subCategoryCode, categoryCode }
+// INSERT ACTIVITY
+// POST: /ABC/ABCMaster/InsertActivity
+// Web Model: ABCActivityInsertModel
+// { activityName, activityCode, categoryCode }
 // createdBy & createdIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
-function doInsertSubCategory() {
-    const subCategoryName = $('#txtSubCategory').val().trim();
+function doInsertActivity() {
+    const activityName = $('#txtActivity').val().trim();
 
-    if (!subCategoryName) {
-        showError('Please enter subcategory name');
-        $('#txtSubCategory').focus();
+    if (!activityName) {
+        showError('Please enter activity name');
+        $('#txtActivity').focus();
         return;
     }
 
@@ -650,16 +649,16 @@ function doInsertSubCategory() {
     }
 
     const insertData = {
-        subCategoryName: subCategoryName,
-        subCategoryCode: null,              // SP auto-generate karta hai
-        categoryCode:    selectedCategoryCode
+        activityName: activityName,
+        activityCode: null,               // SP auto-generate karta hai
+        categoryCode: selectedCategoryCode
         // createdBy & createdIPAddress: Web Controller session se set karega
     };
 
-    $('#btnSubmitSubCategory').prop('disabled', true).text('Saving...');
+    $('#btnSubmitActivity').prop('disabled', true).text('Saving...');
 
     $.ajax({
-        url: '/ABC/ABCMaster/InsertSubCategory',
+        url: '/ABC/ABCMaster/InsertActivity',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(insertData),
@@ -670,11 +669,11 @@ function doInsertSubCategory() {
                 return;
             }
             if (response && response.isSucceeded) {
-                showSuccess('SubCategory added successfully!');
-                $('#txtSubCategory').val('');
-                loadSubCategoryList();
+                showSuccess('Activity added successfully!');
+                $('#txtActivity').val('');
+                loadActivityList();
             } else {
-                showError(response.errorMessage || 'Failed to add subcategory');
+                showError(response.errorMessage || 'Failed to add activity');
             }
         },
         error: function (xhr) {
@@ -682,51 +681,53 @@ function doInsertSubCategory() {
                 const err = JSON.parse(xhr.responseText);
                 showError(err.error || err.message || 'Error occurred');
             } catch (e) {
-                showError('Error adding subcategory');
+                showError('Error adding activity');
             }
         },
         complete: function () {
-            $('#btnSubmitSubCategory').prop('disabled', false).text('Submit');
+            $('#btnSubmitActivity').prop('disabled', false).text('Submit');
         }
     });
 }
 
 // ─────────────────────────────────────────────────────────────
-// UPDATE SUBCATEGORY
-// POST: /ABC/ABCMaster/UpdateSubCategory
-// Web Model: ABCSubCategoryUpdateModel
-// { subCategoryId, subCategoryName, subCategoryCode, categoryCode }
+// UPDATE ACTIVITY
+// POST: /ABC/ABCMaster/UpdateActivity
+// Web Model: ABCActivityUpdateModel
+// { activityId, activityName, activityCode, categoryCode, subCategoryCode }
 // modifiedBy & modifiedIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
-function doUpdateSubCategory() {
-    const subCategoryId   = parseInt($('#hdnEditSubCategoryId').val());
-    const subCategoryName = $('#txtSubCategory').val().trim();
+function doUpdateActivity() {
+    const activityId      = parseInt($('#hdnEditActivityId').val());
+    const activityName    = $('#txtActivity').val().trim();
+    const activityCode    = $('#hdnEditActivityCode').val()    || '';
     const subCategoryCode = $('#hdnEditSubCategoryCode').val() || '';
 
-    if (!subCategoryName) {
-        showError('SubCategory name cannot be empty');
-        $('#txtSubCategory').focus();
+    if (!activityName) {
+        showError('Activity name cannot be empty');
+        $('#txtActivity').focus();
         return;
     }
 
-    if (!subCategoryId || subCategoryId <= 0) {
-        showError('Invalid SubCategory ID');
+    if (!activityId || activityId <= 0) {
+        showError('Invalid Activity ID');
         return;
     }
 
     const updateData = {
-        subCategoryId:   subCategoryId,
-        subCategoryName: subCategoryName,
-        subCategoryCode: subCategoryCode,
-        categoryCode:    selectedCategoryCode
+        activityId:      activityId,
+        activityName:    activityName,
+        activityCode:    activityCode,
+        categoryCode:    selectedCategoryCode,
+        subCategoryCode: subCategoryCode
         // modifiedBy & modifiedIPAddress: Web Controller session se set karega
     };
 
-    $('#btnSubmitSubCategory').prop('disabled', true).text('Updating...');
+    $('#btnSubmitActivity').prop('disabled', true).text('Updating...');
 
     $.ajax({
-        url: '/ABC/ABCMaster/UpdateSubCategory',
-        type: 'POST',
+        url: '/ABC/ABCMaster/UpdateActivity',
+        type: 'POST',   // ✅ POST — API [HttpPost] expect karta hai
         contentType: 'application/json',
         data: JSON.stringify(updateData),
         dataType: 'json',
@@ -736,12 +737,12 @@ function doUpdateSubCategory() {
                 return;
             }
             if (response && response.isSucceeded) {
-                showSuccess('SubCategory updated successfully!');
+                showSuccess('Activity updated successfully!');
                 enterInsertMode();
-                loadSubCategoryList();
+                loadActivityList();
             } else {
-                showError(response.errorMessage || 'Failed to update subcategory');
-                $('#btnSubmitSubCategory').prop('disabled', false).text('Update');
+                showError(response.errorMessage || 'Failed to update activity');
+                $('#btnSubmitActivity').prop('disabled', false).text('Update');
             }
         },
         error: function (xhr) {
@@ -749,93 +750,94 @@ function doUpdateSubCategory() {
                 const err = JSON.parse(xhr.responseText);
                 showError(err.error || err.errorMessage || 'Error occurred');
             } catch (e) {
-                showError('Error updating subcategory');
+                showError('Error updating activity');
             }
-            $('#btnSubmitSubCategory').prop('disabled', false).text('Update');
+            $('#btnSubmitActivity').prop('disabled', false).text('Update');
         }
     });
 }
 
 // ─────────────────────────────────────────────────────────────
-// EDIT button click — same top txtSubCategory textbox mein naam daalo
+// EDIT button click — same top txtActivity textbox mein naam daalo
 // ─────────────────────────────────────────────────────────────
-function onEditSubCategoryClick() {
-    const subCategoryId   = $(this).data('id');
-    const subCategoryName = $(this).data('name');
-    const subCategoryCode = $(this).data('code');
-    enterEditMode(subCategoryId, subCategoryName, subCategoryCode);
+function onEditActivityClick() {
+    const activityId      = $(this).data('id');
+    const activityName    = $(this).data('name');
+    const activityCode    = $(this).data('code');
+    const subCategoryCode = $(this).data('subcategory');
+    enterEditMode(activityId, activityName, activityCode, subCategoryCode);
 }
 
 // ─────────────────────────────────────────────────────────────
 // DELETE — confirmation modal open karo
 // ─────────────────────────────────────────────────────────────
-function onDeleteSubCategoryClick() {
-    const subCategoryId   = $(this).data('id');
-    const subCategoryName = $(this).data('name');
+function onDeleteActivityClick() {
+    const activityId   = $(this).data('id');
+    const activityName = $(this).data('name');
 
-    $('#deleteSubCategoryId').val(subCategoryId);
-    $('#deleteSubCategoryNameDisplay').text(subCategoryName);
-    new bootstrap.Modal(document.getElementById('deleteSubCategoryModal')).show();
+    $('#deleteActivityId').val(activityId);
+    $('#deleteActivityNameDisplay').text(activityName);
+    new bootstrap.Modal(document.getElementById('deleteActivityModal')).show();
 }
 
 // ─────────────────────────────────────────────────────────────
 // CONFIRM DELETE
-// POST: /ABC/ABCMaster/DeleteSubCategory
-// Web Model: ABCSubCategoryDeleteModel
-// { subCategoryId }
+// POST: /ABC/ABCMaster/DeleteActivity
+// Web Model: ABCActivityDeleteModel
+// { activityId }
 // deletedBy & deletedIPAddress — Web Controller session se set karta hai
 // ─────────────────────────────────────────────────────────────
 function onConfirmDeleteClick() {
-    const subCategoryId = parseInt($('#deleteSubCategoryId').val());
+    const activityId = parseInt($('#deleteActivityId').val());
 
-    if (!subCategoryId || subCategoryId <= 0) {
-        showError('Invalid SubCategory ID');
+    if (!activityId || activityId <= 0) {
+        showError('Invalid Activity ID');
         return;
     }
 
     const deleteData = {
-        subCategoryId: subCategoryId
+        activityId: activityId
         // deletedBy & deletedIPAddress: Web Controller session se set karega
     };
 
-    $('#btnConfirmDeleteSubCategory').prop('disabled', true).text('Deleting...');
+    $('#btnConfirmDeleteActivity').prop('disabled', true).text('Deleting...');
 
     $.ajax({
-        url: '/ABC/ABCMaster/DeleteSubCategory',
+        url: '/ABC/ABCMaster/DeleteActivity',
         type: 'POST',   // ✅ POST — API [HttpPost] expect karta hai
         contentType: 'application/json',
         data: JSON.stringify(deleteData),
         dataType: 'json',
         success: function (response) {
-            bootstrap.Modal.getInstance(document.getElementById('deleteSubCategoryModal')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('deleteActivityModal')).hide();
 
             if (response && response.isSessionTimeout) {
                 window.location.href = response.returnUrlAfterLogout;
                 return;
             }
             if (response && response.isSucceeded) {
-                // Agar deleted subcategory ka edit chal raha tha toh reset karo
+                // Agar deleted activity ka edit chal raha tha toh reset karo
                 if ($('#hdnEditMode').val() === 'true' &&
-                    parseInt($('#hdnEditSubCategoryId').val()) === subCategoryId) {
+                    parseInt($('#hdnEditActivityId').val()) === activityId) {
                     enterInsertMode();
                 }
-                showSuccess('SubCategory deleted successfully!');
-                loadSubCategoryList();
+                showSuccess('Activity deleted successfully!');
+                loadActivityList();
             } else {
-                showError(response.errorMessage || 'Failed to delete subcategory');
+                showError(response.errorMessage || 'Failed to delete activity');
             }
         },
         error: function (xhr) {
-            bootstrap.Modal.getInstance(document.getElementById('deleteSubCategoryModal')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('deleteActivityModal')).hide();
             try {
                 const err = JSON.parse(xhr.responseText);
                 showError(err.error || err.errorMessage || 'Error occurred');
             } catch (e) {
-                showError('Error deleting subcategory');
+                showError('Error deleting activity');
             }
         },
         complete: function () {
-            $('#btnConfirmDeleteSubCategory').prop('disabled', false).text('Yes, Delete');
+            $('#btnConfirmDeleteActivity').prop('disabled', false).text('Yes, Delete');
         }
     });
 }
