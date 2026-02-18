@@ -1,0 +1,4926 @@
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnifiedApps.Api.DBManager.SQLHelper;
+using UnifiedApps.Api.HelperLayer.Extension;
+using UnifiedApps.Api.ModelLayer.AppSettings;
+using UnifiedApps.Api.ModelLayer.Areas.ABC;
+
+namespace UnifiedApps.Api.RepositoryLayer.Areas.ABC
+{
+    public class ABCMasterRepository : IABCMasterRepository
+    {
+        private readonly AppSettingsModel _appSettingsModel;
+        private readonly SqlDbUtilities _sqlDbUtilities;
+
+        public ABCMasterRepository(IOptionsMonitor<AppSettingsModel> defaults)
+        {
+            _appSettingsModel = defaults.CurrentValue;
+            _sqlDbUtilities = new SqlDbUtilities(_appSettingsModel.ConnectingString);
+        }
+
+        public ABCMasterDataListModel GetDistCompanyDepartmentSubprocess(out string errorMessage)
+        {
+            var returnData = new ABCMasterDataListModel();
+            errorMessage = string.Empty;
+            try
+            {
+                var data = _sqlDbUtilities.ExectuteStoredProcedure("ABC_PRC_GetDistCompanyDepartmentSubprocess", null, out errorMessage);
+                returnData.MasterDataModel = data.ToList<ABCMasterDataModel>();
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return returnData;
+            }
+        }
+
+        public ABCCompanyListModel GetActiveCompanyList(out string errorMessage)
+        {
+            var returnData = new ABCCompanyListModel();
+            errorMessage = string.Empty;
+            try
+            {
+                var data = _sqlDbUtilities.ExectuteStoredProcedure("ABC_PRC_GetActiveCompanyList", null, out errorMessage);
+                returnData.CompanyList = data.ToList<ABCCompanyModel>();
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return returnData;
+            }
+        }
+
+        public ABCDepartmentListModel GetActiveDepartmentListByCompany(string companyCode, out string errorMessage)
+        {
+            var returnData = new ABCDepartmentListModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "CompanyCode", companyCode }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure("ABC_PRC_GetActiveDepartmentListBYCompany", inParameters, out errorMessage);
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    returnData.DepartmentList = data.ToList<ABCDepartmentModel>();
+                }
+                else
+                {
+                    returnData.DepartmentList = new List<ABCDepartmentModel>();
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.DepartmentList = new List<ABCDepartmentModel>();
+                return returnData;
+            }
+        }
+
+        public ABCSubProcessListModel GetActiveSubProcessListByCompanyAndDepartment(string companyCode, string departmentCode, out string errorMessage)
+        {
+            var returnData = new ABCSubProcessListModel();
+            errorMessage = string.Empty;
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "CompanyCode", companyCode },
+                    { "DepartmentCode", departmentCode }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure("ABC_PRC_GetActiveSubProcessListBYCompanyANDDepartment", inParameters, out errorMessage);
+
+                if (data == null)
+                {
+                    errorMessage = "No data returned from stored procedure.";
+                    returnData.SubProcessList = new List<ABCSubProcessModel>();
+                    return returnData;
+                }
+
+                returnData.SubProcessList = data.ToList<ABCSubProcessModel>();
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.SubProcessList = new List<ABCSubProcessModel>();
+                return returnData;
+            }
+        }
+
+       
+
+        public ABCCategoryResponseModel InsertCategory(ABCCategoryInsertModel model, out string errorMessage)
+        {
+            var returnData = new ABCCategoryResponseModel
+            {
+                Status = 0,
+                Message = string.Empty,
+                CategoryID = 0,
+                CategoryCode = null
+            };
+
+            errorMessage = string.Empty;
+
+            try
+            {
+                
+                if (model == null)
+                {
+                    errorMessage = "Model is null";
+                    returnData.Message = "Invalid request";
+                    return returnData;
+                }
+
+                if (string.IsNullOrWhiteSpace(model.CategoryName))
+                {
+                    returnData.Message = "Category Name is required";
+                    return returnData;
+                }
+
+              
+                var inParameters = new Dictionary<string, object>
+        {
+            { "CategoryName", model.CategoryName.Trim() },
+            { "CompanyCode", string.IsNullOrWhiteSpace(model.CompanyCode) ? DBNull.Value : model.CompanyCode.Trim() },
+            { "DepartmentCode", string.IsNullOrWhiteSpace(model.DepartmentCode) ? DBNull.Value : model.DepartmentCode.Trim() },
+            { "SubprocessCode", string.IsNullOrWhiteSpace(model.SubprocessCode) ? DBNull.Value : model.SubprocessCode.Trim() },
+            { "CreatedBy", string.IsNullOrWhiteSpace(model.CreatedBy) ? DBNull.Value : model.CreatedBy.Trim() },
+            { "CreatedIPAddress", string.IsNullOrWhiteSpace(model.CreatedIPAddress) ? DBNull.Value : model.CreatedIPAddress.Trim() }
+        };
+
+                
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_Insert_CategoryMaster",
+                    inParameters,
+                    out errorMessage
+                );
+
+              
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    returnData.Message = errorMessage;
+                    return returnData;
+                }
+
+                
+                if (data != null && data.Rows.Count > 0)
+                {
+                    var row = data.Rows[0];
+
+                    returnData.Status = row["Status"] != DBNull.Value
+                                        ? Convert.ToInt32(row["Status"])
+                                        : 0;
+
+                    returnData.Message = row["Message"]?.ToString() ?? "No message returned";
+
+                    if (returnData.Status == 1)
+                    {
+                        returnData.CategoryID = row.Table.Columns.Contains("CategoryID") && row["CategoryID"] != DBNull.Value
+                                                ? Convert.ToInt32(row["CategoryID"])
+                                                : 0;
+
+                        returnData.CategoryCode = row.Table.Columns.Contains("CategoryCode")
+                                                ? row["CategoryCode"]?.ToString()
+                                                : null;
+                    }
+                    else
+                    {
+                        
+                        returnData.CategoryID = 0;
+                        returnData.CategoryCode = null;
+                    }
+                }
+                else
+                {
+                    returnData.Message = "No response from database";
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                errorMessage = ex.Message;
+
+                returnData.Status = 0;
+                returnData.Message = "An error occurred while processing the request";
+            }
+
+            return returnData;
+        }
+
+
+       
+
+        public ABCCategoryResponseModel UpdateCategory(ABCCategoryUpdateModel model, out string errorMessage)
+        {
+            var returnData = new ABCCategoryResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.CategoryName))
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "Category Name is required";
+                    errorMessage = "Validation failed";
+                    return returnData;
+                }
+
+                var inParameters = new Dictionary<string, object>()
+        {
+            { "CategoryId",         model.CategoryId },
+            { "CategoryName",       model.CategoryName       ?? string.Empty },
+            { "CategoryCode",       model.CategoryCode       ?? string.Empty },
+            { "CompanyCode",        model.CompanyCode        ?? string.Empty },
+            { "DepartmentCode",     model.DepartmentCode     ?? string.Empty },
+            { "SubprocessCode",     model.SubprocessCode     ?? string.Empty },
+            { "ModifiedBy",         model.ModifiedBy         ?? string.Empty },
+            { "ModifiedIPAddress",  model.ModifiedIPAddress  ?? string.Empty }
+        };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_Category_Update",
+                    inParameters,
+                    out errorMessage
+                );
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    
+                    returnData.Status = Convert.ToInt32(data.Rows[0]["Status"]);
+                    returnData.Message = data.Rows[0]["Message"].ToString();
+                }
+                else
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "No response from database";
+                    errorMessage = "Empty result set";
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+                return returnData;
+            }
+        }
+
+        public ABCCategoryResponseModel DeleteCategory(ABCCategoryDeleteModel model, out string errorMessage)
+        {
+            var returnData = new ABCCategoryResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+        {
+            { "CategoryId",        model.CategoryId },
+            { "DeletedBy",         model.DeletedBy        ?? string.Empty },
+            { "DeletedIPAddress",  model.DeletedIPAddress ?? string.Empty }
+        };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_Category_Delete",
+                    inParameters,
+                    out errorMessage
+                );
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                   
+                    returnData.Status = Convert.ToInt32(data.Rows[0]["Status"]);
+                    returnData.Message = data.Rows[0]["Message"].ToString();
+                }
+                else
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "No response from database";
+                    errorMessage = "Empty result set";
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+                return returnData;
+            }
+        }
+
+        public ABCCategoryListModel GetCategoryList(
+            string companyCode,
+            string departmentCode,
+            string subprocessCode,
+            out string errorMessage)
+        {
+            var returnData = new ABCCategoryListModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "CompanyCode", companyCode ?? (object)DBNull.Value },
+                    { "DepartmentCode", departmentCode ?? (object)DBNull.Value },
+                    { "SubprocessCode", subprocessCode ?? (object)DBNull.Value }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_GetCategoryList",
+                    inParameters,
+                    out errorMessage
+                );
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    returnData.CategoryList = data.ToList<ABCCategoryListItemModel>();
+                }
+                else
+                {
+                    returnData.CategoryList = new List<ABCCategoryListItemModel>();
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.CategoryList = new List<ABCCategoryListItemModel>();
+                return returnData;
+            }
+        }
+
+       
+        public ABCSubCategoryListModel GetSubCategoryList(string categoryCode, out string errorMessage)
+        {
+            var returnData = new ABCSubCategoryListModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "CategoryCode", categoryCode ?? (object)DBNull.Value }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure("ABC_PRC_GetSubCategoryList", inParameters, out errorMessage);
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    returnData.SubCategoryList = data.ToList<ABCSubCategoryListItemModel>();
+                }
+                else
+                {
+                    returnData.SubCategoryList = new List<ABCSubCategoryListItemModel>();
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.SubCategoryList = new List<ABCSubCategoryListItemModel>();
+                return returnData;
+            }
+        }
+
+        public ABCSubCategoryResponseModel InsertSubCategory(ABCSubCategoryInsertModel model, out string errorMessage)
+        {
+            var returnData = new ABCSubCategoryResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+               
+                var inParameters = new Dictionary<string, object>()
+        {
+            { "SubCategoryName", model.SubCategoryName ?? string.Empty },
+            { "CategoryCode", model.CategoryCode ?? string.Empty },
+            { "CreatedBy", model.CreatedBy ?? string.Empty },
+            { "CreatedIPAddress", model.CreatedIPAddress ?? string.Empty }
+        };
+
+               
+                var data = _sqlDbUtilities.ExectuteStoredProcedure("ABC_PRC_InsertSubCategory", inParameters, out errorMessage);
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    var row = data.Rows[0];
+                    returnData.Status = Convert.ToInt32(row["Status"]);
+                    returnData.Message = row["Message"].ToString();
+
+                    if (returnData.Status == 1)
+                    {
+                        if (row["SubCategoryId"] != DBNull.Value)
+                            returnData.SubCategoryId = Convert.ToInt32(row["SubCategoryId"]);
+
+                        if (row.Table.Columns.Contains("SubCategoryCode") && row["SubCategoryCode"] != DBNull.Value)
+                            returnData.SubCategoryCode = row["SubCategoryCode"].ToString();
+                    }
+                }
+                else
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "Failed to insert subcategory";
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+                return returnData;
+            }
+        }
+
+
+        public ABCSubCategoryResponseModel UpdateSubCategory(ABCSubCategoryUpdateModel model, out string errorMessage)
+        {
+            var returnData = new ABCSubCategoryResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.SubCategoryName))
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "SubCategory Name is required";
+                    errorMessage = "Validation failed";
+                    return returnData;
+                }
+
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "SubCategoryId", model.SubCategoryId },
+                    { "SubCategoryName", model.SubCategoryName ?? string.Empty },
+                    { "SubCategoryCode", model.SubCategoryCode ?? string.Empty },
+                    { "CategoryCode", model.CategoryCode ?? string.Empty },
+                    { "ModifiedBy", model.ModifiedBy ?? string.Empty },
+                    { "ModifiedIPAddress", model.ModifiedIPAddress ?? string.Empty }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_SubCategory_Update",
+                    inParameters,
+                    out errorMessage
+                );
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    var status = data.Rows[0]["Status"].ToString();
+                    returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                    returnData.Message = data.Rows[0]["Message"].ToString();
+                }
+                else
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "No response from database";
+                    errorMessage = "Empty result set";
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+                return returnData;
+            }
+        }
+
+        public ABCSubCategoryResponseModel DeleteSubCategory(ABCSubCategoryDeleteModel model, out string errorMessage)
+        {
+            var returnData = new ABCSubCategoryResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "SubCategoryId", model.SubCategoryId },
+                    { "DeletedBy", model.DeletedBy ?? string.Empty },
+                    { "DeletedIPAddress", model.DeletedIPAddress ?? string.Empty }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_SubCategory_Delete",
+                    inParameters,
+                    out errorMessage
+                );
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    var status = data.Rows[0]["Status"].ToString();
+                    returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                    returnData.Message = data.Rows[0]["Message"].ToString();
+                }
+                else
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "No response from database";
+                    errorMessage = "Empty result set";
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+                return returnData;
+            }
+        }
+
+        
+
+        public ABCActivityListModel GetActivityList(string categoryCode, string subCategoryCode, out string errorMessage)
+        {
+            var returnData = new ABCActivityListModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "CategoryCode", categoryCode ?? (object)DBNull.Value },
+                    { "SubCategoryCode", subCategoryCode ?? (object)DBNull.Value }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure("ABC_PRC_GetActivityList", inParameters, out errorMessage);
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    returnData.ActivityList = data.ToList<ABCActivityListItemModel>();
+                }
+                else
+                {
+                    returnData.ActivityList = new List<ABCActivityListItemModel>();
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.ActivityList = new List<ABCActivityListItemModel>();
+                return returnData;
+            }
+        }
+
+        public ABCActivityResponseModel InsertActivity(ABCActivityInsertModel model, out string errorMessage)
+        {
+            var returnData = new ABCActivityResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                if (model == null)
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "Request model is null";
+                    return returnData;
+                }
+
+                var inParameters = new Dictionary<string, object>()
+        {
+            { "ActivityName", model.ActivityName ?? string.Empty },
+            { "CategoryCode", model.CategoryCode ?? string.Empty },
+            { "CreatedBy", model.CreatedBy ?? string.Empty },
+            { "CreatedIPAddress", model.CreatedIPAddress ?? string.Empty }
+        };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_InsertActivity",
+                    inParameters,
+                    out errorMessage
+                );
+
+                
+                if (data == null || data.Rows.Count == 0)
+                {
+                    returnData.Status = 0;
+                    returnData.Message = errorMessage ?? "No response from database (Invalid CategoryCode or SP validation failed)";
+                    return returnData;
+                }
+
+                var row = data.Rows[0];
+
+                returnData.Status = row["Status"] != DBNull.Value ? Convert.ToInt32(row["Status"]) : 0;
+                returnData.Message = row["Message"]?.ToString() ?? "";
+
+                if (returnData.Status == 1)
+                {
+                    if (row.Table.Columns.Contains("ActivityId") && row["ActivityId"] != DBNull.Value)
+                        returnData.ActivityId = Convert.ToInt32(row["ActivityId"]);
+
+                    if (row.Table.Columns.Contains("ActivityCode") && row["ActivityCode"] != DBNull.Value)
+                        returnData.ActivityCode = row["ActivityCode"].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+            }
+
+            return returnData;
+        }
+
+        public ABCActivityResponseModel UpdateActivity(ABCActivityUpdateModel model, out string errorMessage)
+        {
+            var returnData = new ABCActivityResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.ActivityName))
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "Activity Name is required";
+                    errorMessage = "Validation failed";
+                    return returnData;
+                }
+
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "ActivityId", model.ActivityId },
+                    { "ActivityName", model.ActivityName ?? string.Empty },
+                    { "ActivityCode", model.ActivityCode ?? string.Empty },
+                    { "CategoryCode", model.CategoryCode ?? string.Empty },
+                    { "SubCategoryCode", model.SubCategoryCode ?? string.Empty },
+                    { "ModifiedBy", model.ModifiedBy ?? string.Empty },
+                    { "ModifiedIPAddress", model.ModifiedIPAddress ?? string.Empty }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_Activity_Update",
+                    inParameters,
+                    out errorMessage
+                );
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    var status = data.Rows[0]["Status"].ToString();
+                    returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                    returnData.Message = data.Rows[0]["Message"].ToString();
+                }
+                else
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "No response from database";
+                    errorMessage = "Empty result set";
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+                return returnData;
+            }
+        }
+
+        public ABCActivityResponseModel DeleteActivity(ABCActivityDeleteModel model, out string errorMessage)
+        {
+            var returnData = new ABCActivityResponseModel();
+            errorMessage = string.Empty;
+
+            try
+            {
+                var inParameters = new Dictionary<string, object>()
+                {
+                    { "ActivityId", model.ActivityId },
+                    { "DeletedBy", model.DeletedBy ?? string.Empty },
+                    { "DeletedIPAddress", model.DeletedIPAddress ?? string.Empty }
+                };
+
+                var data = _sqlDbUtilities.ExectuteStoredProcedure(
+                    "ABC_PRC_Activity_Delete",
+                    inParameters,
+                    out errorMessage
+                );
+
+                if (data != null && data.Rows.Count > 0)
+                {
+                    var status = data.Rows[0]["Status"].ToString();
+                    returnData.Status = status.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                    returnData.Message = data.Rows[0]["Message"].ToString();
+                }
+                else
+                {
+                    returnData.Status = 0;
+                    returnData.Message = "No response from database";
+                    errorMessage = "Empty result set";
+                }
+
+                return returnData;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                returnData.Status = 0;
+                returnData.Message = "Error: " + ex.Message;
+                return returnData;
+            }
+        }
+    }
+}
+
+model clas:
+
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace UnifiedApps.Api.ModelLayer.Areas.ABC
+{
+    
+    public class ABCMasterDataModel
+    {
+        public string Company_Name { get; set; }
+        public string COMPANY_CODE { get; set; }
+        public string Department_Name { get; set; }
+        public string Department_Code { get; set; }
+        public string SubProcess_Name { get; set; }
+        public string Sub_Process_Code { get; set; }
+    }
+
+    public class ABCMasterDataListModel
+    {
+        public List<ABCMasterDataModel> MasterDataModel { get; set; }
+    }
+
+   
+    public class ABCCompanyModel
+    {
+        public string Company_Name { get; set; }
+        public string COMPANY_CODE { get; set; }
+    }
+
+    public class ABCCompanyListModel
+    {
+        public List<ABCCompanyModel> CompanyList { get; set; }
+    }
+
+   
+    public class ABCDepartmentModel
+    {
+        public string Department_Name { get; set; }
+        public string Department_Code { get; set; }
+    }
+
+    public class ABCDepartmentListModel
+    {
+        public List<ABCDepartmentModel> DepartmentList { get; set; }
+    }
+
+  
+    public class ABCSubProcessModel
+    {
+        public string SubProcess_Name { get; set; }
+        public string Sub_Process_Code { get; set; }
+    }
+
+    public class ABCSubProcessListModel
+    {
+        public List<ABCSubProcessModel> SubProcessList { get; set; }
+    }
+
+   
+
+    public class ABCCategoryModel
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string CreatedBy { get; set; }
+        public string CreatedIPAddress { get; set; }
+    }
+
+    public class ABCCategoryInsertModel
+    {
+        [Required(ErrorMessage = "Category Name is required")]
+        public string CategoryName { get; set; } = string.Empty;
+
+        public string? CompanyCode { get; set; }
+        public string? DepartmentCode { get; set; }
+        public string? SubprocessCode { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? CreatedIPAddress { get; set; }
+    }
+
+
+
+    public class ABCCategoryUpdateModel
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedIPAddress { get; set; }
+    }
+
+    public class ABCCategoryDeleteModel
+    {
+        public int CategoryId { get; set; }
+        public string DeletedBy { get; set; }
+        public string DeletedIPAddress { get; set; }
+    }
+
+    public class ABCCategoryResponseModel
+    {
+        public int Status { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public int CategoryID { get; set; }
+        public string? CategoryCode { get; set; }
+    }
+
+
+    public class ABCCategoryListItemModel
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string Company_Name { get; set; }
+        public string Department_Name { get; set; }
+        public string SubProcess_Name { get; set; }
+    }
+
+    public class ABCCategoryListModel
+    {
+        public List<ABCCategoryListItemModel> CategoryList { get; set; }
+    }
+
+  
+
+    public class ABCSubCategoryListModel
+    {
+        public List<ABCSubCategoryListItemModel> SubCategoryList { get; set; }
+    }
+
+    public class ABCSubCategoryListItemModel
+    {
+        public int SubCategoryId { get; set; }
+        public string SubCategoryName { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string CategoryCode { get; set; }
+        public string CategoryName { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string Company_Name { get; set; }
+        public string Department_Name { get; set; }
+        public string SubProcess_Name { get; set; }
+    }
+
+    public class ABCSubCategoryInsertModel
+    {
+        public string SubCategoryName { get; set; }
+        public string CategoryCode { get; set; }  
+        public string CreatedBy { get; set; }
+        public string CreatedIPAddress { get; set; }
+    }
+    public class ABCSubCategoryUpdateModel
+    {
+        public int SubCategoryId { get; set; }
+        public string SubCategoryName { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string CategoryCode { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedIPAddress { get; set; }
+    }
+
+    public class ABCSubCategoryDeleteModel
+    {
+        public int SubCategoryId { get; set; }
+        public string DeletedBy { get; set; }
+        public string DeletedIPAddress { get; set; }
+    }
+
+    public class ABCSubCategoryResponseModel
+    {
+        public int Status { get; set; }
+        public string Message { get; set; }
+        public int SubCategoryId { get; set; }
+        public string SubCategoryCode { get; set; }  
+    }
+
+ 
+
+    public class ABCActivityListItemModel
+    {
+        public int ActivityId { get; set; }
+        public string ActivityName { get; set; }
+        public string ActivityCode { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string SubCategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string CategoryName { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string Company_Name { get; set; }
+        public string Department_Name { get; set; }
+        public string SubProcess_Name { get; set; }
+    }
+
+    public class ABCActivityListModel
+    {
+        public List<ABCActivityListItemModel> ActivityList { get; set; }
+    }
+
+    public class ABCActivityInsertModel
+    {
+        public string ActivityName { get; set; } = string.Empty;
+        public string CategoryCode { get; set; } = string.Empty;
+        public string CreatedBy { get; set; } = string.Empty;
+        public string CreatedIPAddress { get; set; } = string.Empty;
+    }
+
+
+
+    public class ABCActivityUpdateModel
+    {
+        public int ActivityId { get; set; }
+        public string ActivityName { get; set; }
+        public string ActivityCode { get; set; }
+        public string CategoryCode { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedIPAddress { get; set; }
+    }
+
+    public class ABCActivityDeleteModel
+    {
+        public int ActivityId { get; set; }
+        public string DeletedBy { get; set; }
+        public string DeletedIPAddress { get; set; }
+    }
+
+    public class ABCActivityResponseModel
+    {
+        public int Status { get; set; }
+        public string Message { get; set; }
+        public int ActivityId { get; set; }        
+        public string ActivityCode { get; set; }    
+    }
+
+}
+
+abcmasterbl:
+
+using UnifiedApps.Api.ModelLayer.Areas.ABC;
+using UnifiedApps.Api.RepositoryLayer.Areas.ABC;
+
+namespace UnifiedApps.Api.ServiceLayer.Areas.ABC
+{
+    public class ABCMasterBL : IABCMasterBL
+    {
+        private readonly IABCMasterRepository _repository;
+
+        public ABCMasterBL(IABCMasterRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public ABCMasterDataListModel GetDistCompanyDepartmentSubprocess(out string errorMessage)
+        {
+            return _repository.GetDistCompanyDepartmentSubprocess(out errorMessage);
+        }
+
+        public ABCCompanyListModel GetActiveCompanyList(out string errorMessage)
+        {
+            return _repository.GetActiveCompanyList(out errorMessage);
+        }
+
+        public ABCDepartmentListModel GetActiveDepartmentListByCompany(string companyCode, out string errorMessage)
+        {
+            return _repository.GetActiveDepartmentListByCompany(companyCode, out errorMessage);
+        }
+
+        public ABCSubProcessListModel GetActiveSubProcessListByCompanyAndDepartment(string companyCode, string departmentCode, out string errorMessage)
+        {
+            return _repository.GetActiveSubProcessListByCompanyAndDepartment(companyCode, departmentCode, out errorMessage);
+        }
+
+        public ABCCategoryResponseModel InsertCategory(ABCCategoryInsertModel model, out string errorMessage)
+        {
+            return _repository.InsertCategory(model, out errorMessage);
+        }
+
+        public ABCCategoryListModel GetCategoryList(string companyCode, string departmentCode, string subprocessCode, out string errorMessage)
+        {
+            return _repository.GetCategoryList(companyCode, departmentCode, subprocessCode, out errorMessage);
+        }
+        public ABCCategoryResponseModel UpdateCategory(ABCCategoryUpdateModel model, out string errorMessage)
+        {
+            return _repository.UpdateCategory(model, out errorMessage);
+        }
+
+        public ABCCategoryResponseModel DeleteCategory(ABCCategoryDeleteModel model, out string errorMessage)
+        {
+            return _repository.DeleteCategory(model, out errorMessage);
+        }
+
+
+        public ABCSubCategoryListModel GetSubCategoryList(string categoryCode, out string errorMessage)
+        {
+            return _repository.GetSubCategoryList(categoryCode, out errorMessage);
+        }
+
+        public ABCSubCategoryResponseModel InsertSubCategory(ABCSubCategoryInsertModel model, out string errorMessage)
+        {
+            return _repository.InsertSubCategory(model, out errorMessage);
+        }
+
+        public ABCSubCategoryResponseModel UpdateSubCategory(ABCSubCategoryUpdateModel model, out string errorMessage)
+        {
+            return _repository.UpdateSubCategory(model, out errorMessage);
+        }
+
+        public ABCSubCategoryResponseModel DeleteSubCategory(ABCSubCategoryDeleteModel model, out string errorMessage)
+        {
+            return _repository.DeleteSubCategory(model, out errorMessage);
+        }
+
+       
+
+        public ABCActivityListModel GetActivityList(string categoryCode, string subCategoryCode, out string errorMessage)
+        {
+            return _repository.GetActivityList(categoryCode, subCategoryCode, out errorMessage);
+        }
+
+        public ABCActivityResponseModel InsertActivity(ABCActivityInsertModel model, out string errorMessage)
+        {
+            return _repository.InsertActivity(model, out errorMessage);
+        }
+       public ABCActivityResponseModel UpdateActivity(ABCActivityUpdateModel model, out string errorMessage)
+        {
+            return _repository.UpdateActivity(model, out errorMessage);
+        }
+
+        public ABCActivityResponseModel DeleteActivity(ABCActivityDeleteModel model, out string errorMessage)
+        {
+            return _repository.DeleteActivity(model, out errorMessage);
+        }
+
+    }
+}
+
+controller:
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using UnifiedApps.Api.ServiceLayer.Areas.ABC;
+using UnifiedApps.Api.ModelLayer.Areas.ABC;
+
+namespace UnifiedApps.Api.Areas.ABC
+{
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ABCMasterController : ControllerBase
+    {
+        private readonly IABCMasterBL _service;
+
+        public ABCMasterController(IABCMasterBL service)
+        {
+            _service = service;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetDistCompanyDepartmentSubprocess")]
+        [ProducesResponseType(typeof(ABCMasterDataListModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult GetDistCompanyDepartmentSubprocess()
+        {
+            var result = _service.GetDistCompanyDepartmentSubprocess(out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetActiveCompanyList")]
+        [ProducesResponseType(typeof(ABCCompanyListModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult GetActiveCompanyList()
+        {
+            var result = _service.GetActiveCompanyList(out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetActiveDepartmentListByCompany")]
+        [ProducesResponseType(typeof(ABCDepartmentListModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult GetActiveDepartmentListByCompany([FromQuery] string companyCode)
+        {
+            if (string.IsNullOrWhiteSpace(companyCode))
+            {
+                return BadRequest(new { error = "Company code parameter is required" });
+            }
+
+            var result = _service.GetActiveDepartmentListByCompany(companyCode, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetActiveSubProcessListByCompanyAndDepartment")]
+        [ProducesResponseType(typeof(ABCSubProcessListModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult GetActiveSubProcessListByCompanyAndDepartment(
+            [FromQuery] string companyCode,
+            [FromQuery] string departmentCode)
+        {
+            if (string.IsNullOrWhiteSpace(companyCode))
+            {
+                return BadRequest(new { error = "Company code parameter is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(departmentCode))
+            {
+                return BadRequest(new { error = "Department code parameter is required" });
+            }
+
+            var result = _service.GetActiveSubProcessListByCompanyAndDepartment(companyCode, departmentCode, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            return Ok(result);
+        }
+        [AllowAnonymous] 
+        [HttpPost("InsertCategory")]
+        [ProducesResponseType(typeof(ABCCategoryResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult InsertCategory([FromBody] ABCCategoryInsertModel model)
+        {
+            try
+            {
+               
+                if (model == null)
+                {
+                    return BadRequest(new ABCCategoryResponseModel
+                    {
+                        Status = 0,
+                        Message = "Request body cannot be null"
+                    });
+                }
+
+                
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new ABCCategoryResponseModel
+                    {
+                        Status = 0,
+                        Message = "Invalid input data"
+                    });
+                }
+
+              
+                if (string.IsNullOrWhiteSpace(model.CategoryName))
+                {
+                    return BadRequest(new ABCCategoryResponseModel
+                    {
+                        Status = 0,
+                        Message = "Category name is required"
+                    });
+                }
+
+                
+                var result = _service.InsertCategory(model, out string errorMessage);
+
+              
+                if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                   
+
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new ABCCategoryResponseModel
+                        {
+                            Status = 0,
+                            Message = "An internal server error occurred"
+                        });
+                }
+
+                
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                
+
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new ABCCategoryResponseModel
+                    {
+                        Status = 0,
+                        Message = "An unexpected error occurred"
+                    });
+            }
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpGet("GetCategoryList")]
+        [ProducesResponseType(typeof(ABCCategoryListModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult GetCategoryList(
+            [FromQuery] string companyCode = null,
+            [FromQuery] string departmentCode = null,
+            [FromQuery] string subprocessCode = null)
+        {
+            var result = _service.GetCategoryList(companyCode, departmentCode, subprocessCode, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetSubCategoryList")]
+        [ProducesResponseType(typeof(ABCSubCategoryListModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult GetSubCategoryList([FromQuery] string categoryCode = null)
+        {
+            var result = _service.GetSubCategoryList(categoryCode, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("InsertSubCategory")]
+        [ProducesResponseType(typeof(ABCSubCategoryResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult InsertSubCategory([FromBody] ABCSubCategoryInsertModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new { error = "Request body cannot be null" });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.SubCategoryName))
+            {
+                return BadRequest(new { error = "SubCategory name is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.CategoryCode))
+            {
+                return BadRequest(new { error = "Category code is required" });
+            }
+
+            // Call repository/service
+            var result = _service.InsertSubCategory(model, out string errorMessage);
+
+            // If there was an error during SP execution
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            
+            if (result.Status == 0)
+            {
+                return BadRequest(new { error = result.Message });
+            }
+
+         
+            return Ok(new
+            {
+                Status = result.Status,
+                Message = result.Message,
+                SubCategoryId = result.SubCategoryId,
+                SubCategoryCode = result.SubCategoryCode
+            });
+        }
+
+
+       
+
+        [AllowAnonymous]
+        [HttpGet("GetActivityList")]
+        [ProducesResponseType(typeof(ABCActivityListModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult GetActivityList(
+            [FromQuery] string categoryCode = null,
+            [FromQuery] string subCategoryCode = null)
+        {
+            var result = _service.GetActivityList(categoryCode, subCategoryCode, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpPost("InsertActivity")]
+        [ProducesResponseType(typeof(ABCActivityResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult InsertActivity([FromBody] ABCActivityInsertModel model)
+        {
+            if (model == null)
+                return BadRequest(new { error = "Request body cannot be null" });
+
+            if (string.IsNullOrWhiteSpace(model.ActivityName))
+                return BadRequest(new { error = "Activity name is required" });
+
+            if (string.IsNullOrWhiteSpace(model.CategoryCode))
+                return BadRequest(new { error = "Category code is required" });
+
+            var result = _service.InsertActivity(model, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+                return StatusCode(500, new { error = errorMessage });
+
+            if (result == null)
+                return StatusCode(500, new { error = "No response from service" });
+
+            if (result.Status == 0)
+                return BadRequest(new { error = result.Message });
+
+            return Ok(result);
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("UpdateCategory")]
+        [ProducesResponseType(typeof(ABCCategoryResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult UpdateCategory([FromBody] ABCCategoryUpdateModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new { error = "Request body cannot be null" });
+            }
+
+            if (model.CategoryId <= 0)
+            {
+                return BadRequest(new { error = "Valid Category ID is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.CategoryName))
+            {
+                return BadRequest(new { error = "Category name is required" });
+            }
+
+            var result = _service.UpdateCategory(model, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            if (result.Status == 0)
+            {
+                return BadRequest(new { error = result.Message });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("DeleteCategory")]
+        [ProducesResponseType(typeof(ABCCategoryResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult DeleteCategory([FromBody] ABCCategoryDeleteModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new { error = "Request body cannot be null" });
+            }
+
+            if (model.CategoryId <= 0)
+            {
+                return BadRequest(new { error = "Valid Category ID is required" });
+            }
+
+            var result = _service.DeleteCategory(model, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            if (result.Status == 0)
+            {
+                return BadRequest(new { error = result.Message });
+            }
+
+            return Ok(result);
+        }
+
+
+
+        
+
+        [AllowAnonymous]
+        [HttpPost("UpdateSubCategory")]
+        [ProducesResponseType(typeof(ABCSubCategoryResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult UpdateSubCategory([FromBody] ABCSubCategoryUpdateModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new { error = "Request body cannot be null" });
+            }
+
+            if (model.SubCategoryId <= 0)
+            {
+                return BadRequest(new { error = "Valid SubCategory ID is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.SubCategoryName))
+            {
+                return BadRequest(new { error = "SubCategory name is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.CategoryCode))
+            {
+                return BadRequest(new { error = "Category code is required" });
+            }
+
+            var result = _service.UpdateSubCategory(model, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            if (result.Status == 0)
+            {
+                return BadRequest(new { error = result.Message });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("DeleteSubCategory")]
+        [ProducesResponseType(typeof(ABCSubCategoryResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult DeleteSubCategory([FromBody] ABCSubCategoryDeleteModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new { error = "Request body cannot be null" });
+            }
+
+            if (model.SubCategoryId <= 0)
+            {
+                return BadRequest(new { error = "Valid SubCategory ID is required" });
+            }
+
+            var result = _service.DeleteSubCategory(model, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            if (result.Status == 0)
+            {
+                return BadRequest(new { error = result.Message });
+            }
+
+            return Ok(result);
+        }
+
+     
+        [AllowAnonymous]
+        [HttpPost("UpdateActivity")]
+        [ProducesResponseType(typeof(ABCActivityResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult UpdateActivity([FromBody] ABCActivityUpdateModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new { error = "Request body cannot be null" });
+            }
+
+            if (model.ActivityId <= 0)
+            {
+                return BadRequest(new { error = "Valid Activity ID is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.ActivityName))
+            {
+                return BadRequest(new { error = "Activity name is required" });
+            }
+
+            var result = _service.UpdateActivity(model, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            if (result.Status == 0)
+            {
+                return BadRequest(new { error = result.Message });
+            }
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("DeleteActivity")]
+        [ProducesResponseType(typeof(ABCActivityResponseModel), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult DeleteActivity([FromBody] ABCActivityDeleteModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest(new { error = "Request body cannot be null" });
+            }
+
+            if (model.ActivityId <= 0)
+            {
+                return BadRequest(new { error = "Valid Activity ID is required" });
+            }
+
+            var result = _service.DeleteActivity(model, out string errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return BadRequest(new { error = errorMessage });
+            }
+
+            if (result.Status == 0)
+            {
+                return BadRequest(new { error = result.Message });
+            }
+
+            return Ok(result);
+        }
+    }
+}
+
+
+web model:
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace UnifiedApps.Web.ModelLayer.Areas.ABC
+{
+    // ==================== EXISTING MODELS (for reference) ====================
+
+    // Master Table Data Model
+    public class ABCMasterDataModel
+    {
+        public string Company_Name { get; set; }
+        public string COMPANY_CODE { get; set; }
+        public string Department_Name { get; set; }
+        public string Department_Code { get; set; }
+        public string SubProcess_Name { get; set; }
+        public string Sub_Process_Code { get; set; }
+    }
+
+    public class ABCMasterDataListModel
+    {
+        public List<ABCMasterDataModel> MasterDataModel { get; set; }
+    }
+
+    // Company Dropdown Model
+    public class ABCCompanyModel
+    {
+        public string Company_Name { get; set; }
+        public string COMPANY_CODE { get; set; }
+    }
+
+    public class ABCCompanyListModel
+    {
+        public List<ABCCompanyModel> CompanyList { get; set; }
+    }
+
+    // Department Dropdown Model
+    public class ABCDepartmentModel
+    {
+        public string Department_Name { get; set; }
+        public string Department_Code { get; set; }
+    }
+
+    public class ABCDepartmentListModel
+    {
+        public List<ABCDepartmentModel> DepartmentList { get; set; }
+    }
+
+    // SubProcess Dropdown Model
+    public class ABCSubProcessModel
+    {
+        public string SubProcess_Name { get; set; }
+        public string Sub_Process_Code { get; set; }
+    }
+
+    public class ABCSubProcessListModel
+    {
+        public List<ABCSubProcessModel> SubProcessList { get; set; }
+    }
+
+    // Response Models for AJAX
+    public class ABCMasterResponse
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCMasterDataListModel data { get; set; }
+    }
+
+    public class ABCCompanyResponse
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCCompanyListModel data { get; set; }
+    }
+
+    public class ABCDepartmentResponse
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCDepartmentListModel data { get; set; }
+    }
+
+    public class ABCSubProcessResponse
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCSubProcessListModel data { get; set; }
+    }
+
+    // Category Models
+    public class ABCCategoryModel
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string Company_Name { get; set; }
+        public string Department_Name { get; set; }
+        public string SubProcess_Name { get; set; }
+    }
+
+    public class ABCCategoryListModel
+    {
+        public List<ABCCategoryModel> CategoryList { get; set; }
+    }
+
+    public class ABCCategoryInsertModel
+    {
+        public string CategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string? CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string CreatedBy { get; set; }
+        public string CreatedIPAddress { get; set; }
+    }
+
+    public class ABCCategoryInsertResponseData
+    {
+        public int Status { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class ABCCategoryListResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCCategoryListModel data { get; set; }
+    }
+
+    public class ABCCategoryInsertResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCCategoryInsertResponseData data { get; set; }
+    }
+
+    // SubCategory Models
+    public class ABCSubCategoryListResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCSubCategoryListModel data { get; set; }
+    }
+
+    public class ABCSubCategoryListModel
+    {
+        public List<ABCSubCategoryListItemModel> SubCategoryList { get; set; }
+    }
+
+    public class ABCSubCategoryListItemModel
+    {
+        public int SubCategoryId { get; set; }
+        public string SubCategoryName { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string CategoryCode { get; set; }
+        public string CategoryName { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string Company_Name { get; set; }
+        public string Department_Name { get; set; }
+        public string SubProcess_Name { get; set; }
+    }
+
+    public class ABCSubCategoryInsertModel
+    {
+        public string SubCategoryName { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string CategoryCode { get; set; }
+        public string CreatedBy { get; set; }
+        public string CreatedIPAddress { get; set; }
+    }
+
+    public class ABCSubCategoryInsertResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCSubCategoryInsertResponseData data { get; set; }
+    }
+
+    public class ABCSubCategoryInsertResponseData
+    {
+        public int Status { get; set; }
+        public string Message { get; set; }
+        public int SubCategoryId { get; set; }
+    }
+
+    // ==================== NEW ACTIVITY MODELS ====================
+
+    // Activity List Response Model
+    public class ABCActivityListResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCActivityListModel data { get; set; }
+    }
+
+    // Activity List Model
+    public class ABCActivityListModel
+    {
+        public List<ABCActivityListItemModel> ActivityList { get; set; }
+    }
+
+    // Activity List Item Model
+    public class ABCActivityListItemModel
+    {
+        public int ActivityId { get; set; }
+        public string ActivityName { get; set; }
+        public string ActivityCode { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string SubCategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string CategoryName { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string Company_Name { get; set; }
+        public string Department_Name { get; set; }
+        public string SubProcess_Name { get; set; }
+    }
+
+    // Activity Insert Model
+    public class ABCActivityInsertModel
+    {
+        public string ActivityName { get; set; }
+        public string ActivityCode { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string CreatedBy { get; set; }
+        public string CreatedIPAddress { get; set; }
+    }
+
+    // Activity Insert Response Model
+    public class ABCActivityInsertResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCActivityInsertResponseData data { get; set; }
+    }
+
+    // Activity Insert Response Data
+    public class ABCActivityInsertResponseData
+    {
+        public int Status { get; set; }
+        public string Message { get; set; }
+        public int ActivityId { get; set; }
+    }
+
+    public class ABCCategoryUpdateModel
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public string CategoryCode { get; set; }
+        public string CompanyCode { get; set; }
+        public string DepartmentCode { get; set; }
+        public string SubprocessCode { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedIPAddress { get; set; }
+    }
+
+    public class ABCCategoryDeleteModel
+    {
+        public int CategoryId { get; set; }
+        public string DeletedBy { get; set; }
+        public string DeletedIPAddress { get; set; }
+    }
+
+    public class ABCCategoryUpdateResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCCategoryInsertResponseData data { get; set; }
+    }
+
+    public class ABCCategoryDeleteResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCCategoryInsertResponseData data { get; set; }
+    }
+
+    // ==================== SUBCATEGORY UPDATE & DELETE MODELS ====================
+
+    public class ABCSubCategoryUpdateModel
+    {
+        public int SubCategoryId { get; set; }
+        public string SubCategoryName { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string CategoryCode { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedIPAddress { get; set; }
+    }
+
+    public class ABCSubCategoryDeleteModel
+    {
+        public int SubCategoryId { get; set; }
+        public string DeletedBy { get; set; }
+        public string DeletedIPAddress { get; set; }
+    }
+
+    public class ABCSubCategoryUpdateResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCSubCategoryInsertResponseData data { get; set; }
+    }
+
+    public class ABCSubCategoryDeleteResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCSubCategoryInsertResponseData data { get; set; }
+    }
+
+    // ==================== ACTIVITY UPDATE & DELETE MODELS ====================
+
+    public class ABCActivityUpdateModel
+    {
+        public int ActivityId { get; set; }
+        public string ActivityName { get; set; }
+        public string ActivityCode { get; set; }
+        public string CategoryCode { get; set; }
+        public string SubCategoryCode { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedIPAddress { get; set; }
+    }
+
+    public class ABCActivityDeleteModel
+    {
+        public int ActivityId { get; set; }
+        public string DeletedBy { get; set; }
+        public string DeletedIPAddress { get; set; }
+    }
+
+    public class ABCActivityUpdateResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCActivityInsertResponseData data { get; set; }
+    }
+
+    public class ABCActivityDeleteResponseModel
+    {
+        public bool isSucceeded { get; set; }
+        public bool isSessionTimeout { get; set; }
+        public string returnUrlAfterLogout { get; set; }
+        public string errorMessage { get; set; }
+        public ABCActivityInsertResponseData data { get; set; }
+    }
+
+
+
+}
+
+web controller:
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using UnifiedApps.Web.HelperLayer;
+using UnifiedApps.Web.HelperLayer.Constants;
+using UnifiedApps.Web.ModelLayer;
+using UnifiedApps.Web.ModelLayer.AppSettings;
+using UnifiedApps.Web.ModelLayer.Areas.ABC;
+using UnifiedApps.Web.Session.WorkflowSession;
+
+namespace UnifiedApps.Web.Areas.ABC.Controllers
+{
+    [Area("ABC")]
+    public class ABCMasterController : Controller
+    {
+        protected IWorkflowSession _workflowSession;
+        private readonly AppSettingsModel _settings;
+        private readonly ILogger<ABCMasterController> _logger;
+
+        public ABCMasterController(IWorkflowSession workflowSession, IOptionsMonitor<AppSettingsModel> defaults, ILogger<ABCMasterController> logger)
+        {
+            _workflowSession = workflowSession;
+            _settings = defaults.CurrentValue;
+            _logger = logger;
+        }
+
+        // ==================== VIEW METHODS ====================
+
+        public IActionResult master()
+        {
+            if (_workflowSession == null || _workflowSession.LoggedInUser == null)
+            {
+                return new RedirectResult(string.Format("~/Error/{0}", "SessionExpired"));
+            }
+            string viewName = "~/Areas/ABC/Views/ABCMaster/master.cshtml";
+            return View(viewName);
+        }
+
+        public IActionResult AddCategory()
+        {
+            if (_workflowSession == null || _workflowSession.LoggedInUser == null)
+            {
+                return new RedirectResult(string.Format("~/Error/{0}", "SessionExpired"));
+            }
+            string viewName = "~/Areas/ABC/Views/ABCMaster/AddCategory.cshtml";
+            return View(viewName);
+        }
+
+        public IActionResult AddSubCategory()
+        {
+            if (_workflowSession == null || _workflowSession.LoggedInUser == null)
+            {
+                return new RedirectResult(string.Format("~/Error/{0}", "SessionExpired"));
+            }
+            string viewName = "~/Areas/ABC/Views/ABCMaster/AddSubCategory.cshtml";
+            return View(viewName);
+        }
+
+        public IActionResult AddActivity()
+        {
+            if (_workflowSession == null || _workflowSession.LoggedInUser == null)
+            {
+                return new RedirectResult(string.Format("~/Error/{0}", "SessionExpired"));
+            }
+            string viewName = "~/Areas/ABC/Views/ABCMaster/AddActivity.cshtml";
+            return View(viewName);
+        }
+
+        // ==================== API METHODS ====================
+
+        [HttpGet]
+        public async Task<IActionResult> GetMasterTableData()
+        {
+            var responseObj = new ABCMasterResponse
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCMasterDataListModel()
+            };
+
+            try
+            {
+                if (_workflowSession == null || _workflowSession.LoggedInUser == null)
+                {
+                    responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                    responseObj.isSessionTimeout = true;
+                    return Json(responseObj);
+                }
+
+                if (string.IsNullOrEmpty(_settings?.APIUrl))
+                {
+                    responseObj.errorMessage = "API URL configuration is missing";
+                    _logger.LogError("APIUrl is null or empty in GetMasterTableData");
+                    return Json(responseObj);
+                }
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.GetDistCompanyDepartmentSubprocess}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.GetAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.GetDistCompanyDepartmentSubprocess
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCMasterDataListModel>(result);
+
+                    if (apiData?.MasterDataModel != null)
+                    {
+                        responseObj.isSucceeded = true;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = "Success";
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "No data found";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetMasterTableData Exception");
+                responseObj.errorMessage = $"Error: {ex.Message}";
+
+                if (ex.Message.Contains("session") || ex.Message.Contains("authentication"))
+                {
+                    responseObj.isSessionTimeout = true;
+                    responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                }
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCompanyList()
+        {
+            var responseObj = new ABCCompanyResponse
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCCompanyListModel()
+            };
+
+            try
+            {
+                if (_workflowSession == null || _workflowSession.LoggedInUser == null)
+                {
+                    responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                    responseObj.isSessionTimeout = true;
+                    return Json(responseObj);
+                }
+
+                if (string.IsNullOrEmpty(_settings?.APIUrl))
+                {
+                    responseObj.errorMessage = "API URL configuration is missing";
+                    _logger.LogError("APIUrl is null or empty in GetCompanyList");
+                    return Json(responseObj);
+                }
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.GetActiveCompanyList}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.GetAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.GetActiveCompanyList
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCCompanyListModel>(result);
+
+                    if (apiData?.CompanyList != null)
+                    {
+                        responseObj.isSucceeded = true;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = "Success";
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "No companies found";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetCompanyList Exception");
+                responseObj.errorMessage = $"Error: {ex.Message}";
+
+                if (ex.Message.Contains("session") || ex.Message.Contains("authentication"))
+                {
+                    responseObj.isSessionTimeout = true;
+                    responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                }
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDepartmentList(string companyCode)
+        {
+            var responseObj = new ABCDepartmentResponse
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCDepartmentListModel()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                var apiUrl = $"{HelperLayer.Constants.APIConstants.ABCAPIConstants.GetActiveDepartmentListByCompany}?companyCode={Uri.EscapeDataString(companyCode)}";
+
+                _logger.LogInformation($"Calling API: {apiUrl}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.GetAsync(apiUrl);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCDepartmentListModel>(result);
+
+                    if (apiData?.DepartmentList != null)
+                    {
+                        responseObj.isSucceeded = true;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = "Success";
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "No departments found";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Department API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetDepartmentList");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSubProcessList(string companyCode, string departmentCode)
+        {
+            var responseObj = new ABCSubProcessResponse
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCSubProcessListModel()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                var apiUrl = $"{HelperLayer.Constants.APIConstants.ABCAPIConstants.GetActiveSubProcessListByCompanyAndDepartment}?companyCode={Uri.EscapeDataString(companyCode)}&departmentCode={Uri.EscapeDataString(departmentCode)}";
+
+                _logger.LogInformation($"Calling API: {apiUrl}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.GetAsync(apiUrl);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCSubProcessListModel>(result);
+
+                    if (apiData?.SubProcessList != null)
+                    {
+                        responseObj.isSucceeded = true;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = "Success";
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "No sub processes found";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"SubProcess API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetSubProcessList");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        // ==================== PART 2 - CATEGORY, SUBCATEGORY, ACTIVITY METHODS ====================
+        // This continues from Part 1 - Add these methods to the ABCMasterController class
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategoryList(string companyCode = null, string departmentCode = null, string subprocessCode = null)
+        {
+            var responseObj = new ABCCategoryListResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCCategoryListModel()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                var apiUrl = HelperLayer.Constants.APIConstants.ABCAPIConstants.GetCategoryList;
+
+                var queryParams = new List<string>();
+                if (!string.IsNullOrEmpty(companyCode))
+                    queryParams.Add($"companyCode={Uri.EscapeDataString(companyCode)}");
+                if (!string.IsNullOrEmpty(departmentCode))
+                    queryParams.Add($"departmentCode={Uri.EscapeDataString(departmentCode)}");
+                if (!string.IsNullOrEmpty(subprocessCode))
+                    queryParams.Add($"subprocessCode={Uri.EscapeDataString(subprocessCode)}");
+
+                if (queryParams.Count > 0)
+                    apiUrl += "?" + string.Join("&", queryParams);
+
+                _logger.LogInformation($"Calling API: {apiUrl}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.GetAsync(apiUrl);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCCategoryListModel>(result);
+
+                    if (apiData?.CategoryList != null)
+                    {
+                        responseObj.isSucceeded = true;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = "Success";
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "No categories found";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Category List API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetCategoryList");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InsertCategory([FromBody] ABCCategoryInsertModel model)
+        {
+            var responseObj = new ABCCategoryInsertResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCCategoryInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                model.CreatedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.CreatedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertCategory}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.PostAsJsonAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertCategory,
+                    model
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCCategoryInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to insert category";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Insert Category API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "InsertCategory");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSubCategoryList(string categoryCode = null)
+        {
+            var responseObj = new ABCSubCategoryListResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCSubCategoryListModel()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                var apiUrl = HelperLayer.Constants.APIConstants.ABCAPIConstants.GetSubCategoryList;
+
+                if (!string.IsNullOrEmpty(categoryCode))
+                {
+                    apiUrl += $"?categoryCode={Uri.EscapeDataString(categoryCode)}";
+                }
+
+                _logger.LogInformation($"Calling API: {apiUrl}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.GetAsync(apiUrl);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCSubCategoryListModel>(result);
+
+                    if (apiData?.SubCategoryList != null)
+                    {
+                        responseObj.isSucceeded = true;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = "Success";
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "No subcategories found";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"SubCategory List API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetSubCategoryList");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InsertSubCategory([FromBody] ABCSubCategoryInsertModel model)
+        {
+            var responseObj = new ABCSubCategoryInsertResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCSubCategoryInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                model.CreatedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.CreatedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertSubCategory}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.PostAsJsonAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertSubCategory,
+                    model
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to insert subcategory";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Insert SubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "InsertSubCategory");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        // ==================== ACTIVITY METHODS ====================
+
+        [HttpGet]
+        public async Task<IActionResult> GetActivityList(string categoryCode = null, string subCategoryCode = null)
+        {
+            var responseObj = new ABCActivityListResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCActivityListModel()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                var apiUrl = HelperLayer.Constants.APIConstants.ABCAPIConstants.GetActivityList;
+
+                var queryParams = new List<string>();
+                if (!string.IsNullOrEmpty(categoryCode))
+                    queryParams.Add($"categoryCode={Uri.EscapeDataString(categoryCode)}");
+                if (!string.IsNullOrEmpty(subCategoryCode))
+                    queryParams.Add($"subCategoryCode={Uri.EscapeDataString(subCategoryCode)}");
+
+                if (queryParams.Count > 0)
+                    apiUrl += "?" + string.Join("&", queryParams);
+
+                _logger.LogInformation($"Calling API: {apiUrl}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.GetAsync(apiUrl);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCActivityListModel>(result);
+
+                    if (apiData?.ActivityList != null)
+                    {
+                        responseObj.isSucceeded = true;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = "Success";
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "No activities found";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Activity List API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetActivityList");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InsertActivity([FromBody] ABCActivityInsertModel model)
+        {
+            var responseObj = new ABCActivityInsertResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCActivityInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                model.CreatedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.CreatedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertActivity}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.PostAsJsonAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.InsertActivity,
+                    model
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCActivityInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to insert activity";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Insert Activity API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "InsertActivity");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCategory([FromBody] ABCCategoryUpdateModel model)
+        {
+            var responseObj = new ABCCategoryUpdateResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCCategoryInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                // Validate before hitting API
+                if (model == null || model.CategoryId <= 0)
+                {
+                    responseObj.errorMessage = "Valid Category ID is required";
+                    return Json(responseObj);
+                }
+                if (string.IsNullOrWhiteSpace(model.CategoryName))
+                {
+                    responseObj.errorMessage = "Category name is required";
+                    return Json(responseObj);
+                }
+
+                // Set audit fields from session
+                model.ModifiedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.ModifiedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API UpdateCategory for CategoryId: {model.CategoryId}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+
+                // ✅ FIX: was PutAsJsonAsync — API expects POST
+                var apiResponse = await httpClient.PostAsJsonAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateCategory,
+                    model
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCCategoryInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to update category";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Update Category API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UpdateCategory");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+       
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategory([FromBody] ABCCategoryDeleteModel model)
+        {
+            var responseObj = new ABCCategoryDeleteResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCCategoryInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                // Validate before hitting API
+                if (model == null || model.CategoryId <= 0)
+                {
+                    responseObj.errorMessage = "Valid Category ID is required";
+                    return Json(responseObj);
+                }
+
+                // Set audit fields from session
+                model.DeletedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.DeletedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API DeleteCategory for CategoryId: {model.CategoryId}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+
+                // ✅ Sending DELETE with body (correct pattern)
+                var request = new HttpRequestMessage(HttpMethod.Delete,
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteCategory)
+                {
+                    Content = JsonContent.Create(model)
+                };
+
+                var apiResponse = await httpClient.SendAsync(request);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCCategoryInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to delete category";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Delete Category API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "DeleteCategory");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+
+        // ==================== SUBCATEGORY UPDATE & DELETE ====================
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateSubCategory([FromBody] ABCSubCategoryUpdateModel model)
+        {
+            var responseObj = new ABCSubCategoryUpdateResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCSubCategoryInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                model.ModifiedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.ModifiedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateSubCategory}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.PutAsJsonAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateSubCategory,
+                    model
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to update subcategory";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Update SubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UpdateSubCategory");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteSubCategory([FromBody] ABCSubCategoryDeleteModel model)
+        {
+            var responseObj = new ABCSubCategoryDeleteResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCSubCategoryInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                model.DeletedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.DeletedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteSubCategory}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+
+                var request = new HttpRequestMessage(HttpMethod.Delete, HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteSubCategory)
+                {
+                    Content = JsonContent.Create(model)
+                };
+
+                var apiResponse = await httpClient.SendAsync(request);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCSubCategoryInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to delete subcategory";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Delete SubCategory API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "DeleteSubCategory");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        // ==================== ACTIVITY UPDATE & DELETE ====================
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateActivity([FromBody] ABCActivityUpdateModel model)
+        {
+            var responseObj = new ABCActivityUpdateResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCActivityInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                model.ModifiedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.ModifiedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateActivity}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+                var apiResponse = await httpClient.PutAsJsonAsync(
+                    HelperLayer.Constants.APIConstants.ABCAPIConstants.UpdateActivity,
+                    model
+                );
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCActivityInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to update activity";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Update Activity API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UpdateActivity");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteActivity([FromBody] ABCActivityDeleteModel model)
+        {
+            var responseObj = new ABCActivityDeleteResponseModel
+            {
+                isSucceeded = false,
+                isSessionTimeout = false,
+                returnUrlAfterLogout = "",
+                errorMessage = "",
+                data = new ABCActivityInsertResponseData()
+            };
+
+            if (_workflowSession?.LoggedInUser == null)
+            {
+                responseObj.returnUrlAfterLogout = Url.Content(CommonConstants.LOGINREDIRECT);
+                responseObj.isSessionTimeout = true;
+                return Json(responseObj);
+            }
+
+            try
+            {
+                model.DeletedBy = _workflowSession.LoggedInUser.EmployeeCode;
+                model.DeletedIPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                _logger.LogInformation($"Calling API: {HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteActivity}");
+
+                var httpClient = APIHelper.GetHttpClient(_workflowSession.LoggedInUser, _settings.APIUrl);
+
+                var request = new HttpRequestMessage(HttpMethod.Delete, HelperLayer.Constants.APIConstants.ABCAPIConstants.DeleteActivity)
+                {
+                    Content = JsonContent.Create(model)
+                };
+
+                var apiResponse = await httpClient.SendAsync(request);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var result = await apiResponse.Content.ReadAsStringAsync();
+                    var apiData = JsonConvert.DeserializeObject<ABCActivityInsertResponseData>(result);
+
+                    if (apiData != null)
+                    {
+                        responseObj.isSucceeded = apiData.Status == 1;
+                        responseObj.data = apiData;
+                        responseObj.errorMessage = apiData.Message;
+                    }
+                    else
+                    {
+                        responseObj.errorMessage = "Failed to delete activity";
+                    }
+                }
+                else
+                {
+                    var errorContent = await apiResponse.Content.ReadAsStringAsync();
+                    responseObj.errorMessage = $"API Error: {apiResponse.StatusCode} - {errorContent}";
+                    _logger.LogError($"Delete Activity API Error: {apiResponse.StatusCode} - {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "DeleteActivity");
+                responseObj.errorMessage = ex.Message;
+            }
+
+            return Json(responseObj);
+        }
+    }
+}
+    
+abcapi constants:
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace UnifiedApps.Web.HelperLayer.Constants.APIConstants
+{
+    public class ABCAPIConstants
+    {
+        public const string ABCAuth = "ABCAuth/ABCAuth";
+
+        public const string ABCCategoryMasterData = "ABC/GetCategoryMasterData";
+        public const string ABCSubCategoryMasterData = "ABC/GetSubCategoryMasterDataByCategory";
+        public const string ABCActivityMasterData = "ABC/GetActivityMasterData";
+        public const string InsertTimesheetDetails = "ABC/InsertTimesheetDetails";
+        public const string UpdateTimesheetDetails = "ABC/UpdateTimesheetDetails";
+        public const string GetTimesheetDataByEmployeeDate = "ABC/GetTimesheetDataByEmployeeDate";
+        public const string TimesheetFillupPercentageByEmployee = "ABC/TimesheetFillupPercentageByEmployee";
+        public const string TimesheetDaywiseTotalDurationCurrentMonth = "ABC/TimesheetDaywiseTotalDurationCurrentMonth";
+        public const string GetAcknowledgeTSBySearch = "ABC/GetAcknowledgeTSBySearch";
+        public const string ABCApprovalStatusMasterData = "ABC/GetApprovalStatusMasterData";
+        public const string GetActivityMinitsDataByEmployee = "ABC/GetActivityMinitsDataByEmployee";
+        public const string GetEmployeeDataByManagerId = "ABC/GetEmployeeDataByManagerId";
+        public const string GetEmployeeDetailsForDelete = "ABC/GetEmployeeDetailsForDelete";
+        public const string DeleteTimesheetDetails = "ABC/DeleteTimesheetDetails";
+
+        // NEW CONSTANTS FOR MASTER PAGE
+        public const string GetDistCompanyDepartmentSubprocess = "ABCMaster/GetDistCompanyDepartmentSubprocess";
+        public const string GetActiveCompanyList = "ABCMaster/GetActiveCompanyList";
+        public const string GetActiveDepartmentListByCompany = "ABCMaster/GetActiveDepartmentListByCompany";
+        public const string GetActiveSubProcessListByCompanyAndDepartment = "ABCMaster/GetActiveSubProcessListByCompanyAndDepartment";
+
+        public const string GetCategoryList = "ABCMaster/GetCategoryList";
+        public const string InsertCategory = "ABCMaster/InsertCategory";
+
+        public const string GetSubCategoryList = "ABCMaster/GetSubCategoryList";
+        public const string InsertSubCategory = "ABCMaster/InsertSubCategory";
+       
+
+        // Activity
+        public const string GetActivityList = "ABCMaster/GetActivityList";
+        public const string InsertActivity = "ABCMaster/InsertActivity";
+
+        // Category Update & Delete
+        public static readonly string UpdateCategory = "ABCMaster/UpdateCategory";
+        public static readonly string DeleteCategory = "ABCMaster/DeleteCategory";
+
+        // SubCategory Update & Delete
+        public static readonly string UpdateSubCategory = "ABCMaster/UpdateSubCategory";
+        public static readonly string DeleteSubCategory = "ABCMaster/DeleteSubCategory";
+
+        // Activity Update & Delete
+        public static readonly string UpdateActivity = "ABCMaster/UpdateActivity";
+        public static readonly string DeleteActivity = "ABCMaster/DeleteActivity";
+
+
+
+
+
+
+
+    }
+}
+ addcategory.js:
+
+// ==================== addcategory.js - COMPLETE FIXED VERSION ====================
+// File: wwwroot/areas/ABC/assets/js/custom/addcategory.js
+
+$(document).ready(function () {
+    initializePage();
+    bindEvents();
+});
+
+var currentCompanyCode = '';
+var currentDepartmentCode = '';
+var currentSubProcessCode = '';
+
+// ─────────────────────────────────────────────────────────────
+function bindEvents() {
+    $('#btnSubmitCategory').on('click', onSubmitCategoryClick);
+
+    // Edit modal save button
+    $('#btnSaveEditCategory').on('click', onSaveEditCategoryClick);
+
+    // Event delegation for dynamically added edit/delete buttons
+    $(document).on('click', '.edit-category-btn', onEditCategoryClick);
+    $(document).on('click', '.delete-category-btn', onDeleteCategoryClick);
+}
+
+// ─────────────────────────────────────────────────────────────
+function initializePage() {
+    parseUrlParameters();
+    loadCategoryList();
+}
+
+// ─────────────────────────────────────────────────────────────
+function parseUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const companyName = urlParams.get('companyName') || '';
+    const companyCode = urlParams.get('companyCode') || '';
+    const departmentName = urlParams.get('departmentName') || '';
+    const departmentCode = urlParams.get('departmentCode') || '';
+    const subprocessName = urlParams.get('subprocessName') || '';
+    const subprocessCode = urlParams.get('subprocessCode') || '';
+
+    $('#txtCompany').val(companyName);
+    $('#hdnCompanyCode').val(companyCode);
+    currentCompanyCode = companyCode;
+
+    $('#txtDepartment').val(departmentName);
+    $('#hdnDepartmentCode').val(departmentCode);
+    currentDepartmentCode = departmentCode;
+
+    $('#txtSubProcess').val(subprocessName);
+    $('#hdnSubProcessCode').val(subprocessCode);
+    currentSubProcessCode = subprocessCode;
+
+    if (!companyCode || !departmentCode || !subprocessCode) {
+        showError('Invalid parameters. Please select from master page.');
+        $('#btnSubmitCategory').prop('disabled', true);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+function loadCategoryList() {
+    if (!currentCompanyCode || !currentDepartmentCode || !currentSubProcessCode) {
+        $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">No data available</td></tr>');
+        return;
+    }
+
+    $.ajax({
+        url: '/ABC/ABCMaster/GetCategoryList',
+        type: 'GET',
+        data: {
+            companyCode: currentCompanyCode,
+            departmentCode: currentDepartmentCode,
+            subprocessCode: currentSubProcessCode
+        },
+        dataType: 'json',
+        success: function (response) {
+            if (response && response.isSucceeded && response.data && response.data.categoryList) {
+                populateCategoryTable(response.data.categoryList);
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                $('#tblCategoryData').html('<tr><td colspan="6" class="text-center">No categories found</td></tr>');
+            }
+        },
+        error: function () {
+            $('#tblCategoryData').html('<tr><td colspan="6" class="text-center text-danger">Error loading categories</td></tr>');
+        }
+    });
+}
+
+// ─────────────────────────────────────────────────────────────
+function populateCategoryTable(categories) {
+    const $tbody = $('#tblCategoryData');
+    $tbody.empty();
+
+    if (!categories || categories.length === 0) {
+        $tbody.html('<tr><td colspan="6" class="text-center">No categories found</td></tr>');
+        return;
+    }
+
+    $.each(categories, function (index, category) {
+        const addSubCategoryUrl = `/ABC/ABCMaster/AddSubCategory?` +
+            `categoryId=${category.categoryId || ''}&` +
+            `categoryName=${encodeURIComponent(category.categoryName || '')}&` +
+            `categoryCode=${encodeURIComponent(category.categoryCode || '')}&` +
+            `companyCode=${encodeURIComponent(category.companyCode || '')}&` +
+            `companyName=${encodeURIComponent(category.company_Name || '')}&` +
+            `departmentCode=${encodeURIComponent(category.departmentCode || '')}&` +
+            `departmentName=${encodeURIComponent(category.department_Name || '')}&` +
+            `subprocessCode=${encodeURIComponent(category.subprocessCode || '')}&` +
+            `subprocessName=${encodeURIComponent(category.subProcess_Name || '')}`;
+
+        const addActivityUrl = `/ABC/ABCMaster/AddActivity?` +
+            `categoryCode=${encodeURIComponent(category.categoryCode || '')}&` +
+            `categoryName=${encodeURIComponent(category.categoryName || '')}&` +
+            `companyCode=${encodeURIComponent(category.companyCode || '')}&` +
+            `companyName=${encodeURIComponent(category.company_Name || '')}&` +
+            `departmentCode=${encodeURIComponent(category.departmentCode || '')}&` +
+            `departmentName=${encodeURIComponent(category.department_Name || '')}&` +
+            `subprocessCode=${encodeURIComponent(category.subprocessCode || '')}&` +
+            `subprocessName=${encodeURIComponent(category.subProcess_Name || '')}`;
+
+        const rowHtml = `
+            <tr>
+                <td class="text-center">${index + 1}</td>
+                <td>${escapeHtml(category.company_Name || '')}</td>
+                <td>${escapeHtml(category.department_Name || '')}</td>
+                <td>${escapeHtml(category.subProcess_Name || '')}</td>
+                <td>${escapeHtml(category.categoryName || '')}</td>
+                <td class="text-center action-col">
+                    <a href="javascript:;" class="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots"></i>
+                    </a>
+                    <ul class="dropdown-menu mt-2">
+                        <li>
+                            <a href="javascript:;" class="dropdown-item edit-category-btn"
+                               data-id="${category.categoryId}"
+                               data-name="${escapeHtml(category.categoryName || '')}"
+                               data-code="${escapeHtml(category.categoryCode || '')}"
+                               data-company="${escapeHtml(category.companyCode || '')}"
+                               data-department="${escapeHtml(category.departmentCode || '')}"
+                               data-subprocess="${escapeHtml(category.subprocessCode || '')}">
+                                <i class="bi bi-pencil me-2"></i>Edit Category
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;" class="dropdown-item text-danger delete-category-btn"
+                               data-id="${category.categoryId}"
+                               data-name="${escapeHtml(category.categoryName || '')}">
+                                <i class="bi bi-trash3 me-2"></i>Delete Category
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a href="${addSubCategoryUrl}" class="dropdown-item">
+                                <i class="bi bi-plus-circle me-2"></i>Add Sub Category
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${addActivityUrl}" class="dropdown-item">
+                                <i class="bi bi-plus-circle me-2"></i>Add Activity
+                            </a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        `;
+        $tbody.append(rowHtml);
+    });
+}
+
+// ─────────────────────────────────────────────────────────────
+//function onSubmitCategoryClick() {
+//    const categoryName = $('#txtCategory').val().trim();
+//    const companyCode = $('#hdnCompanyCode').val();
+//    const departmentCode = $('#hdnDepartmentCode').val();
+//    const subprocessCode = $('#hdnSubProcessCode').val();
+
+//    if (!categoryName) {
+//        showError('Please enter category name');
+//        $('#txtCategory').focus();
+//        return;
+//    }
+//    if (!companyCode || !departmentCode || !subprocessCode) {
+//        showError('Invalid company, department or subprocess');
+//        return;
+//    }
+
+//    const categoryData = {
+//        categoryName: categoryName,
+//        categoryCode: '',
+//        companyCode: companyCode,
+//        departmentCode: departmentCode,
+//        subprocessCode: subprocessCode
+//    };
+
+//    $('#btnSubmitCategory').prop('disabled', true).text('Saving...');
+
+//    $.ajax({
+//        url: '/ABC/ABCMaster/InsertCategory',
+//        type: 'POST',
+//        contentType: 'application/json',
+//        data: JSON.stringify(categoryData),
+//        dataType: 'json',
+//        success: function (response) {
+//            if (response && response.isSucceeded) {
+//                showSuccess(response.errorMessage || 'Category added successfully!');
+//                $('#txtCategory').val('');
+//                loadCategoryList();
+//            } else if (response && response.isSessionTimeout) {
+//                window.location.href = response.returnUrlAfterLogout;
+//            } else {
+//                showError(response.errorMessage || 'Failed to add category');
+//            }
+//        },
+//        error: function (xhr) {
+//            try {
+//                const err = JSON.parse(xhr.responseText);
+//                showError(err.error || err.message || 'Error occurred');
+//            } catch (e) {
+//                showError('Error adding category');
+//            }
+//        },
+//        complete: function () {
+//            $('#btnSubmitCategory').prop('disabled', false).text('Submit');
+//        }
+//    });
+//}
+function onSubmitCategoryClick() {
+    const categoryName = $('#txtCategory').val().trim();
+    const companyCode = $('#hdnCompanyCode').val();
+    const departmentCode = $('#hdnDepartmentCode').val();
+    const subprocessCode = $('#hdnSubProcessCode').val();
+
+    if (!categoryName) {
+        showError('Please enter category name');
+        $('#txtCategory').focus();
+        return;
+    }
+
+    if (!companyCode || !departmentCode || !subprocessCode) {
+        showError('Invalid company, department or subprocess');
+        return;
+    }
+
+    const categoryData = {
+        categoryName: categoryName,
+       
+        categoryCode:null,
+        companyCode: companyCode,
+        departmentCode: departmentCode,
+        subprocessCode: subprocessCode
+        // CreatedBy aur CreatedIPAddress Web Controller session se set karta hai
+    };
+
+    console.log('Submitting category:', categoryData);
+
+    $('#btnSubmitCategory').prop('disabled', true).text('Saving...');
+
+    $.ajax({
+        url: '/ABC/ABCMaster/InsertCategory',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(categoryData),
+        dataType: 'json',
+        success: function (response) {
+            console.log('Insert Response:', response);
+
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'Category added successfully!');
+                $('#txtCategory').val('');
+                loadCategoryList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to add category');
+            }
+        },
+        error: function (xhr) {
+            console.error('Insert Error:', xhr.responseText);
+            try {
+                const err = JSON.parse(xhr.responseText);
+                showError(err.error || err.message || 'Error occurred');
+            } catch (e) {
+                showError('Error adding category');
+            }
+        },
+        complete: function () {
+            $('#btnSubmitCategory').prop('disabled', false).text('Submit');
+        }
+    });
+}
+
+
+// ─────────────────────────────────────────────────────────────
+// EDIT — opens Bootstrap modal with pre-filled data
+// ─────────────────────────────────────────────────────────────
+function onEditCategoryClick() {
+    const categoryId = $(this).data('id');
+    const categoryName = $(this).data('name');
+    const categoryCode = $(this).data('code');
+    const companyCode = $(this).data('company');
+    const departmentCode = $(this).data('department');
+    const subprocessCode = $(this).data('subprocess');
+
+    // Store in modal hidden fields
+    $('#editCategoryId').val(categoryId);
+    $('#editCategoryCode').val(categoryCode);
+    $('#editCompanyCode').val(companyCode);
+    $('#editDepartmentCode').val(departmentCode);
+    $('#editSubprocessCode').val(subprocessCode);
+    $('#editCategoryName').val(categoryName);
+
+    // Open modal
+    const modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+    modal.show();
+}
+
+function onSaveEditCategoryClick() {
+    const categoryId = $('#editCategoryId').val();
+    const categoryName = $('#editCategoryName').val().trim();
+    const categoryCode = $('#editCategoryCode').val();
+    const companyCode = $('#editCompanyCode').val();
+    const departmentCode = $('#editDepartmentCode').val();
+    const subprocessCode = $('#editSubprocessCode').val();
+
+    if (!categoryName) {
+        showError('Category name cannot be empty');
+        $('#editCategoryName').focus();
+        return;
+    }
+
+    const updateData = {
+        categoryId: parseInt(categoryId),
+        categoryName: categoryName,
+        categoryCode: categoryCode,
+        companyCode: companyCode,
+        departmentCode: departmentCode,
+        subprocessCode: subprocessCode
+    };
+
+    $('#btnSaveEditCategory').prop('disabled', true).text('Saving...');
+
+    $.ajax({
+        url: '/ABC/ABCMaster/UpdateCategory',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(updateData),
+        dataType: 'json',
+        success: function (response) {
+            if (response && response.isSucceeded) {
+                bootstrap.Modal.getInstance(document.getElementById('editCategoryModal')).hide();
+                showSuccess(response.errorMessage || 'Category updated successfully!');
+                loadCategoryList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to update category');
+            }
+        },
+        error: function (xhr) {
+            try {
+                const err = JSON.parse(xhr.responseText);
+                showError(err.error || err.errorMessage || 'Error occurred');
+            } catch (e) {
+                showError('Error updating category');
+            }
+        },
+        complete: function () {
+            $('#btnSaveEditCategory').prop('disabled', false).text('Save Changes');
+        }
+    });
+}
+
+// ─────────────────────────────────────────────────────────────
+// DELETE — confirm then call API
+// ─────────────────────────────────────────────────────────────
+function onDeleteCategoryClick() {
+    const categoryId = $(this).data('id');
+    const categoryName = $(this).data('name');
+
+    if (!confirm(`Are you sure you want to delete "${categoryName}"?\n\nThis action cannot be undone.`)) {
+        return;
+    }
+
+    const deleteData = {
+        categoryId: parseInt(categoryId)
+    };
+
+    $.ajax({
+        url: '/ABC/ABCMaster/DeleteCategory',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(deleteData),
+        dataType: 'json',
+        success: function (response) {
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'Category deleted successfully!');
+                loadCategoryList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to delete category');
+            }
+        },
+        error: function (xhr) {
+            try {
+                const err = JSON.parse(xhr.responseText);
+                showError(err.error || err.errorMessage || 'Error occurred');
+            } catch (e) {
+                showError('Error deleting category');
+            }
+        }
+    });
+}
+
+// ─────────────────────────────────────────────────────────────
+// Utilities
+// ─────────────────────────────────────────────────────────────
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showError(message) {
+    alert('Error: ' + message);
+    console.error(message);
+}
+
+function showSuccess(message) {
+    alert(message);
+    console.log(message);
+}
+
+addsubcategory.js:
+
+$(document).ready(function () {
+    initializeAddSubCategoryPage();
+    bindAddSubCategoryEvents();
+});
+
+var selectedCategoryCode = '';
+var selectedCategoryName = '';
+var selectedCompanyCode = '';
+var selectedCompanyName = '';
+var selectedDepartmentCode = '';
+var selectedDepartmentName = '';
+var selectedSubProcessCode = '';
+var selectedSubProcessName = '';
+
+function bindAddSubCategoryEvents() {
+    $('#btnSubmitSubCategory').on('click', onSubmitSubCategoryClick);
+
+    // Event delegation for edit/delete buttons
+    $(document).on('click', '.icon-btn[title="Edit"]', onEditSubCategoryClick);
+    $(document).on('click', '.icon-btn[title="Delete"]', onDeleteSubCategoryClick);
+}
+
+function initializeAddSubCategoryPage() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const categoryCode = urlParams.get('categoryCode');
+    const categoryName = urlParams.get('categoryName');
+    const companyCode = urlParams.get('companyCode');
+    const companyName = urlParams.get('companyName');
+    const departmentCode = urlParams.get('departmentCode');
+    const departmentName = urlParams.get('departmentName');
+    const subprocessCode = urlParams.get('subprocessCode');
+    const subprocessName = urlParams.get('subprocessName');
+
+    console.log('URL Parameters:', {
+        categoryCode, categoryName,
+        companyCode, companyName,
+        departmentCode, departmentName,
+        subprocessCode, subprocessName
+    });
+
+    if (!categoryCode) {
+        console.error('Missing categoryCode parameter!');
+        showError('Missing required parameters. Please select a category from the list.');
+        setTimeout(function () {
+            window.history.back();
+        }, 2000);
+        return;
+    }
+
+    $('#txtCompany').val(companyName || '');
+    $('#txtDepartment').val(departmentName || '');
+    $('#txtSubProcess').val(subprocessName || '');
+    $('#txtCategory').val(categoryName || '');
+    $('#hdnCategoryCode').val(categoryCode || '');
+
+    selectedCategoryCode = categoryCode;
+    selectedCategoryName = categoryName;
+    selectedCompanyCode = companyCode;
+    selectedCompanyName = companyName;
+    selectedDepartmentCode = departmentCode;
+    selectedDepartmentName = departmentName;
+    selectedSubProcessCode = subprocessCode;
+    selectedSubProcessName = subprocessName;
+
+    console.log('Initialized with categoryCode:', selectedCategoryCode);
+
+    loadSubCategoryList();
+}
+
+function loadSubCategoryList() {
+    console.log('Loading subcategories for category:', selectedCategoryCode);
+
+    if (!selectedCategoryCode) {
+        $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">No category selected</td></tr>');
+        return;
+    }
+
+    $.ajax({
+        url: '/ABC/ABCMaster/GetSubCategoryList',
+        type: 'GET',
+        data: {
+            categoryCode: selectedCategoryCode
+        },
+        dataType: 'json',
+        success: function (response) {
+            console.log('SubCategory List Response:', response);
+
+            if (response && response.isSucceeded) {
+                populateSubCategoryTable(response.data.subCategoryList || []);
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center">No subcategories found</td></tr>');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('SubCategory List Error:', error);
+            $('#tblSubCategoryData').html('<tr><td colspan="7" class="text-center text-danger">Error loading subcategories</td></tr>');
+            showError('Failed to load subcategories: ' + error);
+        }
+    });
+}
+
+function populateSubCategoryTable(subCategories) {
+    const $tbody = $('#tblSubCategoryData');
+    $tbody.empty();
+
+    if (subCategories && subCategories.length > 0) {
+        $.each(subCategories, function (index, subCategory) {
+            const rowHtml = `
+                <tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td>${subCategory.company_Name || ''}</td>
+                    <td>${subCategory.department_Name || ''}</td>
+                    <td>${subCategory.subProcess_Name || ''}</td>
+                    <td>${subCategory.categoryName || ''}</td>
+                    <td>${subCategory.subCategoryName || ''}</td>
+                    <td class="text-center action-col">
+                        <a href="javascript:;" class="icon-btn" title="Edit" 
+                           data-id="${subCategory.subCategoryId}"
+                           data-name="${escapeHtml(subCategory.subCategoryName || '')}"
+                           data-code="${subCategory.subCategoryCode || ''}"
+                           data-category="${subCategory.categoryCode || ''}">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="javascript:;" class="icon-btn" title="Delete" 
+                           data-id="${subCategory.subCategoryId}"
+                           data-name="${escapeHtml(subCategory.subCategoryName || '')}">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                    </td>
+                </tr>
+            `;
+            $tbody.append(rowHtml);
+        });
+    } else {
+        $tbody.html('<tr><td colspan="7" class="text-center">No subcategories found for this category</td></tr>');
+    }
+}
+
+function onSubmitSubCategoryClick() {
+    const subCategoryName = $('#txtSubCategory').val().trim();
+
+    console.log('Submit clicked - SubCategory:', subCategoryName);
+
+    if (!subCategoryName) {
+        showError('Please enter subcategory name');
+        $('#txtSubCategory').focus();
+        return;
+    }
+
+    if (!selectedCategoryCode) {
+        showError('Missing category information. Please go back and select again.');
+        return;
+    }
+
+    const subCategoryData = {
+        subCategoryName: subCategoryName,
+        subCategoryCode: '',  // SP will auto-generate
+        categoryCode: selectedCategoryCode
+    };
+
+    console.log('Submitting subcategory data:', subCategoryData);
+
+    $('#btnSubmitSubCategory').prop('disabled', true).text('Saving...');
+
+    $.ajax({
+        url: '/ABC/ABCMaster/InsertSubCategory',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(subCategoryData),
+        dataType: 'json',
+        success: function (response) {
+            console.log('Insert Response:', response);
+
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'SubCategory added successfully!');
+                $('#txtSubCategory').val('');
+                loadSubCategoryList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to add subcategory');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Insert Error:', xhr.responseText);
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                showError(errorResponse.error || errorResponse.message || 'Error occurred');
+            } catch (e) {
+                showError('Error adding subcategory: ' + error);
+            }
+        },
+        complete: function () {
+            $('#btnSubmitSubCategory').prop('disabled', false).text('Submit');
+        }
+    });
+}
+
+// ==================== EDIT SUBCATEGORY ====================
+
+function onEditSubCategoryClick() {
+    const subCategoryId = $(this).data('id');
+    const subCategoryName = $(this).data('name');
+    const subCategoryCode = $(this).data('code');
+    const categoryCode = $(this).data('category');
+
+    console.log('Edit SubCategory:', { subCategoryId, subCategoryName });
+
+    const newName = prompt('Edit SubCategory Name:', subCategoryName);
+
+    if (newName === null) {
+        return; // User cancelled
+    }
+
+    if (!newName.trim()) {
+        showError('SubCategory name cannot be empty');
+        return;
+    }
+
+    const updateData = {
+        subCategoryId: subCategoryId,
+        subCategoryName: newName.trim(),
+        subCategoryCode: subCategoryCode,
+        categoryCode: categoryCode
+    };
+
+    console.log('Updating subcategory:', updateData);
+
+    $.ajax({
+        url: '/ABC/ABCMaster/UpdateSubCategory',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(updateData),
+        dataType: 'json',
+        success: function (response) {
+            console.log('Update Response:', response);
+
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'SubCategory updated successfully!');
+                loadSubCategoryList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to update subcategory');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Update Error:', xhr.responseText);
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                showError(errorResponse.error || errorResponse.errorMessage || 'Error occurred');
+            } catch (e) {
+                showError('Error updating subcategory: ' + error);
+            }
+        }
+    });
+}
+
+// ==================== DELETE SUBCATEGORY ====================
+
+function onDeleteSubCategoryClick() {
+    const subCategoryId = $(this).data('id');
+    const subCategoryName = $(this).data('name');
+
+    console.log('Delete SubCategory:', { subCategoryId, subCategoryName });
+
+    if (!confirm(`Are you sure you want to delete the subcategory "${subCategoryName}"?\n\nThis action cannot be undone.`)) {
+        return;
+    }
+
+    const deleteData = {
+        subCategoryId: subCategoryId
+    };
+
+    console.log('Deleting subcategory:', deleteData);
+
+    $.ajax({
+        url: '/ABC/ABCMaster/DeleteSubCategory',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(deleteData),
+        dataType: 'json',
+        success: function (response) {
+            console.log('Delete Response:', response);
+
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'SubCategory deleted successfully!');
+                loadSubCategoryList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to delete subcategory');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Delete Error:', xhr.responseText);
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                showError(errorResponse.error || errorResponse.errorMessage || 'Error occurred');
+            } catch (e) {
+                showError('Error deleting subcategory: ' + error);
+            }
+        }
+    });
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showError(message) {
+    alert('Error: ' + message);
+    console.error(message);
+}
+
+function showSuccess(message) {
+    alert('Success: ' + message);
+    console.log(message);
+}
+
+AddActivity.js
+
+$(document).ready(function () {
+    initializeAddActivityPage();
+    bindAddActivityEvents();
+});
+
+var selectedCategoryCode = '';
+var selectedCategoryName = '';
+var selectedCompanyCode = '';
+var selectedCompanyName = '';
+var selectedDepartmentCode = '';
+var selectedDepartmentName = '';
+var selectedSubProcessCode = '';
+var selectedSubProcessName = '';
+
+function bindAddActivityEvents() {
+    $('#btnSubmitActivity').on('click', onSubmitActivityClick);
+
+    // Event delegation for edit/delete buttons
+    $(document).on('click', '.icon-btn[title="Edit"]', onEditActivityClick);
+    $(document).on('click', '.icon-btn[title="Delete"]', onDeleteActivityClick);
+}
+
+function initializeAddActivityPage() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const categoryCode = urlParams.get('categoryCode');
+    const categoryName = urlParams.get('categoryName');
+    const companyCode = urlParams.get('companyCode');
+    const companyName = urlParams.get('companyName');
+    const departmentCode = urlParams.get('departmentCode');
+    const departmentName = urlParams.get('departmentName');
+    const subprocessCode = urlParams.get('subprocessCode');
+    const subprocessName = urlParams.get('subprocessName');
+
+    console.log('URL Parameters:', {
+        categoryCode, categoryName,
+        companyCode, companyName,
+        departmentCode, departmentName,
+        subprocessCode, subprocessName
+    });
+
+    // Validation: Category must be provided
+    if (!categoryCode) {
+        console.error('Missing category code parameter!');
+        showError('Missing required parameters. Please select a category from the list.');
+        setTimeout(function () {
+            window.history.back();
+        }, 2000);
+        return;
+    }
+
+    // Set display values - all readonly
+    $('#txtCompany').val(companyName || '');
+    $('#txtDepartment').val(departmentName || '');
+    $('#txtSubProcess').val(subprocessName || '');
+    $('#txtCategory').val(categoryName || '');
+    $('#hdnCategoryCode').val(categoryCode || '');
+
+    // Store values
+    selectedCategoryCode = categoryCode || '';
+    selectedCategoryName = categoryName || '';
+    selectedCompanyCode = companyCode || '';
+    selectedCompanyName = companyName || '';
+    selectedDepartmentCode = departmentCode || '';
+    selectedDepartmentName = departmentName || '';
+    selectedSubProcessCode = subprocessCode || '';
+    selectedSubProcessName = subprocessName || '';
+
+    console.log('Initialized with categoryCode:', selectedCategoryCode);
+
+    loadActivityList();
+}
+
+function loadActivityList() {
+    console.log('Loading activities for categoryCode:', selectedCategoryCode);
+
+    if (!selectedCategoryCode) {
+        $('#tblActivityData').html('<tr><td colspan="7" class="text-center">No category selected</td></tr>');
+        return;
+    }
+
+    $.ajax({
+        url: '/ABC/ABCMaster/GetActivityList',
+        type: 'GET',
+        data: {
+            categoryCode: selectedCategoryCode,
+            subCategoryCode: null  // Get ALL activities for this category
+        },
+        dataType: 'json',
+        success: function (response) {
+            console.log('Activity List Response:', response);
+
+            if (response && response.isSucceeded) {
+                populateActivityTable(response.data.activityList || []);
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                $('#tblActivityData').html('<tr><td colspan="7" class="text-center">No activities found</td></tr>');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Activity List Error:', error);
+            $('#tblActivityData').html('<tr><td colspan="7" class="text-center text-danger">Error loading activities</td></tr>');
+            showError('Failed to load activities: ' + error);
+        }
+    });
+}
+
+function populateActivityTable(activities) {
+    const $tbody = $('#tblActivityData');
+    $tbody.empty();
+
+    if (activities && activities.length > 0) {
+        $.each(activities, function (index, activity) {
+            const rowHtml = `
+                <tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td>${activity.company_Name || ''}</td>
+                    <td>${activity.department_Name || ''}</td>
+                    <td>${activity.subProcess_Name || ''}</td>
+                    <td>${activity.categoryName || ''}</td>
+                    <td>${activity.activityName || ''}</td>
+                    <td class="text-center action-col">
+                        <a href="javascript:;" class="icon-btn" title="Edit" 
+                           data-id="${activity.activityId}"
+                           data-name="${escapeHtml(activity.activityName || '')}"
+                           data-code="${activity.activityCode || ''}"
+                           data-category="${activity.categoryCode || ''}"
+                           data-subcategory="${activity.subCategoryCode || ''}">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="javascript:;" class="icon-btn" title="Delete" 
+                           data-id="${activity.activityId}"
+                           data-name="${escapeHtml(activity.activityName || '')}">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                    </td>
+                </tr>
+            `;
+            $tbody.append(rowHtml);
+        });
+    } else {
+        $tbody.html('<tr><td colspan="7" class="text-center">No activities found</td></tr>');
+    }
+}
+
+function onSubmitActivityClick() {
+    const activityName = $('#txtActivity').val().trim();
+
+    console.log('Submit clicked - Activity:', activityName);
+
+    if (!activityName) {
+        showError('Please enter activity name');
+        $('#txtActivity').focus();
+        return;
+    }
+
+    if (!selectedCategoryCode) {
+        showError('Missing category information. Please go back and select again.');
+        return;
+    }
+
+    const activityData = {
+        activityName: activityName,
+        activityCode: '',  // SP will auto-generate
+        categoryCode: selectedCategoryCode  // Changed: Use categoryCode instead of subCategoryCode
+    };
+
+    console.log('Submitting activity data:', activityData);
+
+    $('#btnSubmitActivity').prop('disabled', true).text('Saving...');
+
+    $.ajax({
+        url: '/ABC/ABCMaster/InsertActivity',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(activityData),
+        dataType: 'json',
+        success: function (response) {
+            console.log('Insert Response:', response);
+
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'Activity added successfully!');
+                $('#txtActivity').val('');
+                loadActivityList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to add activity');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Insert Error:', xhr.responseText);
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                showError(errorResponse.error || errorResponse.message || 'Error occurred');
+            } catch (e) {
+                showError('Error adding activity: ' + error);
+            }
+        },
+        complete: function () {
+            $('#btnSubmitActivity').prop('disabled', false).text('Submit');
+        }
+    });
+}
+
+// ==================== EDIT ACTIVITY ====================
+
+function onEditActivityClick() {
+    const activityId = $(this).data('id');
+    const activityName = $(this).data('name');
+    const activityCode = $(this).data('code');
+    const categoryCode = $(this).data('category');
+    const subCategoryCode = $(this).data('subcategory');
+
+    console.log('Edit Activity:', { activityId, activityName });
+
+    const newName = prompt('Edit Activity Name:', activityName);
+
+    if (newName === null) {
+        return; // User cancelled
+    }
+
+    if (!newName.trim()) {
+        showError('Activity name cannot be empty');
+        return;
+    }
+
+    const updateData = {
+        activityId: activityId,
+        activityName: newName.trim(),
+        activityCode: activityCode,
+        categoryCode: categoryCode,
+        subCategoryCode: subCategoryCode
+    };
+
+    console.log('Updating activity:', updateData);
+
+    $.ajax({
+        url: '/ABC/ABCMaster/UpdateActivity',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(updateData),
+        dataType: 'json',
+        success: function (response) {
+            console.log('Update Response:', response);
+
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'Activity updated successfully!');
+                loadActivityList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to update activity');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Update Error:', xhr.responseText);
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                showError(errorResponse.error || errorResponse.errorMessage || 'Error occurred');
+            } catch (e) {
+                showError('Error updating activity: ' + error);
+            }
+        }
+    });
+}
+
+// ==================== DELETE ACTIVITY ====================
+
+function onDeleteActivityClick() {
+    const activityId = $(this).data('id');
+    const activityName = $(this).data('name');
+
+    console.log('Delete Activity:', { activityId, activityName });
+
+    if (!confirm(`Are you sure you want to delete the activity "${activityName}"?\n\nThis action cannot be undone.`)) {
+        return;
+    }
+
+    const deleteData = {
+        activityId: activityId
+    };
+
+    console.log('Deleting activity:', deleteData);
+
+    $.ajax({
+        url: '/ABC/ABCMaster/DeleteActivity',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(deleteData),
+        dataType: 'json',
+        success: function (response) {
+            console.log('Delete Response:', response);
+
+            if (response && response.isSucceeded) {
+                showSuccess(response.errorMessage || 'Activity deleted successfully!');
+                loadActivityList();
+            } else if (response && response.isSessionTimeout) {
+                window.location.href = response.returnUrlAfterLogout;
+            } else {
+                showError(response.errorMessage || 'Failed to delete activity');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Delete Error:', xhr.responseText);
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                showError(errorResponse.error || errorResponse.errorMessage || 'Error occurred');
+            } catch (e) {
+                showError('Error deleting activity: ' + error);
+            }
+        }
+    });
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showError(message) {
+    alert('Error: ' + message);
+    console.error(message);
+}
+
+function showSuccess(message) {
+    alert('Success: ' + message);
+    console.log(message);
+}
+
+addcategory.cshtml:
+@{
+    Layout = "~/Views/Shared/_ABCLayout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="@Url.Action("Dashboard", "Home", new { area = "ABC" })">
+                                        Activity-Based Consolidation
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Add Category</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-body-card masters">
+            <div class="card-header justify-content-between">
+                <div class="d-flex">
+                    <h2 class="main-title">Add Category</h2>
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })" class="btn btn-outline-secondary">Back</a>
+                    <button type="button" class="btn btn-success" id="btnSubmitCategory">Submit</button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="main-body-card">
+
+                    <!--Add Form-->
+                    <div class="row row-cols-lg-4 mb-3">
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Company</label>
+                                <input type="text" class="form-control" id="txtCompany" readonly />
+                                <input type="hidden" id="hdnCompanyCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" class="form-control" id="txtDepartment" readonly />
+                                <input type="hidden" id="hdnDepartmentCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Sub Process</label>
+                                <input type="text" class="form-control" id="txtSubProcess" readonly />
+                                <input type="hidden" id="hdnSubProcessCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Category <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtCategory"
+                                       placeholder="Enter category name" maxlength="200" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Category List Table-->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-style-1">
+                                    <thead>
+                                        <tr>
+                                            <th width="60" class="text-center">Sr.No</th>
+                                            <th>Company</th>
+                                            <th>Department</th>
+                                            <th>Subprocess</th>
+                                            <th>Category</th>
+                                            <th width="80" class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblCategoryData">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Loading...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--═══════════════════════════════════════════════════════════-->
+<!--EDIT CATEGORY MODAL                                       -->
+<!--═══════════════════════════════════════════════════════════-->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">
+                    <i class="bi bi-pencil me-2"></i>Edit Category
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!--Hidden fields to carry IDs-->
+                <input type="hidden" id="editCategoryId" />
+                <input type="hidden" id="editCategoryCode" />
+                <input type="hidden" id="editCompanyCode" />
+                <input type="hidden" id="editDepartmentCode" />
+                <input type="hidden" id="editSubprocessCode" />
+
+                <div class="mb-3">
+                    <label class="form-label">Category Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="editCategoryName"
+                           placeholder="Enter category name" maxlength="200" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="btnSaveEditCategory">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/areas/ABC/assets/js/custom/addcategory.js"></script>
+}
+
+Addsubcategory.cshtml:
+@{
+    Layout = "~/Views/Shared/_ABCLayout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="@Url.Action("Dashboard", "Home", new { area = "ABC" })">
+                                        Activity-Based Consolidation
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Add SubCategory</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-body-card masters">
+            <div class="card-header justify-content-between">
+                <div class="d-flex">
+                    <h2 class="main-title">Add SubCategory</h2>
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary">Back</a>
+                    <button type="button" class="btn btn-success" id="btnSubmitSubCategory">Submit</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="main-body-card">
+                    <div class="row row-cols-lg-5 mb-3">
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Company</label>
+                                <input type="text" class="form-control" id="txtCompany" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" class="form-control" id="txtDepartment" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Sub Process</label>
+                                <input type="text" class="form-control" id="txtSubProcess" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <input type="text" class="form-control" id="txtCategory" readonly />
+                                <input type="hidden" id="hdnCategoryCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">SubCategory <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtSubCategory" placeholder="Enter subcategory name" maxlength="200" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-style-1">
+                                    <thead>
+                                        <tr>
+                                            <th width="60" class="text-center">Sr.No</th>
+                                            <th>Company</th>
+                                            <th>Department</th>
+                                            <th>Subprocess</th>
+                                            <th>Category</th>
+                                            <th>SubCategory</th>
+                                            <th width="100" class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblSubCategoryData">
+                                        <tr>
+                                            <td colspan="7" class="text-center">Loading...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/areas/ABC/assets/js/custom/addsubcategory.js"></script>
+}
+
+
+addactivity.cshtml:
+@{
+    Layout = "~/Views/Shared/_ABCLayout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="@Url.Action("Dashboard", "Home", new { area = "ABC" })">
+                                        Activity-Based Consolidation
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="@Url.Action("master", "ABCMaster", new { area = "ABC" })">Master</a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Add Activity</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-body-card masters">
+            <div class="card-header justify-content-between">
+                <div class="d-flex">
+                    <h2 class="main-title">Add Activity</h2>
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary">Back</a>
+                    <button type="button" class="btn btn-success" id="btnSubmitActivity">Submit</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="main-body-card">
+                    <div class="row row-cols-lg-5 gx-3 mb-3">
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Company</label>
+                                <input type="text" class="form-control" id="txtCompany" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" class="form-control" id="txtDepartment" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Sub Process</label>
+                                <input type="text" class="form-control" id="txtSubProcess" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <input type="text" class="form-control" id="txtCategory" readonly />
+                                <input type="hidden" id="hdnCategoryCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg">
+                            <div class="mb-3">
+                                <label class="form-label">Activity <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtActivity" placeholder="Enter activity name" maxlength="200" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-style-1">
+                                    <thead>
+                                        <tr>
+                                            <th width="60" class="text-center">Sr.No</th>
+                                            <th>Company</th>
+                                            <th>Department</th>
+                                            <th>Subprocess</th>
+                                            <th>Category</th>
+                                            <th>Activity</th>
+                                            <th width="100" class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblActivityData">
+                                        <tr>
+                                            <td colspan="7" class="text-center">Loading...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/areas/ABC/assets/js/custom/addactivity.js"></script>
+}
+
+
+
+
+
+
+
+
+
+
+<div class="content-body">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-12">
+						<div class="d-flex justify-content-between align-items-center">
+							<div class="">
+								<nav aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="dashboard.html">Activity-Based
+												Consolidation</a></li>
+										<li class="breadcrumb-item"><a href="master.html">Master</a></li>
+										<li class="breadcrumb-item active" aria-current="page">Add Category</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="main-body-card masters">
+					<div class="card-header justify-content-between">
+						<div class="d-flex">
+							<h2 class="main-title">Add Category</h2>
+						</div>
+						<div class="d-flex gap-3">
+							<a href="master.html" class="btn btn-outline-secondary">Back</a>
+							<button type="button" class="btn btn-success">Submit</button>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="main-body-card">
+							<div class="row row-cols-lg-4 mb-3">
+								<div class="col-md-6 col-lg">
+									<div class="mb-3">
+										<label class="form-label">Company</label>
+										<select class="customSelect" disabled>
+											<option value="0">Select</option>
+											<option value="1" selected>Sagility India</option>
+											<option value="2">Company 2</option>
+											<option value="3">Company 3</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6 col-lg">
+									<div class="mb-3">
+										<label class="form-label">Department</label>
+										<select class="customSelect" disabled>
+											<option value="0">Select</option>
+											<option value="1" selected>HEALTHCARE EAM</option>
+											<option value="2">Department 2</option>
+											<option value="3">Department 3</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6 col-lg">
+									<div class="mb-3">
+										<label class="form-label">Sub Process</label>
+										<select class="customSelect" disabled>
+											<option value="0">Select</option>
+											<option value="1" selected>HEALTHCARE EAM OVERALL</option>
+											<option value="2">Sub Process 2</option>
+											<option value="3">Sub Process 3</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6 col-lg">
+									<div class="mb-3">
+										<label class="form-label">Category</label>
+										<input type="text" class="form-control">
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-12">
+									<div class="table-responsive">
+										<table class="table table-style-1">
+											<thead>
+												<tr>
+													<th width="60" class="text-center">Sr.No</th>
+													<th>Company</th>
+													<th>Department </th>
+													<th>Subprocess</th>
+													<th>Category</th>
+													<th class="text-center">Action</th>
+
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td class="text-center">1</td>
+													<td>Sagility India</td>
+													<td>HEALTHCARE EAM </td>
+													<td>HEALTHCARE EAM OVERALL</td>
+													<td>Category 1</td>
+													<td class="text-center action-col">
+														<a href="javascript:;" class="dropdown"
+															data-bs-toggle="dropdown" aria-expanded="false">
+															<i class="bi bi-three-dots"></i>
+														</a>
+														<ul class="dropdown-menu mt-2">
+															<li>
+																<a href="add-subcategory.html" class="dropdown-item">
+																	Add Sub Category
+																</a>
+															</li>
+															<li>
+																<a href="add-activity.html" class="dropdown-item">
+																	Add Activity
+																</a>
+															</li>
+															<li>
+																<a href="javascript:;" class="dropdown-item">
+																	Edit
+																</a>
+															</li>
+															<li>
+																<a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal">
+																	Delete
+																</a>
+															</li>
+														</ul>
+													</td>
+												</tr>
+												<tr>
+													<td class="text-center">2</td>
+													<td>Sagility India</td>
+													<td>HEALTHCARE EAM </td>
+													<td>HEALTHCARE EAM OVERALL</td>
+													<td>Category 2</td>
+													<td class="text-center action-col">
+														<a href="javascript:;" class="dropdown"
+															data-bs-toggle="dropdown" aria-expanded="false">
+															<i class="bi bi-three-dots"></i>
+														</a>
+														<ul class="dropdown-menu mt-2">
+															<li>
+																<a href="add-subcategory.html" class="dropdown-item">
+																	Add Sub Category
+																</a>
+															</li>
+															<li>
+																<a href="add-activity.html" class="dropdown-item">
+																	Add Activity
+																</a>
+															</li>
+															<li>
+																<a href="javascript:;" class="dropdown-item">
+																	Edit
+																</a>
+															</li>
+															<li>
+																<a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal">
+																	Delete
+																</a>
+															</li>
+														</ul>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Footer -->
+		<script src="assets/js/footer.js" type="text/javascript"></script>
+		<!-- Footer -->
+
+	</div>
+
+	<!-- Modal -->
+	<div class="modal fade icon-modal" id="logoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="logoutModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body text-center">
+					<h2 class="icon-text text-danger"><i class="bi bi-box-arrow-right"></i></h2>
+					<h5 class="main-text mb-4">Are you sure you want to logout?</h5>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Yes</button>
+					<button type="button" class="btn btn-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+<div class="modal fade icon-modal" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body text-center">
+			<a href="javascript:;" class="btn-close" title="Close" data-bs-dismiss="modal"></a>
+			<img src="assets/images/delete-icon.svg" class="mb-4" />
+			<h5 class="main-text mb-3">
+				Are you sure you want to delete this record?
+			</h5>
+			<h6 class="mb-4">
+				All the associated data will be lost.
+			</h6>
+			<div class="text-center">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Yes</button>
+				<button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
