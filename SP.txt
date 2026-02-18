@@ -1,0 +1,291 @@
+USE [DUnifiedApps]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ABC_PRC_Category_Delete]    Script Date: 19-02-2026 02:01:35 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[ABC_PRC_Category_Delete]
+(
+    @CategoryId INT,
+    @DeletedBy VARCHAR(200) = NULL,
+    @DeletedIPAddress VARCHAR(50) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1 
+        FROM ABC_CategoryMaster 
+        WHERE CategoryId = @CategoryId 
+        AND ISNULL(DeletedFlag,0) = 0
+    )
+    BEGIN
+        UPDATE ABC_CategoryMaster
+        SET 
+            DeletedFlag = 1,
+            DeletedDateTime = GETDATE(),
+            DeletedBy = @DeletedBy,
+            DeletedIPAddress = @DeletedIPAddress
+        WHERE CategoryId = @CategoryId;
+
+        SELECT 'SUCCESS' AS Status, 'Category deleted successfully' AS Message;
+    END
+    ELSE
+    BEGIN
+        SELECT 'FAILED' AS Status, 'Category not found or already deleted' AS Message;
+    END
+END
+GO
+
+
+USE [DUnifiedApps]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ABC_PRC_Category_Update]    Script Date: 19-02-2026 01:58:03 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[ABC_PRC_Category_Update]
+(
+    @CategoryId INT,
+    @CategoryName NVARCHAR(200),
+    @CategoryCode NVARCHAR(50) = NULL,
+    @CompanyCode VARCHAR(100) = NULL,
+    @DepartmentCode VARCHAR(100) = NULL,
+    @SubprocessCode VARCHAR(100) = NULL,
+    @ModifiedBy VARCHAR(200) = NULL,
+    @ModifiedIPAddress VARCHAR(50) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1 
+        FROM ABC_CategoryMaster 
+        WHERE CategoryId = @CategoryId 
+        AND ISNULL(DeletedFlag,0) = 0
+    )
+    BEGIN
+        UPDATE ABC_CategoryMaster
+        SET 
+            CategoryName = @CategoryName,
+            CategoryCode = @CategoryCode,
+            CompanyCode = @CompanyCode,
+            DepartmentCode = @DepartmentCode,
+            SubprocessCode = @SubprocessCode,
+            ModifiedBy = @ModifiedBy,
+            ModifiedIPAddress = @ModifiedIPAddress,
+            ModifiedDateTime = GETDATE()
+        WHERE CategoryId = @CategoryId;
+
+        SELECT 'SUCCESS' AS Status, 'Category updated successfully' AS Message;
+    END
+    ELSE
+    BEGIN
+        SELECT 'FAILED' AS Status, 'Category not found or already deleted' AS Message;
+    END
+END
+GO
+
+USE [DUnifiedApps]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ABC_PRC_Activity_Delete]    Script Date: 19-02-2026 02:02:54 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[ABC_PRC_Activity_Delete]
+(
+    @ActivityId INT,
+    @DeletedBy VARCHAR(200) = NULL,
+    @DeletedIPAddress VARCHAR(50) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM ABC_ActivityMaster
+        WHERE ActivityId = @ActivityId
+        AND ISNULL(DeletedFlag,0) = 0
+    )
+    BEGIN
+        UPDATE ABC_ActivityMaster
+        SET
+            DeletedFlag = 1,
+            DeletedDateTime = GETDATE(),
+            DeletedBy = @DeletedBy,
+            DeletedIPAddress = @DeletedIPAddress
+        WHERE ActivityId = @ActivityId;
+
+        SELECT 'SUCCESS' AS Status, 'Activity deleted successfully' AS Message;
+    END
+    ELSE
+    BEGIN
+        SELECT 'FAILED' AS Status, 'Activity not found or already deleted' AS Message;
+    END
+END
+GO
+
+
+USE [DUnifiedApps]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ABC_PRC_Activity_Update]    Script Date: 19-02-2026 02:03:18 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[ABC_PRC_Activity_Update]
+(
+    @ActivityId INT,
+    @ActivityName NVARCHAR(200),
+    @ActivityCode NVARCHAR(50) = NULL,
+    @CategoryCode NVARCHAR(100) = NULL,
+    @SubCategoryCode NVARCHAR(50) = NULL,
+    @ModifiedBy VARCHAR(200) = NULL,
+    @ModifiedIPAddress VARCHAR(50) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM ABC_ActivityMaster
+        WHERE ActivityId = @ActivityId
+        AND ISNULL(DeletedFlag,0) = 0
+    )
+    BEGIN
+        UPDATE ABC_ActivityMaster
+        SET
+            ActivityName = @ActivityName,
+            ActivityCode = @ActivityCode,
+            CategoryCode = @CategoryCode,
+            SubCategoryCode = @SubCategoryCode,
+            ModifiedBy = @ModifiedBy,
+            ModifiedIPAddress = @ModifiedIPAddress,
+            ModifiedDateTime = GETDATE()
+        WHERE ActivityId = @ActivityId;
+
+        SELECT 'SUCCESS' AS Status, 'Activity updated successfully' AS Message;
+    END
+    ELSE
+    BEGIN
+        SELECT 'FAILED' AS Status, 'Activity not found or already deleted' AS Message;
+    END
+END
+GO
+
+
+USE [DUnifiedApps]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ABC_PRC_SubCategory_Update]    Script Date: 19-02-2026 02:04:22 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[ABC_PRC_SubCategory_Update]
+(
+    @SubCategoryId INT,
+    @SubCategoryName NVARCHAR(200),
+    @SubCategoryCode NVARCHAR(50) = NULL,
+    @CategoryCode NVARCHAR(50) = NULL,
+    @ModifiedBy VARCHAR(200) = NULL,
+    @ModifiedIPAddress VARCHAR(50) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1 
+        FROM ABC_SubCategoryMaster
+        WHERE SubCategoryId = @SubCategoryId
+        AND ISNULL(DeletedFlag,0) = 0
+    )
+    BEGIN
+        UPDATE ABC_SubCategoryMaster
+        SET
+            SubCategoryName = @SubCategoryName,
+            SubCategoryCode = @SubCategoryCode,
+            CategoryCode = @CategoryCode,
+            ModifiedBy = @ModifiedBy,
+            ModifiedIPAddress = @ModifiedIPAddress,
+            ModifiedDateTime = GETDATE()
+        WHERE SubCategoryId = @SubCategoryId;
+
+        SELECT 'SUCCESS' AS Status, 'SubCategory updated successfully' AS Message;
+    END
+    ELSE
+    BEGIN
+        SELECT 'FAILED' AS Status, 'SubCategory not found or already deleted' AS Message;
+    END
+END
+GO
+
+
+USE [DUnifiedApps]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ABC_PRC_SubCategory_Delete]    Script Date: 19-02-2026 02:04:33 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[ABC_PRC_SubCategory_Delete]
+(
+    @SubCategoryId INT,
+    @DeletedBy VARCHAR(200) = NULL,
+    @DeletedIPAddress VARCHAR(50) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1 
+        FROM ABC_SubCategoryMaster
+        WHERE SubCategoryId = @SubCategoryId
+        AND ISNULL(DeletedFlag,0) = 0
+    )
+    BEGIN
+        UPDATE ABC_SubCategoryMaster
+        SET
+            DeletedFlag = 1,
+            DeletedDateTime = GETDATE(),
+            DeletedBy = @DeletedBy,
+            DeletedIPAddress = @DeletedIPAddress
+        WHERE SubCategoryId = @SubCategoryId;
+
+        SELECT 'SUCCESS' AS Status, 'SubCategory deleted successfully' AS Message;
+    END
+    ELSE
+    BEGIN
+        SELECT 'FAILED' AS Status, 'SubCategory not found or already deleted' AS Message;
+    END
+END
+GO
+
+
+
