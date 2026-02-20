@@ -1,12 +1,404 @@
-Select b.Cmb_hreid as AssociateId,b.Txt_User_id as userId,x.fname+' '+x.lname as AssociateName,count(distinct b.Audit_No) as Total                                    
- ,ceiling(count(distinct b.Audit_No)*1) AS PERCENT1
- ,u.skill_set                
- From Audit_input_V2 a 
- inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved='Y' 
- JOIN Emp_Master x ON a.Cmb_hreid=x.hreid             
- left join userlist u on a.cmb_hreid=u.userid  
- where b.delete_flag='n'  AND b.Audit_Date >= '01/01/2022' AND b.Audit_Date <= DATEADD(DAY,1,'12/31/2022') group by b.Cmb_hreid,b.Txt_User_id,x.fname+' '+x.lname,u.skill_set
+ALTER PROCEDURE PRC_GET_AUDIT_SAMPLING_DATA_V1                         
+(                          
+    @FROMDate varchar(50),                          
+    @TODate varchar(50),                          
+    @phase varchar(50),                          
+    @audittype varchar(50),                          
+    @filtertype varchar(50),                          
+    @billtype varchar(50),                         
+    @billcode varchar(50),                          
+    @Clientid varchar(50),                          
+    @billform varchar(50),                          
+    @billmode varchar(50),                          
+    @Min_Charge_Amount float=0,                          
+    @Max_Charge_Amount float=0,                          
+    @assigner_id varchar(50),                          
+    @PERC float=100,                          
+    @hreid varchar(50)=null,
+    @received_type varchar(50)=null                        
+)                          
+AS                          
+BEGIN                          
+    
+    DECLARE @PERC1 float
+    DECLARE @sql nvarchar(max)
+    
+    SET @PERC1 = @PERC                          
+    SET @PERC = @PERC/100                              
+                          
+    -- NULL checks
+    IF @FROMDate='NULL' OR @FROMDate=''                          
+        SET @FROMDate = NULL                           
+                          
+    IF @TODate='NULL' OR @TODate=''                          
+        SET @TODate = NULL                           
+                          
+    IF @phase='NULL' OR @phase='' OR @phase='all'                          
+        SET @phase = NULL                           
+                          
+    IF @audittype='NULL' OR @audittype='' OR @audittype='all'                          
+        SET @audittype = NULL                           
+                          
+    IF @filtertype='NULL' OR @filtertype=''                          
+        SET @filtertype = NULL                           
+                          
+    IF @billtype='NULL' OR @billtype=''                          
+        SET @billtype = NULL                           
 
-(330 rows affected)
+    IF @billcode='NULL' OR @billcode=''                          
+        SET @billcode = NULL                           
+                          
+    IF @Clientid='NULL' OR @Clientid=''                          
+        SET @Clientid = NULL                           
+                          
+    IF @billform='NULL' OR @billform=''                          
+        SET @billform = NULL                           
+                          
+    IF @billmode='NULL' OR @billmode=''                          
+        SET @billmode = NULL                           
 
-Completion time: 2026-02-20T16:50:27.8551991+05:30
+    IF @received_type='NULL' OR @received_type=''
+        SET @received_type = NULL
+
+    -- =============================================
+    -- ASSOCIATE WISE SUMMARY (@hreid is null)
+    -- =============================================
+    IF (@filtertype='Associate' AND @hreid IS NULL)                                    
+    BEGIN
+        SET @sql = 'Select 
+            b.Cmb_hreid as AssociateId,
+            b.Txt_User_id as userId,
+            x.fname+'' ''+x.lname as AssociateName,
+            count(distinct b.Audit_No) as Total,
+            ceiling(count(distinct b.Audit_No)*'+ CAST(@Perc AS nvarchar)+') AS PERCENT1,
+            
+            (select count(distinct audit_no) from audit_inputsummary_v2 c              
+            where c.delete_flag=''n''  
+            AND c.Audit_Date >= '''+ISNULL(@FROMDate,'01/01/1900')+'''
+            AND c.Audit_Date <= DATEADD(DAY,1,'''+ISNULL(@TODate,'12/31/9999')+''')               
+            and c.Cmb_hreid=b.Cmb_hreid 
+            and c.billreviewASSIGNEDTO is not null) as billreviewASSIGNEDTO,
+            
+            (select count(distinct audit_no) from audit_inputsummary_v2 c              
+            where c.delete_flag=''n''  
+            AND c.Audit_Date >= '''+ISNULL(@FROMDate,'01/01/1900')+'''
+            AND c.Audit_Date <= DATEADD(DAY,1,'''+ISNULL(@TODate,'12/31/9999')+''')               
+            and c.Cmb_hreid=b.Cmb_hreid 
+            and c.codereviewASSIGNEDTO is not null) as codereviewASSIGNEDTO,
+            
+            (select count(distinct audit_no) from audit_inputsummary_v2 c              
+            where c.delete_flag=''n''  
+            AND c.Audit_Date >= '''+ISNULL(@FROMDate,'01/01/1900')+'''
+            AND c.Audit_Date <= DATEADD(DAY,1,'''+ISNULL(@TODate,'12/31/9999')+''')               
+            and c.Cmb_hreid=b.Cmb_hreid 
+            and c.nursereviewASSIGNEDTO is not null) as nursereviewASSIGNEDTO,
+            
+            u.skill_set                
+            From Audit_input_V2 a 
+            inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' 
+            JOIN Emp_Master x ON a.Cmb_hreid=x.hreid             
+            left join userlist u on a.cmb_hreid=u.userid  
+            where b.delete_flag=''n'' '
+
+        -- Filters
+        IF @FROMDate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date >= '''+@FROMDate+''''
+        
+        IF @TODate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')'
+        
+        IF @phase IS NOT NULL
+            SET @sql = @sql + ' AND b.PHASE_NAME IN ('''+@phase+''')'
+        
+        IF @audittype IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_TYPE IN ('''+@audittype+''')'
+        
+        IF @billtype IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_TYPE IN ('''+@billtype+''')'
+        
+        IF @received_type IS NOT NULL
+            SET @sql = @sql + ' AND b.received_type IN ('''+@received_type+''')'
+        
+        IF @billcode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_CODE IN ('''+@billcode+''')'
+        
+        IF @Clientid IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_CLIENT_ID IN ('''+@Clientid+''')'
+        
+        IF @billform IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_FORM1 IN ('''+@billform+''')'
+        
+        IF @billmode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_MODE IN ('''+@billmode+''')'
+        
+        IF @Min_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) >= '+CAST(@Min_Charge_Amount AS nvarchar)
+        
+        IF @Max_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) <= '+CAST(@Max_Charge_Amount AS nvarchar)
+        
+        SET @sql = @sql + ' group by b.Cmb_hreid,b.Txt_User_id,x.fname+'' ''+x.lname,u.skill_set'
+    END
+
+    -- =============================================
+    -- ASSOCIATE WISE DETAIL (@hreid is not null)
+    -- =============================================
+    IF (@filtertype='Associate' AND @hreid IS NOT NULL)                                    
+    BEGIN
+        SET @sql = 'Select distinct TOP '+CAST(@PERC1 AS nvarchar)+' PERCENT 
+            b.Audit_No,
+            b.cmb_bill_code+b.cmb_client_id+''-''+b.txt_bill_id as billid,
+            b.received_type,
+            b.NurseReviewAssignedto,
+            b.CodeReviewAssignedto,
+            b.BillReviewAssignedto,
+            b.Cmb_hreid,
+            b.Txt_User_id,
+            x.fname+'' ''+x.lname as AssociateName,
+            b.Phase_Name,                          
+            b.Audit_Type,
+            b.Auditor_id,
+            Convert(Varchar(10),b.Audit_Date,101) As Audit_Date,
+            b.Audit_Status,
+            b.IsAudited,
+            y.fname+'' ''+y.lname as AuditorName                          
+            From Audit_input_V2 a 
+            inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' 
+            Inner Join Emp_Master x ON b.Cmb_hreid=x.hreid 
+            JOIN Emp_Master y ON b.Auditor_id=y.hreid  
+            where b.delete_flag=''n'' 
+            and b.Cmb_hreid='''+@hreid+''' '
+
+        IF @FROMDate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date >= '''+@FROMDate+''''
+        
+        IF @TODate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')'
+
+        IF @phase IS NOT NULL
+            SET @sql = @sql + ' AND b.PHASE_NAME IN ('''+@phase+''')'
+        
+        IF @audittype IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_TYPE IN ('''+@audittype+''')'
+
+        IF @billtype IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_TYPE IN ('''+@billtype+''')'
+
+        IF @received_type IS NOT NULL
+            SET @sql = @sql + ' AND b.received_type IN ('''+@received_type+''')'
+
+        IF @billcode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_CODE IN ('''+@billcode+''')'
+
+        IF @Clientid IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_CLIENT_ID IN ('''+@Clientid+''')'
+
+        IF @billform IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_FORM1 IN ('''+@billform+''')'
+
+        IF @billmode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_MODE IN ('''+@billmode+''')'
+
+        IF @Min_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) >= '+CAST(@Min_Charge_Amount AS nvarchar)
+
+        IF @Max_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) <= '+CAST(@Max_Charge_Amount AS nvarchar)
+
+        SET @sql = @sql + ' order by b.NurseReviewAssignedto,b.CodeReviewAssignedto,b.BillReviewAssignedto desc'
+    END
+
+    -- =============================================
+    -- AUDITOR WISE SUMMARY (@hreid is null)
+    -- =============================================
+    IF (@filtertype='Auditor' AND @hreid IS NULL)                           
+    BEGIN
+        SET @sql = 'Select 
+            b.Auditor_Id as Auditor_Id,
+            x.fname+'' ''+x.lname as AuditorName,
+            count(distinct b.Audit_No) as Total,
+            ceiling(count(distinct b.Audit_No)*'+CAST(@Perc AS nvarchar)+') AS PERCENT1,
+            
+            (select count(distinct audit_no) from audit_inputsummary_v2 c              
+            where c.delete_flag=''n''  
+            AND c.Audit_Date >= '''+ISNULL(@FROMDate,'01/01/1900')+'''
+            AND c.Audit_Date <= DATEADD(DAY,1,'''+ISNULL(@TODate,'12/31/9999')+''')               
+            and c.auditor_id=b.auditor_id 
+            and c.billreviewASSIGNEDTO is not null) as billreviewASSIGNEDTO,
+            
+            (select count(distinct audit_no) from audit_inputsummary_v2 c              
+            where c.delete_flag=''n''  
+            AND c.Audit_Date >= '''+ISNULL(@FROMDate,'01/01/1900')+'''
+            AND c.Audit_Date <= DATEADD(DAY,1,'''+ISNULL(@TODate,'12/31/9999')+''')               
+            and c.auditor_id=b.auditor_id 
+            and c.codereviewASSIGNEDTO is not null) as codereviewASSIGNEDTO,
+            
+            (select count(distinct audit_no) from audit_inputsummary_v2 c              
+            where c.delete_flag=''n''  
+            AND c.Audit_Date >= '''+ISNULL(@FROMDate,'01/01/1900')+'''
+            AND c.Audit_Date <= DATEADD(DAY,1,'''+ISNULL(@TODate,'12/31/9999')+''')               
+            and c.auditor_id=b.auditor_id 
+            and c.nursereviewASSIGNEDTO is not null) as nursereviewASSIGNEDTO,
+            
+            u.skill_set                          
+            From Audit_input_V2 a 
+            inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' 
+            JOIN Emp_Master x ON b.Auditor_Id=x.hreid              
+            left join userlist u on b.Auditor_Id=u.userid 
+            where b.delete_flag=''n'' '
+
+        IF @FROMDate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date >= '''+@FROMDate+''''
+        
+        IF @TODate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')'
+        
+        IF @phase IS NOT NULL
+            SET @sql = @sql + ' AND b.PHASE_NAME IN ('''+@phase+''')'
+        
+        IF @audittype IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_TYPE IN ('''+@audittype+''')'
+        
+        IF @billtype IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_TYPE IN ('''+@billtype+''')'
+
+        IF @received_type IS NOT NULL
+            SET @sql = @sql + ' AND b.received_type IN ('''+@received_type+''')'
+        
+        IF @billcode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_CODE IN ('''+@billcode+''')'
+        
+        IF @Clientid IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_CLIENT_ID IN ('''+@Clientid+''')'
+        
+        IF @billform IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_FORM1 IN ('''+@billform+''')'
+        
+        IF @billmode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_MODE IN ('''+@billmode+''')'
+        
+        IF @Min_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) >= '+CAST(@Min_Charge_Amount AS nvarchar)
+        
+        IF @Max_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) <= '+CAST(@Max_Charge_Amount AS nvarchar)
+        
+        SET @sql = @sql + ' group by b.Auditor_Id,x.fname+'' ''+x.lname,u.skill_set'
+    END
+
+    -- =============================================
+    -- AUDITOR WISE DETAIL (@hreid is not null)
+    -- =============================================
+    IF (@filtertype='Auditor' AND @hreid IS NOT NULL)                           
+    BEGIN
+        SET @sql = 'Select distinct TOP '+CAST(@PERC1 AS nvarchar)+' PERCENT 
+            b.Audit_No,
+            b.cmb_bill_code+b.cmb_client_id+''-''+b.txt_bill_id as billid,
+            b.received_type,
+            b.NurseReviewAssignedto,
+            b.CodeReviewAssignedto,
+            b.BillReviewAssignedto,
+            b.Cmb_hreid,
+            b.Txt_User_id,
+            x.fname+'' ''+x.lname as AssociateName,                                    
+            b.Phase_Name,
+            b.Audit_Type,
+            b.Auditor_id,
+            Convert(Varchar(10),b.Audit_Date,101) As Audit_Date,
+            b.Audit_Status,
+            b.IsAudited,                              
+            y.fname+'' ''+y.lname as AuditorName      
+            From Audit_input_V2 a 
+            inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y''           
+            Join Emp_Master x ON b.Cmb_hreid=x.hreid 
+            join Emp_Master y ON b.Auditor_id=y.hreid 
+            where b.delete_flag=''n'' 
+            and b.Auditor_id='''+@hreid+''' '
+
+        IF @FROMDate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date >= '''+@FROMDate+''''
+        
+        IF @TODate IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')'
+
+        IF @phase IS NOT NULL
+            SET @sql = @sql + ' AND b.PHASE_NAME IN ('''+@phase+''')'
+        
+        IF @audittype IS NOT NULL
+            SET @sql = @sql + ' AND b.Audit_TYPE IN ('''+@audittype+''')'
+
+        IF @billtype IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_TYPE IN ('''+@billtype+''')'
+
+        IF @received_type IS NOT NULL
+            SET @sql = @sql + ' AND b.received_type IN ('''+@received_type+''')'
+
+        IF @billcode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_CODE IN ('''+@billcode+''')'
+
+        IF @Clientid IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_CLIENT_ID IN ('''+@Clientid+''')'
+
+        IF @billform IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_FORM1 IN ('''+@billform+''')'
+
+        IF @billmode IS NOT NULL
+            SET @sql = @sql + ' AND b.CMB_BILL_MODE IN ('''+@billmode+''')'
+
+        IF @Min_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) >= '+CAST(@Min_Charge_Amount AS nvarchar)
+
+        IF @Max_Charge_Amount <> 0
+            SET @sql = @sql + ' AND CAST(b.[Txt_REV_Amount] AS float) <= '+CAST(@Max_Charge_Amount AS nvarchar)
+    END
+
+    PRINT @sql                           
+    EXEC (@sql)                          
+                          
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Test 1: Bina filter (data hona chahiye):
+exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
+'01/01/2022','12/31/2022',
+'All','All','Associate',
+'','','','','',
+0,0,'152788',100,null,null
+
+-- Test 2: received_type filter ke saath:
+exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
+'01/01/2022','12/31/2022',
+'All','All','Associate',
+'','','','','',
+0,0,'152788',100,null,'OCR'
+
+-- Test 3: Auditor wise:
+exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
+'01/01/2022','12/31/2022',
+'All','All','Auditor',
+'','','','','',
+0,0,'152788',100,null,null
