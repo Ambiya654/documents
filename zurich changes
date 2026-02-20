@@ -4,3 +4,34 @@ A1000951	Y	Re-Eval	222729	152788	Re-Evaluations	PrePay	2022-08-08 14:48:56.077	N
 A1000952	Y	OCR	246170	152132	Code Review	PostPay	2022-08-08 14:49:30.307	N
 A1000953	Y	OCR	603237	152788	ZNBR	PrePay	2022-08-08 14:50:47.490	N
 A1000954	Y	OCR	603674	210664	Nurse Review	PrePay	2022-08-08 14:52:01.453	N
+
+
+
+
+exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
+'01/01/2022',
+'12/31/2022',
+'All',
+'All',
+'Associate',
+'','','','','',
+0, 0,
+'51486',
+100,
+null
+
+
+
+
+exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
+'01/01/2022',
+'12/31/2022',
+'All',
+'All',
+'Associate',
+'','','','','',
+0, 0,
+'51486',
+100,
+null,
+'OCR'    -- received_type filter
