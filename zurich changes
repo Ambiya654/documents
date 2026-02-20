@@ -1,1241 +1,188 @@
-<%@ Page Title="" Language="C#" MasterPageFile="~/PageMaster.master" AutoEventWireup="true"
-    CodeFile="R1805_ATA_assignement.aspx.cs" Inherits="R1805_ATA_assignement" %>
-
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="Server">
-</asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
-    <link href="Content/css/bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="Content/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <asp:ScriptManager ID="sm" runat="server">
-    </asp:ScriptManager>
-    <style type="text/css">
-        #page-bg
-        {
-            position: absolute;
-            margin: 0 0 0 0px;
-            padding: 0 30px;
-            width: 100%;
-            margin-top: 0%;
-            height: 100%;
-            max-height: 100%;
-            background-color: White;
-        }
-        body
-        {
-            margin-top: 0%;
-        }
-        .cal_Theme1 .ajax__calendar_container
-        {
-            background-color: #DEF1F4;
-            border: solid 1px #77D5F7;
-            width: 201px;
-        }
-        
-        .cal_Theme1 .ajax__calendar_header
-        {
-            background-color: #ffffff;
-            margin-bottom: 4px;
-        }
-        
-        .cal_Theme1 .ajax__calendar_title, .cal_Theme1 .ajax__calendar_next, .cal_Theme1 .ajax__calendar_prev
-        {
-            color: #004080;
-            padding-top: 3px;
-        }
-        
-        .cal_Theme1 .ajax__calendar_body
-        {
-            background-color: #bce8f1;
-            border: solid 1px #77D5F7;
-            color: White;
-        }
-        
-        .cal_Theme1 .ajax__calendar_dayname
-        {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 4px;
-            margin-top: 2px;
-            color: #004080;
-        }
-        
-        .cal_Theme1 .ajax__calendar_day
-        {
-            color: #004080;
-            text-align: center;
-        }
-        
-        
-        .cal_Theme1 .ajax__calendar_hover .ajax__calendar_day, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_month, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_year, .cal_Theme1 .ajax__calendar_active
-        {
-            color: #004080;
-            font-weight: bold;
-            background-color: #DEF1F4;
-        }
-        
-        .cal_Theme1 .ajax__calendar_today
-        {
-            font-weight: bold;
-        }
-        
-        .cal_Theme1 .ajax__calendar_other, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_today, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_title
-        {
-            color: #bbbbbb;
-        }
-        .cal_Theme1
-        {
-            position: absolute;
-            z-index: 1000;
-        }
-        .heading
-        {
-            color: rgba(255, 255, 255, 1);
-        }
-        .heading1
-        {
-            color: rgba(255, 255, 265, 1);
-            font-family: @GungsuhChe;
-            font-size: medium;
-        }
-        .heading3
-        {
-            color: rgba(49, 166, 201, 1);
-            font-family: @BatangChe;
-            font-size: large;
-        }
-        .bodyShadow
-        {
-            box-shadow: 10px 10px 29px 1px rgba(0,0,0,0.4);
-        }
-        .bodyShadow1
-        {
-            box-shadow: 10px 10px 29px 1px rgba(0,0,0,0.2);
-        }
-        .txt
-        {
-            background-color: rgba(32, 108, 131, 1);
-            color: White;
-        }
-        .pnl
-        {
-            background-color: #3498DB;
-            color: White;
-            font-family: @MS PMincho;
-            border-radius: 15px 15px 15px 15px;
-        }
-        .hr:before
-        {
-            /* Not really supposed to work, but does */
-            display: block;
-            content: "";
-            height: 30px;
-            margin-top: -31px;
-            border-style: solid;
-            border-color: black;
-            border-width: 0 0 1px 0;
-            border-radius: 20px;
-        }
-        .hr1
-        {
-            height: 30px;
-            border-style: solid;
-            border-color: #2471A3;
-            border-width: 5px 0 0 0;
-            border-radius: 20px;
-        }
-        .style-seven
-        {
-            /* Not really supposed to work, but does */
-            display: block;
-            content: "";
-            height: 30px;
-            border-style: solid;
-            border-color: #2471A3;
-            border-width: 0 0 5px 0;
-            border-radius: 20px;
-        }
-        .btn.btn-primary_test
-        {
-            color: #2B669A;
-            background-color: #428BCA;
-            background-image: linear-gradient(to bottom, #ffffff, #ffffff);
-            border-color: #2B669A #2B669A #2B669A;
-        }
-        .btn.btn-primary_test:hover
-        {
-            color: #ffffff;
-            background-color: #2D6CA2;
-            background-image: linear-gradient(to bottom, #2D6CA2, #2D6CA2);
-            border-color: #2B669A #2B669A #2B669A;
-            box-shadow: 10px 10px 29px 1px rgba(0,0,0,0.2);
-        }
-        .modalBackground
-        {
-            background-color: Black;
-            filter: alpha(opacity=90);
-            opacity: 0.8;
-        }
-        .modalPopup
-        {
-            background-color: #FFFFFF;
-            border-width: 3px;
-            border-style: solid;
-            border-color: black;
-            padding-top: 10px;
-            padding-left: 10px;
-            width: 300px;
-            height: 140px;
-        }
-    </style>
-    <div id="page-bg" class="jumbotron">
-        <asp:UpdatePanel ID="up1" runat="server">
-            <ContentTemplate>
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-xs-12" style="margin-left: 0%;">
-                        <div class="pnl">
-                            <div class="panel-body text-center  bodyShadow">
-                                <div class="row">
-                                    <div class=" col-lg-12 col-md-12 col-sm-12 " runat="server" id="divDummy" visible="false">
-                                        <div class="form-group input-group  has-feedback">
-                                            <div class=" col-lg-3 col-md-3 col-sm-3 ">
-                                                <div class="form-group input-group ">
-                                                    <span class="input-group-addon labelcolor">PR : </span>
-                                                    <asp:DropDownList runat="server" ID="ddlPR" class="form-control  input-sm">
-                                                    </asp:DropDownList>
-                                                </div>
-                                            </div>
-                                            <div class=" col-lg-1 col-md-1 col-sm-1 ">
-                                                <asp:Button runat="server" ID="btnView" Text="View" CssClass="btn btn-primary_test" />
-                                            </div>
-                                            <div class=" col-lg-3 col-md-3 col-sm-3 ">
-                                                <div class="form-group input-group ">
-                                                    <span class="input-group-addon labelcolor">Process : </span>
-                                                    <asp:DropDownList runat="server" ID="ddlcategory" class="form-control  input-sm">
-                                                    </asp:DropDownList>
-                                                </div>
-                                            </div>
-                                            <div class=" col-lg-3 col-md-3 col-sm-3 ">
-                                                <div class="form-group input-group ">
-                                                    <span class="input-group-addon labelcolor">Week : </span>
-                                                    <asp:DropDownList runat="server" ID="ddlWeek" class="form-control  input-sm">
-                                                    </asp:DropDownList>
-                                                </div>
-                                            </div>
-                                            <div class=" col-lg-2 col-md-2 col-sm-2 ">
-                                                <asp:Button runat="server" ID="btnAssign" Text="Assign" OnClientClick="return TestCheckBoxcorr();"
-                                                    CssClass="btn btn-primary_test" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <table>
-                                    <tr>
-                                        <td align="left" style="padding: 15px">
-                                            <asp:Label runat="server" Text="From Date " Visible="false" CssClass="label label-info bodyShadow"
-                                                ID="Label1"></asp:Label>
-                                            <asp:TextBox runat="server" ID="txtFromDate" Visible="false" CssClass="form-control input"
-                                                size="15" Width="150" BackColor="#ffffff" TabIndex="3" />
-                                            <%--<cc1:calendarextender runat="server" id="calExtender1" targetcontrolid="txtFromDate"
-                                                format="MM/dd/yyyy" popupbuttonid="Txt_Batch_Date" />--%>
-                                        </td>
-                                        <td align="left" style="padding: 15px">
-                                            <asp:Label runat="server" Text="To Date " Visible="false" CssClass="label label-info bodyShadow"
-                                                ID="lblTodate"></asp:Label>
-                                            <asp:TextBox runat="server" ID="txtToDate" Visible="false" CssClass="form-control input"
-                                                size="15" Width="150" BackColor="#ffffff" TabIndex="3" />
-                                            <%--<cc1:calendarextender runat="server" id="calExtender11" targetcontrolid="txtToDate"
-                                                format="MM/dd/yyyy" popupbuttonid="Txt_Batch_Date" />--%>
-                                            <asp:Label runat="server" Visible="false" Text="Audit Status" CssClass="label label-info bodyShadow"
-                                                ID="Label3"></asp:Label>
-                                            <asp:DropDownList runat="server" Visible="false" ID="ddlStatus" CssClass="form-control input"
-                                                Width="300">
-                                                <asp:ListItem Text="Correct" Value="Correct"></asp:ListItem>
-                                                <asp:ListItem Text="Incorrect" Value="Incorrect"></asp:ListItem>
-                                            </asp:DropDownList>
-                                        </td>
-                                        <td align="left" style="padding: 15px">
-                                        </td>
-                                        <td align="left" style="padding: 15px" colspan="6">
-                                            <asp:Label runat="server" Text="Select Skill Set" CssClass="label label-info bodyShadow"
-                                                ID="Label4"></asp:Label>
-                                            <asp:DropDownList runat="server" ID="ddlSkillSet" CssClass="form-control input" Width="210"
-                                                OnSelectedIndexChanged="ddlSkillSet_OnSelectedIndexChanged" AutoPostBack="true">
-                                                <asp:ListItem Text="Nurse Review" Value="Nurse Review"></asp:ListItem>
-                                                <asp:ListItem Text="Code Review" Value="Code Review"></asp:ListItem>
-                                                <asp:ListItem Text="Bill Review" Value="Bill Review"></asp:ListItem>
-                                            </asp:DropDownList>
-                                        </td>
-                                        <td align="left" style="padding: 15px" colspan="6">
-                                            <asp:Label runat="server" Text="Select Auditor" CssClass="label label-info bodyShadow"
-                                                ID="Label2"></asp:Label>
-                                            <asp:DropDownList runat="server" ID="ddluserids" CssClass="form-control input" Width="210">
-                                            </asp:DropDownList>
-                                        </td>
-                                        <td align="left" style="padding: 15px">
-                                            <asp:Button runat="server" ID="Button1" Text="Submit" CssClass="btn btn-default"
-                                                Font-Bold="true" CausesValidation="false" OnClick="Btn_Save_Click" />
-                                            <asp:Button runat="server" ID="Btn_Back" Text="Back" CssClass="btn btn-default" Font-Bold="true"
-                                                CausesValidation="false" OnClick="btnBack_Click" PostBackUrl="~/R1805_ATAEntry.aspx?Q=1" />
-                                        </td>
-                                    </tr>
-                                </table>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-xs-12 ">
-                                        <asp:GridView ID="gvAuditReport" runat="server" BackColor="white" ForeColor="#2E86C1"
-                                            OnRowDataBound="gvAuditReport_RowDataBound" AutoGenerateColumns="False" BorderColor="#CCFF66"
-                                            BorderStyle="Inset" CssClass="table table-bordered" BorderWidth="1px" CellPadding="1"
-                                            ShowFooter="True" Font-Names="DokChampa" Font-Size="Small" HorizontalAlign="Center"
-                                            CellSpacing="1" Width="100%" Style="overflow: hidden; height: auto;" OnRowCommand="gvAuditReport_RowCommand">
-                                            <Columns>
-                                                <asp:TemplateField HeaderText="#" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <%# Container.DataItemIndex +1 %>
-                                                        <%--       <asp:Label ID="lblId" runat="server" Text='<%# Eval("Row_No") %>' Visible="false"></asp:Label>--%>
-                                                    </ItemTemplate>
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Audit No" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAuditNo" Text='<%#Eval("Audit_No") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Bill Id" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblbillid" Text='<%#Eval("billid") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Phase Name" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblPhaseName" Text='<%#Eval("Phase_Name") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Audit Type" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAuditType" Text='<%#Eval("Audit_Type") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="UserId" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblUserId" Text='<%#Eval("txt_User_Id") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Associate Id" HeaderStyle-HorizontalAlign="Left" Visible="false">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAssociateId" Text='<%#Eval("Cmb_hreid") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Associate Name" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAssociateName" Text='<%#Eval("AssociateName") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Auditor Id" HeaderStyle-HorizontalAlign="Left" Visible="false">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAuditorId" Text='<%#Eval("Auditor_Id") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Auditor Name" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAuditorName" Text='<%#Eval("AuditorName") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Audited Date" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAuditedDate" Text='<%#Eval("Audit_Date") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Audit Status" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblIsAudited" Visible="false" Text='<%#Eval("IsAudited") %>' />
-                                                        <asp:Label runat="server" ID="lblAuditStatus" Text='<%#Eval("Audit_Status") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <%--                                                <asp:TemplateField HeaderText="Assigned to" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblAssignedto" Text='<%#Eval("Assigned_to") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>--%>
-                                                <asp:TemplateField HeaderText="Nurse Review Assigned to" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblNurseReviewAssignedto" Text='<%#Eval("NurseReviewAssignedto") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Code Review Assigned to" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblCodeReviewAssignedto" Text='<%#Eval("CodeReviewAssignedto") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Bill Review Assigned to" HeaderStyle-HorizontalAlign="Left">
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server" ID="lblBillReviewAssignedto" Text='<%#Eval("BillReviewAssignedto") %>' />
-                                                    </ItemTemplate>
-                                                    <ItemStyle HorizontalAlign="Left" />
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Number" Visible="false">
-                                                    <HeaderTemplate>
-                                                        <span>Enter Number : </span>
-                                                        <asp:TextBox runat="server" Style="color: Black;" MaxLength="4" ID="htxtNumber" onkeyup="GetGroup();"
-                                                            onkeypress="return isNumber(event)" CssClass="input-sm"></asp:TextBox>
-                                                    </HeaderTemplate>
-                                                    <ItemTemplate>
-                                                        <asp:TextBox runat="server" ID="txtNumber" MaxLength="4" onkeypress="return isNumber(event)"
-                                                            CssClass="input-sm"></asp:TextBox>
-                                                    </ItemTemplate>
-                                                    <FooterTemplate>
-                                                        <asp:Label ID="lblFotTotClaimProcessing" runat="server" Font-Bold="true" Font-Size="Small"></asp:Label>
-                                                    </FooterTemplate>
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Move">
-                                                    <%--<ItemTemplate>
-                                                        <asp:Button runat="server" ID="btnProcess" Text="Assign" CommandName="Assign" CommandArgument='<%#Container.DataItemIndex%>' />
-                                                    </ItemTemplate>--%>
-                                                    <HeaderTemplate>
-                                                        <asp:CheckBox ID="checkAll" runat="server" onclick="checkAll(this);" />
-                                                    </HeaderTemplate>
-                                                    <ItemTemplate>
-                                                        <asp:CheckBox ID="CheckBox1" runat="server" onclick="Check_Click(this)" />
-                                                    </ItemTemplate>
-                                                </asp:TemplateField>
-                                            </Columns>
-                                            <HeaderStyle BackColor="#2471A3" ForeColor="White" />
-                                            <FooterStyle BackColor="#2471A3" ForeColor="White" />
-                                        </asp:GridView>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="container col-lg-8 col-md-8 col-xs-8 col-lg-offset-2" id="divWarning"
-                                        runat="server" visible="false">
-                                        <div class="alert alert-warning  bodyShadow">
-                                            <strong>Warning!</strong> Data Not Available
-                                        </div>
-                                        <asp:GridView runat="server" ID="gvExcel">
-                                            <HeaderStyle BackColor="#2471A3" ForeColor="White" />
-                                            <FooterStyle BackColor="#2471A3" ForeColor="White" />
-                                        </asp:GridView>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-            </ContentTemplate>
-        </asp:UpdatePanel>
-        <asp:UpdateProgress runat="server" ID="uProgress" AssociatedUpdatePanelID="up1">
-            <ProgressTemplate>
-                <div id="Imgt" style="position: fixed; width: 100%; height: 100%;" align="center"
-                    runat="server" class="divWaiting">
-                    Processing...<br />
-                    <img src="Images\spiffygif_30x30.gif" style="position: static; right: 100px" /><br />
-                </div>
-            </ProgressTemplate>
-        </asp:UpdateProgress>
-    </div>
-    <asp:HiddenField runat="server" ID="txtUserId" />
-    <asp:HiddenField runat="server" ID="txtAssociateId" />
-    <asp:HiddenField runat="server" ID="txtAuditorId" />
-    <asp:HiddenField runat="server" ID="txtEmpName" />
-    <asp:HiddenField runat="server" ID="txtFilterType" />
-    <asp:HiddenField runat="server" ID="txtPhaseName" />
-    <asp:HiddenField runat="server" ID="txtAuditType" />
-    <asp:HiddenField runat="server" ID="txtSmplingperc" />
-    <asp:HiddenField runat="server" ID="txtQuery" />
-    <asp:HiddenField runat="server" ID="clicked_id" />
-    <asp:HiddenField runat="server" ID="strBillType" />
-    <asp:HiddenField runat="server" ID="strBillCode" />
-    <asp:HiddenField runat="server" ID="strClientId" />
-    <asp:HiddenField runat="server" ID="strBillForm" />
-    <asp:HiddenField runat="server" ID="strBillMode" />
-    <asp:HiddenField runat="server" ID="strMinAmount" />
-    <asp:HiddenField runat="server" ID="strMaxAmount" />
-    <asp:HiddenField runat="server" ID="strFromDate" />
-    <asp:HiddenField runat="server" ID="strToDate" />
-    <asp:HiddenField runat="server" ID="strFromTime" />
-    <asp:HiddenField runat="server" ID="strToTime" />
-    <asp:HiddenField runat="server" ID="HiddenField23" />
-    <asp:HiddenField runat="server" ID="HiddenField24" />
-    <asp:HiddenField runat="server" ID="HiddenField25" />
-    <asp:HiddenField runat="server" ID="HiddenField26" />
-    <asp:HiddenField runat="server" ID="HiddenField27" />
-    <script type="text/javascript">
-        //        function GetGroup() {
-        //            var header = $("[id*=htxtNumber]");
-        //            var item = $("[id*=txtNumber]");
-        //            var Result = header.val()
-        //            item.val(Result);
-
-        //        }
-
-    </script>
-    <script type="text/javascript">
-
-        function isNumber(evt) {
-            evt = (evt) ? evt : window.event;
-            var charCode = (evt.which) ? evt.which : evt.keyCode;
-            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-                return false;
-            }
-            return true;
-        }
-    </script>
-    <script type="text/javascript">
-        function Check_Click(objRef) {
-            //Get the Row based on checkbox
-            var row = objRef.parentNode.parentNode;
-            if (objRef.checked) {
-                //If checked change color to Aqua
-                row.style.backgroundColor = "aqua";
-            }
-            else {
-                //If not checked change back to original color
-                if (row.rowIndex % 2 == 0) {
-                    //Alternating Row Color
-                    row.style.backgroundColor = "white";
-                }
-                else {
-                    row.style.backgroundColor = "white";
-                }
-            }
-
-            //Get the reference of GridView
-            var GridView = row.parentNode;
-
-            //Get all input elements in Gridview
-            var inputList = GridView.getElementsByTagName("input");
-
-            for (var i = 0; i < inputList.length; i++) {
-                //The First element is the Header Checkbox
-                var headerCheckBox = inputList[0];
-
-                //Based on all or none checkboxes
-                //are checked check/uncheck Header Checkbox
-                var checked = true;
-                if (inputList[i].type == "checkbox" && inputList[i] != headerCheckBox) {
-                    if (!inputList[i].checked) {
-                        checked = false;
-                        break;
-                    }
-                }
-            }
-            headerCheckBox.checked = checked;
-
-        }
-    </script>
-    <script type="text/javascript">
-        function checkAll(objRef) {
-            var GridView = objRef.parentNode.parentNode.parentNode;
-            var inputList = GridView.getElementsByTagName("input");
-            for (var i = 0; i < inputList.length; i++) {
-                //Get the Cell To find out ColumnIndex
-                var row = inputList[i].parentNode.parentNode;
-                if (inputList[i].type == "checkbox" && objRef != inputList[i]) {
-                    if (objRef.checked) {
-                        //If the header checkbox is checked
-                        //check all checkboxes
-                        //and highlight all rows
-                        row.style.backgroundColor = "aqua";
-                        inputList[i].checked = true;
-                    }
-                    else {
-                        //If the header checkbox is checked
-                        //uncheck all checkboxes
-                        //and change rowcolor back to original
-                        if (row.rowIndex % 2 == 0) {
-                            //Alternating Row Color
-                            row.style.backgroundColor = "white";
-                        }
-                        else {
-                            row.style.backgroundColor = "white";
-                        }
-                        inputList[i].checked = false;
-                    }
-                }
-            }
-        }
-    </script>
-    <script type="text/javascript">
-        function Validate(lnkUpdate) {
-            var txtName, ddlCountries;
-
-            //Find the GridView Row using the LinkButton reference.
-            var row = lnkUpdate.parentNode.parentNode;
-
-            //Fetch all controls in GridView Row.
-            var controls = row.getElementsByTagName("*");
-
-            //Loop through the fetched controls.
-            for (var i = 0; i < controls.length; i++) {
-
-                //Find the TextBox control.
-                if (controls[i].id.indexOf("txtName") != -1) {
-                    txtName = controls[i];
-                }
-
-                //Find the DropDownList control.
-                if (controls[i].id.indexOf("ddlCountries") != -1) {
-                    ddlCountries = controls[i];
-                }
-            }
-            var message = "";
-
-            //Validate the TextBox control.
-            if (txtName.value.replace(/\s/g, '') == "") {
-                message += "Please enter Name.\n";
-            }
-
-            //Validate the DropDownList control.
-            if (ddlCountries.value == "") {
-                message += "Please select Country";
-            }
-
-            //Display error message.
-            if (message != "") {
-                alert(message);
-                return false;
-            }
-            return true;
-        }
-    </script>
-    <script type="text/javascript">
-
-
-        function TestCheckBoxcorr() {
-            var TargetBaseControlcorr = null;
-            var TargetBaseControlcru = null;
-            var flag = false;
-            var ddlcategory = document.getElementById("<%=ddlcategory.ClientID %>");
-            var ddlweek = document.getElementById("<%=ddlWeek.ClientID %>");
-
-
-            if (ddlcategory.value != "-- Select Category --") {
-                if (ddlweek.value != "-- Select Week --") {
-
-                    TargetBaseControlcorr = document.getElementById('<%= this.gvAuditReport.ClientID %>');
-                    if (TargetBaseControlcorr == null) return false;
-
-                    //get target child control.
-                    var TargetChildControl = "CheckBox1";
-                    var TargetChildControl1 = "txtNumber";
-                    var Inputs = TargetBaseControlcorr.getElementsByTagName("input");
-                    for (var n = 0; n < Inputs.length; ++n)
-
-                        if (Inputs[n].type == 'checkbox' && Inputs[n].id.indexOf(TargetChildControl, 0) >= 0 && Inputs[n].checked) {
-
-                            if (Inputs[n - 1].type == 'text' && Inputs[n - 1].id.indexOf(TargetChildControl1, 0) >= 0) {
-                                if (Inputs[n - 1].value.trim() == "" || Number(Inputs[n - 1].value) == "0") {
-                                    Inputs[n - 1].focus();
-                                    alert('Enter valid number!');
-                                    return false;
-
-                                }
-                                else {
-                                    flag = true;
-                                }
-
-                            }
-
-                        }
-
-                    if (!flag) {
-                        alert('Select at least one checkbox!');
-                        return false;
-                    } else {
-
-                    }
-                }
-                else {
-                    ddlweek.focus();
-                    alert("Please select an Week!");
-                    return false;
-                }
-            }
-            else {
-                ddlcategory.focus();
-                alert("Please select an Process!");
-                return false;
-
-            }
-        }
-      
-        
-    </script>
-</asp:Content>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Data.SqlClient;
-using System.Data;
-
-public partial class R1805_ATA_assignement : System.Web.UI.Page
-{
-    string userId = string.Empty;
-    string Query = string.Empty;
-    SqlCommand cmd;
-    SqlConnection con1 = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]);
-    SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]);
-    SqlDataAdapter da;
-    DataTable dt;
-
-    protected void Page_Load(object sender, EventArgs e)
-    {
-        userId = Convert.ToString(Session["uid"]);
-        if (!IsPostBack)
-        {
-            if (Session["uid"] != null)
-            {
-                txtUserId.Value = Convert.ToString(Session["R1805_UserId"]);
-                txtAssociateId.Value = Convert.ToString(Session["R1805_AssociateId"]);
-                txtAuditorId.Value = Convert.ToString(Session["R1805_AuditorId"]);
-                txtEmpName.Value = Convert.ToString(Session["R1805_Name"]);
-                txtFromDate.Text = Convert.ToString(Session["R1805_From_Date"]);
-                txtToDate.Text = Convert.ToString(Session["R1805_To_Date"]);
-                txtFilterType.Value = Convert.ToString(Session["R1805_Filter_By"]);
-                txtPhaseName.Value = Convert.ToString(Session["R1805_Audit_Phase_Name"]);
-                txtAuditType.Value = Convert.ToString(Session["R1805_Audit_Type"]);
-                txtSmplingperc.Value = Convert.ToString(Session["txtSmplingperc"]);
-                txtQuery.Value = Convert.ToString(Session["SamplingQuery"]);
-                clicked_id.Value = Convert.ToString(Session["clicked_id"]);
-
-                strBillType.Value = Convert.ToString(Session["sBillType"]);
-                strBillCode.Value = Convert.ToString(Session["sBillCode"]);
-                strClientId.Value = Convert.ToString(Session["sClientId"]);
-                strBillForm.Value = Convert.ToString(Session["sBillForm"]);
-
-                strBillMode.Value = Convert.ToString(Session["sBillMode"]);
-                strMinAmount.Value = Convert.ToString(Session["sMinAmount"]);
-                strMaxAmount.Value = Convert.ToString(Session["sMaxAmount"]);
-                strFromDate.Value = Convert.ToString(Session["sFromDate"]);
-                strToDate.Value = Convert.ToString(Session["sToDate"]);
-                strFromTime.Value = Convert.ToString(Session["sFromTime"]);
-                strToTime.Value = Convert.ToString(Session["ToTime"]);
-
-                //loadAuditors();
-                LoadSkillSetAuditors();
-
-                loaddata();
-                //LoadReport(txtUserId.Text,txtAssociateId.Text,txtAuditorId.Text,txtEmpName.Text,txtFromDate.Text,txtToDate.Text,txtPhaseName.Text,txtAuditType.Text,txtFilterType.Text);
-            }
-        }
-    }
-
-
-    protected void ddlSkillSet_OnSelectedIndexChanged(object sender, EventArgs e)
-    {
-
-        LoadSkillSetAuditors();
-
-    }
-
-    private void LoadSkillSetAuditors()
-    {
-        try
-        {
-            // Query = "exec r1805_prc_get_SkillSet_ata_auditor '" + ddlSkillSet.SelectedValue.Trim() + "'";
-            Query = "exec r1805_prc_get_SkillSet_ata_auditor_new '" + ddlSkillSet.SelectedValue.Trim() + "'";
-            cmd = new SqlCommand(Query, con1);
-            da = new SqlDataAdapter(cmd);
-            dt = new DataTable();
-            da.Fill(dt);
-
-            ddluserids.DataSource = dt;
-            ddluserids.DataTextField = "Name";
-            ddluserids.DataValueField = "Auditor_id";
-            ddluserids.DataBind();
-
-        }
-        catch (Exception ex)
-        {
-        }
-    }
-
-
-
-    //private void loadAuditors()
-    //{
-    //    try
-    //    {
-    //        Query = "exec r1805_prc_get_ata_auditors '" + userId + "'";
-    //        cmd = new SqlCommand(Query, con1);
-    //        da = new SqlDataAdapter(cmd);
-    //        dt = new DataTable();
-    //        da.Fill(dt);
-
-    //        ddluserids.DataSource = dt;
-    //        ddluserids.DataTextField = "Name";
-    //        ddluserids.DataValueField = "Auditor_id";
-    //        ddluserids.DataBind();
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //    }
-    //}
-
-
-
-    private void loaddata()
-    {
-        try
-        {
-            using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
-            {
-                string Query = txtQuery.Value + ",'" + clicked_id.Value + "'";
-                using (SqlCommand cmd = new SqlCommand(Query, con))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    con.Open();
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        da.Fill(dt);
-                        con.Close();
-                        gvAuditReport.DataSource = dt.Rows.Count > 0 ? dt : null;
-                        gvAuditReport.DataBind();
-                        if (gvAuditReport.Rows.Count == 0)
-                            Response.Redirect("R1805_ATAEntry.aspx");
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-    }
-
-    protected void btnBack_Click(object sender, EventArgs e)
-    {
-        Session["R1805_From_Date"] = txtFromDate.Text;
-        Session["R1805_To_Date"] = txtToDate.Text;
-        Session["R1805_Filter_By"] = txtFilterType.Value;
-        Session["R1805_Audit_Phase_Name"] = txtPhaseName.Value;
-        Session["R1805_Audit_Type"] = txtAuditType.Value;
-        Session["txtSmplingperc"] = txtSmplingperc.Value;
-
-
-        Session["sBillType"] = strBillType.Value;
-        Session["sBillCode"] = strBillCode.Value;
-        Session["sClientId"] = strClientId.Value;
-        Session["sBillForm"] = strBillForm.Value;
-        Session["sBillMode"] = strBillMode.Value;
-        Session["sMinAmount"] = strMinAmount.Value;
-        Session["sMaxAmount"] = strMaxAmount.Value;
-        Session["sFromDate"] = strFromDate.Value;
-        Session["sToDate"] = strToDate.Value;
-        Session["sFromTime"] = strFromTime.Value;
-        Session["ToTime"] = strToTime.Value;
-
-        //   Response.Redirect("~/R1805_ATAEntry.aspx?Q=1", false);
-        // Response.Redirect("https://10.240.68.19/R1805_ATAEntry.aspx?Q=1", false);
-        //Response.Write("<script>");
-        //Response.Write("window.open('https://10.240.68.19/R1805_ATAEntry.aspx?Q=1','_blank')");
-        //Response.Write("</script>");
-
-    }
-
-    protected void Btn_Save_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            int dataInserted = 0;
-
-            foreach (GridViewRow grdRow in gvAuditReport.Rows)
-            {
-                if (grdRow.Enabled == true)
-                {
-                    if (((CheckBox)grdRow.FindControl("CheckBox1")).Checked == true)
-                    {
-                        string audit_no = ((Label)grdRow.FindControl("lblAuditNo")).Text.Trim();
-
-                        //if (ddluserids.SelectedValue.Trim() == "None")
-                        //{
-                        //    Query = "update Audit_inputsummary_V2 set Assigned_to=null, Assigned_by=null,Assigned_date=null where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-                        //}
-                        //else
-                        //{
-                        //    Query = "update Audit_inputsummary_V2 set Assigned_to='" + ddluserids.SelectedValue.Trim() + "', Assigned_by='" + userId + "',Assigned_date=getdate() where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-                        //}
-
-
-                        //if (ddlSkillSet.SelectedValue.Trim() == "Nurse Review")
-                        //{
-
-                        //    Query = "update Audit_inputsummary_V2 set NurseReviewAssignedto='" + ddluserids.SelectedValue.Trim() + "', NurseReviewAssignedBy='" + userId + "',NurseReviewAssignedDate=getdate() where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        //}
-                        //else if (ddlSkillSet.SelectedValue.Trim() == "Code Review")
-                        //{
-                        //    Query = "update Audit_inputsummary_V2 set CodeReviewAssignedto='" + ddluserids.SelectedValue.Trim() + "', CodeReviewAssignedBy='" + userId + "',CodeReviewAssignedDate=getdate() where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        //}
-                        //else if (ddlSkillSet.SelectedValue.Trim() == "Bill Review")
-                        //{
-                        //    Query = "update Audit_inputsummary_V2 set BillReviewAssignedto='" + ddluserids.SelectedValue.Trim() + "', BillReviewAssignedBy='" + userId + "',BillReviewAssignedDate=getdate() where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        //}
-
-
-
-                        if (ddlSkillSet.SelectedValue.Trim() == "Nurse Review" && ddluserids.SelectedValue.Trim() != "None")
-                        {
-
-                            Query = "update Audit_inputsummary_V2 set NurseReviewAssignedto='" + ddluserids.SelectedValue.Trim() + "', NurseReviewAssignedBy='" + userId + "',NurseReviewAssignedDate=getdate() where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        }
-                        else if (ddlSkillSet.SelectedValue.Trim() == "Code Review" && ddluserids.SelectedValue.Trim() != "None")
-                        {
-                            Query = "update Audit_inputsummary_V2 set CodeReviewAssignedto='" + ddluserids.SelectedValue.Trim() + "', CodeReviewAssignedBy='" + userId + "',CodeReviewAssignedDate=getdate() where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        }
-                        else if (ddlSkillSet.SelectedValue.Trim() == "Bill Review" && ddluserids.SelectedValue.Trim() != "None")
-                        {
-                            Query = "update Audit_inputsummary_V2 set BillReviewAssignedto='" + ddluserids.SelectedValue.Trim() + "', BillReviewAssignedBy='" + userId + "',BillReviewAssignedDate=getdate() where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        }
-                        else if (ddlSkillSet.SelectedValue.Trim() == "Nurse Review" && ddluserids.SelectedValue.Trim() == "None")
-                        {
-
-                            Query = "update Audit_inputsummary_V2 set NurseReviewAssignedto=null, NurseReviewAssignedBy=null where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        }
-                        else if (ddlSkillSet.SelectedValue.Trim() == "Code Review" && ddluserids.SelectedValue.Trim() == "None")
-                        {
-                            Query = "update Audit_inputsummary_V2 set CodeReviewAssignedto=null, CodeReviewAssignedBy=null where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        }
-                        else if (ddlSkillSet.SelectedValue.Trim() == "Bill Review" && ddluserids.SelectedValue.Trim() == "None")
-                        {
-                            Query = "update Audit_inputsummary_V2 set BillReviewAssignedto=null, BillReviewAssignedBy=null where Audit_no='" + audit_no + "'  and delete_flag='N' and ismoved='Y'";
-
-                        }
-
-
-                        //Query = "exec Prc_R1805_Update_ATA_Auditors";
-                        //cmd.Parameters.AddWithValue("@SkillSet",ddlSkillSet.SelectedValue.Trim());
-                        //cmd.Parameters.AddWithValue("@AuditNo", ddlSkillSet.SelectedValue.Trim());
-                        //cmd.Parameters.AddWithValue("@ATAAuditor", ddlSkillSet.SelectedValue.Trim());
-                        //cmd.Parameters.AddWithValue("@UserId", ddlSkillSet.SelectedValue.Trim());
-
-
-                        dt = new DataTable();
-                        cmd = new SqlCommand(Query, con1);
-                        con1.Open();
-                        int numberOfRecords = cmd.ExecuteNonQuery();
-                        dataInserted += numberOfRecords;
-                        con1.Close();
-                    }
-                }
-            }
-            if (dataInserted > 0)
-            {
-                //ScriptManager.RegisterStartupScript(Page, typeof(Page), "", "alert('Assignment Done Successfully !');window.location.href='R1805_manual_movement.aspx';", true);
-                ScriptManager.RegisterStartupScript(Page, typeof(Page), "", "alert('Assignment Done Successfully !');", true);
-                loaddata();
-            }
-        }
-        catch (Exception ex)
-        {
-            con1.Close();
-        }
-        finally
-        {
-            con1.Close();
-        }
-
-    }
-
-    protected void gvAuditReport_RowDataBound(object sender, GridViewRowEventArgs e)
-    {
-        try
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)
-            {
-
-            }
-        }
-        catch (Exception Ex)
-        {
-        }
-
-    }
-
-
-    protected void gvAuditReport_RowCommand(object sender, GridViewCommandEventArgs e)
-    {
-        try
-        {
-            if (e.CommandName == "Move")
-            {
-
-            }
-
-        }
-        catch (Exception EX)
-        {
-        }
-    }
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
----exec PRC_GET_AUDIT_SAMPLING_DATA_V1 '03/23/2021','03/26/2021','All','All','Auditor','','','','','','0','0','51486','2','100570'  
-  
-  
-CREATE PROCEDURE PRC_GET_AUDIT_SAMPLING_DATA_V1                         
-(                          
-@FROMDate varchar(50),                          
-@TODate varchar(50),                          
-@phase varchar(50),                          
-@audittype varchar(50),                          
-@filtertype varchar(50),                          
-@billtype varchar(50),                           
-@billcode varchar(50),                          
-@Clientid varchar(50),                          
-@billform varchar(50),                          
-@billmode varchar(50),                          
-@Min_Charge_Amount float=0,                          
-@Max_Charge_Amount float=0,                          
-@assigner_id varchar(50),                          
-@PERC float=100,                          
-@hreid varchar(50)=null                          
-)                          
-as                          
-begin                          
-                          
-declare @PERC1 float                          
-set @PERC1=@PERC                          
-                          
-SET @PERC =@PERC/100                              
-                          
-IF @FROMDate='NULL' or @FROMDate=''                          
-SET @FROMDate =NULL                           
-                          
-IF @TODate='NULL' or @TODate=''                          
-SET @TODate =NULL                           
-                          
-IF @phase='NULL' or @phase='' or @phase='all'                          
-SET @phase =NULL                           
-                          
-IF @audittype='NULL' or @audittype='' or @audittype='all'                          
-SET @audittype =NULL                           
-                          
-IF @filtertype='NULL' or @filtertype=''                          
-SET @filtertype =NULL                           
-                          
-IF @billtype='NULL' or @billtype=''                          
-SET @billtype =NULL                           
-                          
-IF @billcode='NULL' or @billcode=''                          
-SET @billcode =NULL                           
-                          
-IF @Clientid='NULL' or @Clientid=''                          
-SET @Clientid =NULL                           
-                          
-IF @billform='NULL' or @billform=''                          
-SET @billform =NULL                           
-                          
-IF @billmode='NULL' or @billmode=''                          
-SET @billmode =NULL                           
-                          
-IF @Min_Charge_Amount=0                          
-SET @Min_Charge_Amount =0                           
-                          
-IF @Max_Charge_Amount=0                          
-SET @Max_Charge_Amount =0                           
-                          
-IF @PERC=0                          
-SET @PERC =0                           
-                          
-                          
-                          
-DECLARE @sql  nvarchar(max),@eneterd_id varchar(50),@Query  nvarchar(max)                                        
-                          
-If(@filtertype='Associate' and @hreid is null)                                    
- set @sql ='Select b.Cmb_hreid as AssociateId,b.Txt_User_id as userId,x.fname+'' ''+x.lname as AssociateName,count(distinct b.Audit_No) as Total                                    
- ,ceiling(count(distinct b.Audit_No)*'+ cast(@Perc as nvarchar) + ') AS PERCENT1                          
-    
-,(select count(distinct audit_no) from audit_inputsummary_v2 c              
-where c.delete_flag=''n''  AND c.Audit_Date >= '''+@FROMDate+''' AND c.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')               
-and c.Cmb_hreid=b.Cmb_hreid and c.billreviewASSIGNEDTO is not null) as billreviewASSIGNEDTO    
-    
-,(select count(distinct audit_no) from audit_inputsummary_v2 c              
-where c.delete_flag=''n''  AND c.Audit_Date >= '''+@FROMDate+''' AND c.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')               
-and c.Cmb_hreid=b.Cmb_hreid and c.codereviewASSIGNEDTO is not null) as codereviewASSIGNEDTO    
-    
-,(select count(distinct audit_no) from audit_inputsummary_v2 c              
-where c.delete_flag=''n''  AND c.Audit_Date >= '''+@FROMDate+''' AND c.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')               
-and c.Cmb_hreid=b.Cmb_hreid and c.nursereviewASSIGNEDTO is not null) as nursereviewASSIGNEDTO    
-    
-    
- ,u.skill_set                
- From Audit_input_V2 a inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' JOIN Emp_Master x ON a.Cmb_hreid=x.hreid             
-inner join userlist u on a.cmb_hreid=u.userid  where b.delete_flag=''n'' '                          
-                          
-print @sql              
-                          
-If(@filtertype='Associate' and @hreid is not null)                                    
-set @sql ='Select distinct TOP '+ cast(@PERC1 as nvarchar) + ' PERCENT  b.Audit_No,b.cmb_bill_code+b.cmb_client_id+''-''+b.txt_bill_id as billid  ,          
-b.NurseReviewAssignedto,b.CodeReviewAssignedto,b.BillReviewAssignedto,b.Cmb_hreid,b.Txt_User_id,x.fname+'' ''+x.lname as AssociateName,b.Phase_Name,                          
-b.Audit_Type,b.Auditor_id,Convert(Varchar(10),b.Audit_Date,101) As Audit_Date,b.Audit_Status,b.IsAudited,y.fname+'' ''+y.lname as AuditorName                          
-From Audit_input_V2 a inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' Inner Join Emp_Master x           
-ON b.Cmb_hreid=x.hreid JOIN Emp_Master y ON b.Auditor_id=y.hreid  where b.delete_flag=''n'' and b.Cmb_hreid='''+@hreid+'''  '              
-            
-              
-                
-                  
-                    
-                      
-                        
-                          
-If(@filtertype='Auditor' and @hreid is null)                           
- set @sql ='Select b.Auditor_Id as Auditor_Id,x.fname+'' ''+x.lname as AuditorName,count(distinct b.Audit_No) as Total                          
-,ceiling(count(distinct b.Audit_No)*'+ cast(@Perc as nvarchar) + ') AS PERCENT1                
-    
-,(select count(distinct audit_no) from audit_inputsummary_v2 c              
-where c.delete_flag=''n''  AND c.Audit_Date >= '''+@FROMDate+''' AND c.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')               
-and c.auditor_id=b.auditor_id and c.billreviewASSIGNEDTO is not null) as billreviewASSIGNEDTO      
-    
-    
-,(select count(distinct audit_no) from audit_inputsummary_v2 c              
-where c.delete_flag=''n''  AND c.Audit_Date >= '''+@FROMDate+''' AND c.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')               
-and c.auditor_id=b.auditor_id and c.codereviewASSIGNEDTO is not null) as codereviewASSIGNEDTO      
-    
-,(select count(distinct audit_no) from audit_inputsummary_v2 c              
-where c.delete_flag=''n''  AND c.Audit_Date >= '''+@FROMDate+''' AND c.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')               
-and c.auditor_id=b.auditor_id and c.nursereviewASSIGNEDTO is not null) as nursereviewASSIGNEDTO      
-    
-    
-,u.skill_set                          
- From Audit_input_V2 a inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' JOIN Emp_Master x ON b.Auditor_Id=x.hreid              
-inner join userlist u on b.Auditor_Id=u.userid where b.delete_flag=''n'' '                           
-                          
-If(@filtertype='Auditor' and @hreid is not null)                           
-set @sql ='Select distinct TOP '+ cast(@PERC1 as nvarchar) + ' PERCENT  b.Audit_No,b.cmb_bill_code+b.cmb_client_id+''-''+b.txt_bill_id as billid,          
-b.NurseReviewAssignedto,b.CodeReviewAssignedto,b.BillReviewAssignedto,b.Cmb_hreid, b.Txt_User_id,x.fname+'' ''+x.lname as AssociateName,                                    
-b.Phase_Name,b.Audit_Type,b.Auditor_id,Convert(Varchar(10),b.Audit_Date,101) As Audit_Date,b.Audit_Status,b.IsAudited,                              
-y.fname+'' ''+y.lname as AuditorName      
-      
-        
- From Audit_input_V2 a inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y''           
-Join Emp_Master x ON b.Cmb_hreid=x.hreid join                          
-Emp_Master y ON b.Auditor_id=y.hreid where b.delete_flag=''n'' and b.Auditor_id='''+@hreid+'''  '                            
-                          
-                          
-print @sql                           
-                       
-  IF (@FROMDate IS NOT NULL OR @FROMDate <>'')                                        
-  set @sql =@sql  + ' AND b.Audit_Date >= '''+@FROMDate+''''                          
-                          
-  IF (@TODate IS NOT NULL OR @TODate <>'')                                        
-  set @sql =@sql  + ' AND b.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')'                          
-                          
-  IF (@phase IS NOT NULL OR @phase <>'')                                        
-  set @sql =@sql  + ' AND b.PHASE_NAME IN ('''+@phase+''')'                           
-                          
-  IF (@audittype IS NOT NULL OR @audittype<>'')                                        
-  set @sql =@sql  + ' AND b.Audit_TYPE IN ('''+@audittype+''')'                           
-                          
-print @sql                           
-                          
-  IF (@billtype IS NOT NULL OR @billtype<>'')                                        
-  set @sql =@sql  + ' AND b.CMB_BILL_TYPE IN ('''+@billtype+''')'                           
-                          
-  IF (@billcode IS NOT NULL OR @billcode<>'')                                        
-  set @sql =@sql  + ' AND b.CMB_BILL_CODE IN ('''+@billcode+''')'                           
-                          
-  IF (@Clientid IS NOT NULL OR @Clientid<>'')                                        
-  set @sql =@sql  + ' AND b.CMB_CLIENT_ID IN ('''+@Clientid+''')'                           
-                          
-                          
-                          
-  IF (@billform IS NOT NULL OR @billform<>'')                                     
-  set @sql =@sql  + ' AND b.CMB_BILL_FORM1 IN ('''+@billform+''')'                           
-                          
-  IF (@billmode IS NOT NULL OR @billmode <>'')                             
-  set @sql =@sql  + ' AND b.CMB_BILL_MODE IN ('''+@billmode+''')'                           
-                          
-  IF (@Min_Charge_Amount IS NOT NULL and @Min_Charge_Amount <>0)                                        
-  set @sql  =@sql + ' AND CAST(b.[Txt_REV_Amount] AS float) >= ' +  cast(@Min_Charge_Amount as nvarchar)                 
-                          
-  IF (@Max_Charge_Amount IS NOT NULL and @Max_Charge_Amount <>0)                                        
-  set @sql  =@sql + ' AND CAST(b.[Txt_REV_Amount] AS float) <= ' +  cast(@Max_Charge_Amount as nvarchar)                                         
-                          
-If(@filtertype='Associate' and @hreid is null)                                  
-  set @sql =@sql + ' group by b.Cmb_hreid ,b.Txt_User_id ,x.fname+'' ''+x.lname ,u.skill_set     '                             
-                          
-If(@filtertype='Auditor' and @hreid is null)                          
-  set @sql =@sql + 'group by b.Auditor_Id ,x.fname+'' ''+x.lname ,u.skill_set     '                                   
-                
-If(@filtertype='Associate' and @hreid is not null)                                  
-  set @sql =@sql + 'order by b.NurseReviewAssignedto,b.CodeReviewAssignedto,b.BillReviewAssignedto desc'                                   
-                          
---If(@filtertype='Auditor' and @hreid is not null)                          
- -- set @sql =@sql + 'order by b.NurseReviewAssignedto,b.CodeReviewAssignedto,b.BillReviewAssignedto desc'                                   
-                
-                          
-PRINT @sql                           
-                          
-EXEC (@sql)                          
-                          
-end   
+The name 'txtFromDate' does not exist in the current context
+The name 'txtFromDate' does not exist in the current context
+The name 'txtToDate' does not exist in the current context
+The name 'txtFromDate' does not exist in the current context
+The name 'txtToDate' does not exist in the current context
+The name 'txtToDate' does not exist in the current context
+The name 'txtFromDate' does not exist in the current context
+The name 'txtToDate' does not exist in the current context
+The name 'grdview' does not exist in the current context
+The name 'grdview' does not exist in the current context
+The name 'txtFromDate' does not exist in the current context
+The name 'txtToDate' does not exist in the current context
+The name 'grdviewExp' does not exist in the current context
+The name 'grdviewExp' does not exist in the current context
+The name 'grdviewExp' does not exist in the current context
+The name 'txtFromDate' does not exist in the current context
+The name 'txtToDate' does not exist in the current context
+The name 'grdview' does not exist in the current context
+The name 'grdview' does not exist in the current context
+The name 'grdview' does not exist in the current context
+The name 'grdview' does not exist in the current context
+The name 'grdview' does not exist in the current context
+The name 'txtFromDate' does not exist in the current context
+The name 'txtToDate' does not exist in the current context
+Literal content ('aspx') is not allowed within a 'System.Web.UI.WebControls.DataControlFieldCollection'.
+Naming rule violation: These words must begin with upper case characters: btnRawData_Click
+Naming rule violation: These words must begin with upper case characters: grdview_RowCommand
+Unnecessary assignment of a value to 'Type'
+Naming rule violation: These words must begin with upper case characters: loadexcel
+Naming rule violation: These words must begin with upper case characters: btnRawData_Click
+Naming rule violation: These words must begin with upper case characters: grdview_RowCommand
+Make field readonly
+Make field readonly
+Naming rule violation: These words must begin with upper case characters: updateField
+Naming rule violation: These words must begin with upper case characters: loadDropdownlist
+Naming rule violation: These words must begin with upper case characters: loadReceivedType
+Naming rule violation: These words must begin with upper case characters: loadPhase
+Object initialization can be simplified
+Naming rule violation: These words must begin with upper case characters: loadAssociateWise
+Naming rule violation: These words must begin with upper case characters: prepareDataTable
+Naming rule violation: These words must begin with upper case characters: btnSubmit_OnClick
+Naming rule violation: These words must begin with upper case characters: getdata
+Object initialization can be simplified
+Naming rule violation: These words must begin with upper case characters: fn_FormData
+Naming rule violation: These words must begin with upper case characters: btnSubmit1_OnClick
+Naming rule violation: These words must begin with upper case characters: btnBack_OnClick
+Naming rule violation: These words must begin with upper case characters: ddlFilterType_OnSelectedIndexChanged
+Naming rule violation: These words must begin with upper case characters: bindEmpAuditData
+Naming rule violation: These words must begin with upper case characters: gvReportAssociate_OnRowDataBound
+Naming rule violation: These words must begin with upper case characters: gvReportAssociate_OnRowCommand
+Naming rule violation: These words must begin with upper case characters: gvReportAuditor_OnRowDataBound
+Naming rule violation: These words must begin with upper case characters: gvReportAuditor_OnRowCommand
+Make field readonly
+Make field readonly
+Naming rule violation: These words must begin with upper case characters: ddlSkillSet_OnSelectedIndexChanged
+Naming rule violation: These words must begin with upper case characters: loaddata
+Naming rule violation: These words must begin with upper case characters: btnBack_Click
+Naming rule violation: These words must begin with upper case characters: gvAuditReport_RowDataBound
+Naming rule violation: These words must begin with upper case characters: gvAuditReport_RowCommand
+Naming rule violation: These words must begin with upper case characters: loadGrade
+Naming rule violation: These words must begin with upper case characters: loadEmpId
+Naming rule violation: These words must begin with upper case characters: getLastWorkedPhase
+Naming rule violation: These words must begin with upper case characters: updateSummary
+Naming rule violation: These words must begin with upper case characters: prepareDataTable
+Naming rule violation: These words must begin with upper case characters: loadDropdownlist
+Naming rule violation: These words must begin with upper case characters: clearPrevAuditScreen
+Naming rule violation: These words must begin with upper case characters: prepareOpporunity
+Use '++' operator
+Use '++' operator
+Naming rule violation: These words must begin with upper case characters: loadScaleV1Details
+Naming rule violation: These words must begin with upper case characters: loadScaleV2Details
+Naming rule violation: These words must begin with upper case characters: getLoadParameterQuery
+Naming rule violation: These words must begin with upper case characters: checkDuplicate
+Naming rule violation: These words must begin with upper case characters: prepareInsertQuery
+Naming rule violation: These words must begin with upper case characters: prepareInsertQueryForSummary
+Naming rule violation: These words must begin with upper case characters: getAuditId
+Naming rule violation: These words must begin with upper case characters: prepareV1Data
+Naming rule violation: These words must begin with upper case characters: prepareV2Data
+Naming rule violation: These words must begin with upper case characters: saveData
+Naming rule violation: These words must begin with upper case characters: loadOpportunities
+Naming rule violation: These words must begin with upper case characters: uploadFile
+Naming rule violation: These words must begin with upper case characters: gvParameter_OnRowDataBound
+Naming rule violation: These words must begin with upper case characters: gvParameterV2_OnRowDataBound
+Naming rule violation: These words must begin with upper case characters: gvParameter_CheckBoxChanged
+Naming rule violation: These words must begin with upper case characters: fn_ddltest1
+Use '++' operator
+Use '++' operator
+Use '++' operator
+Use '++' operator
+Naming rule violation: These words must begin with upper case characters: fn_ddltest2
+Naming rule violation: These words must begin with upper case characters: ddlPhase_SelectedIndexChanged
+Naming rule violation: These words must begin with upper case characters: ddlrecievedtype_SelectedIndexChanged
+Naming rule violation: These words must begin with upper case characters: ddlauditfor_SelectedIndexChanged
+Naming rule violation: These words must begin with upper case characters: loadDropdownlist
+Naming rule violation: These words must begin with upper case characters: fillAuditData
+Naming rule violation: These words must begin with upper case characters: prepareOpporunity
+Use '++' operator
+Use '++' operator
+Naming rule violation: These words must begin with upper case characters: bindsql_Scale1
+Naming rule violation: These words must begin with upper case characters: bindsql_Scale2
+Naming rule violation: These words must begin with upper case characters: gvProcParameters_RowDataBound
+Use '++' operator
+Naming rule violation: These words must begin with upper case characters: gvFinParameters_RowDataBound
+Use '++' operator
+Naming rule violation: These words must begin with upper case characters: fn_ddltest1
+Use '++' operator
+Use '++' operator
+Use '++' operator
+Use '++' operator
+Naming rule violation: These words must begin with upper case characters: fn_ddltest2
+Naming rule violation: These words must begin with upper case characters: gvProcParameters_CheckBoxChanged
+Unnecessary assignment of a value to 'myConnection'
+Use compound assignment
+Unnecessary assignment of a value to 'objCn1'
+Unnecessary assignment of a value to 'sql'
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Unnecessary assignment of a value to 'objCn2'
+Unnecessary assignment of a value to 'sql2'
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Use compound assignment
+Naming rule violation: These words must begin with upper case characters: uploadFile
+Naming rule violation: These words must begin with upper case characters: updateAuditStatusSummary
+Naming rule violation: These words must begin with upper case characters: updateAuditStatus
+Naming rule violation: These words must begin with upper case characters: clearPrevAuditScreen
+Naming rule violation: These words must begin with upper case characters: ddlauditfor_SelectedIndexChanged
