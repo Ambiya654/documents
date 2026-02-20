@@ -1,23 +1,12 @@
--- SQL Server mein yeh chalao:
-DECLARE @sql nvarchar(max)
-DECLARE @PERC float = 100
-DECLARE @FROMDate varchar(50) = '01/01/2022'
-DECLARE @TODate varchar(50) = '12/31/2022'
-
-SET @PERC = @PERC/100
-
-set @sql ='Select b.Cmb_hreid as AssociateId,b.Txt_User_id as userId,x.fname+'' ''+x.lname as AssociateName,count(distinct b.Audit_No) as Total                                    
- ,ceiling(count(distinct b.Audit_No)*'+ cast(@Perc as nvarchar) + ') AS PERCENT1
+Select b.Cmb_hreid as AssociateId,b.Txt_User_id as userId,x.fname+' '+x.lname as AssociateName,count(distinct b.Audit_No) as Total                                    
+ ,ceiling(count(distinct b.Audit_No)*1) AS PERCENT1
  ,u.skill_set                
  From Audit_input_V2 a 
- inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' 
+ inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved='Y' 
  JOIN Emp_Master x ON a.Cmb_hreid=x.hreid             
  left join userlist u on a.cmb_hreid=u.userid  
- where b.delete_flag=''n'' '
+ where b.delete_flag='n'  AND b.Audit_Date >= '01/01/2022' AND b.Audit_Date <= DATEADD(DAY,1,'12/31/2022') group by b.Cmb_hreid,b.Txt_User_id,x.fname+' '+x.lname,u.skill_set
 
-set @sql = @sql + ' AND b.Audit_Date >= '''+@FROMDate+''''
-set @sql = @sql + ' AND b.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')'
-set @sql = @sql + ' group by b.Cmb_hreid,b.Txt_User_id,x.fname+'' ''+x.lname,u.skill_set'
+(330 rows affected)
 
-PRINT @sql
-EXEC (@sql)
+Completion time: 2026-02-20T16:50:27.8551991+05:30
