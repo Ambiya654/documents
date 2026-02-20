@@ -1,30 +1,11 @@
-315969	2022-01-03 04:10:21.770	2025-09-16 13:31:02.017
+126608	NULL
+65234	NULL
+12600	Nurse Review,Code Review,Bill Review
+12604	Bill Review
+13466	NULL
 
-
-603235	54604	Mahalakshmi	Doreswamy Naidu
-222729	152788	Shankar	Bannikoppa
-246170	152132	Mohhammad	Iashak
-603237	152788	Shankar	Bannikoppa
-603674	210664	Floria	Pereira
-
-
-
-
--- Check 1:
-SELECT COUNT(*) FROM userlist
-
--- Check 2:
-SELECT TOP 5 userid, skill_set 
-FROM userlist
-
--- Check 3 - Join check:
-SELECT TOP 5
-    b.Audit_No,
-    b.Cmb_hreid,
-    u.userid,
-    u.skill_set
-FROM audit_inputsummary_v2 b
-INNER JOIN Audit_input_V2 a ON a.audit_no = b.audit_no
-INNER JOIN userlist u ON a.cmb_hreid = u.userid
-WHERE b.Delete_Flag = 'N'
-AND b.IsMoved = 'Y'
+A946875	88472	88472	
+A946875	88472	88472	
+A946875	88472	88472	
+A946875	88472	88472	
+A946875	88472	88472	
