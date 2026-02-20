@@ -1,66 +1,23 @@
-Change 1 — SP mein (filter ke liye)
-Parameter add karo — @hreid ke baad:
-sql@hreid varchar(50)=null,
-@received_type varchar(50)=null
-NULL check add karo — @billmode check ke baad:
-sqlIF @received_type='NULL' or @received_type=''
-SET @received_type = NULL
-Filter condition add karo — @billmode condition ke baad:
-sqlIF (@received_type IS NOT NULL OR @received_type <>'')
-set @sql = @sql + ' AND b.received_type IN ('''+@received_type+''')'
+-- SQL Server mein yeh chalao:
+DECLARE @sql nvarchar(max)
+DECLARE @PERC float = 100
+DECLARE @FROMDate varchar(50) = '01/01/2022'
+DECLARE @TODate varchar(50) = '12/31/2022'
 
-Change 2 — Assignment Page GridView mein (column ke liye)
-R1805_ATA_assignement.aspx mein — lblBillReviewAssignedto column ke baad:
-aspx<asp:TemplateField HeaderText="Received Type" HeaderStyle-HorizontalAlign="Left">
-    <ItemTemplate>
-        <asp:Label runat="server" ID="lblReceivedType" Text='<%#Eval("received_type") %>' />
-    </ItemTemplate>
-    <ItemStyle HorizontalAlign="Left" />
-</asp:TemplateField>
+SET @PERC = @PERC/100
 
-Change 3 — Assignment Page .cs mein (session restore ke liye)
-Page_Load mein — strToTime.Value ke baad:
-csharpstrToTime.Value = Convert.ToString(Session["ToTime"]);
-strReceivedType.Value = Convert.ToString(Session["sReceivedType"]); // ← ADD KARO
-btnBack_Click mein — Session["ToTime"] ke baad:
-csharpSession["ToTime"] = strToTime.Value;
-Session["sReceivedType"] = strReceivedType.Value; // ← ADD KARO
+set @sql ='Select b.Cmb_hreid as AssociateId,b.Txt_User_id as userId,x.fname+'' ''+x.lname as AssociateName,count(distinct b.Audit_No) as Total                                    
+ ,ceiling(count(distinct b.Audit_No)*'+ cast(@Perc as nvarchar) + ') AS PERCENT1
+ ,u.skill_set                
+ From Audit_input_V2 a 
+ inner join audit_inputsummary_v2 b on a.audit_no=b.audit_no and b.IsMoved=''Y'' 
+ JOIN Emp_Master x ON a.Cmb_hreid=x.hreid             
+ left join userlist u on a.cmb_hreid=u.userid  
+ where b.delete_flag=''n'' '
 
-Change 4 — Assignment Page .aspx mein Hidden Field
-Baaki hidden fields ke baad:
-aspx<asp:HiddenField runat="server" ID="strToTime" />
-<asp:HiddenField runat="server" ID="strReceivedType" /> <%-- ← ADD KARO --%>
+set @sql = @sql + ' AND b.Audit_Date >= '''+@FROMDate+''''
+set @sql = @sql + ' AND b.Audit_Date <= DATEADD(DAY,1,'''+@TODate+''')'
+set @sql = @sql + ' group by b.Cmb_hreid,b.Txt_User_id,x.fname+'' ''+x.lname,u.skill_set'
 
-Change 5 — Entry Page getdata() mein SP call update
-@billmode parameter ke baad:
-csharpcmd.Parameters.AddWithValue("@billmode", String.IsNullOrEmpty(pBillMode) ? DBNull.Value : (object)pBillMode);
-
-// ↓ ADD KARO:
-string pReceivedType = string.Empty;
-if (!string.IsNullOrEmpty(strReceivedType))
-    pReceivedType = strReceivedType;
-
-cmd.Parameters.AddWithValue("@received_type", String.IsNullOrEmpty(pReceivedType) ? DBNull.Value : (object)pReceivedType);
-Session query string update karo — existing Session["SamplingQuery"] line replace karo:
-csharpSession["SamplingQuery"] = "exec PRC_GET_AUDIT_SAMPLING_DATA_V1 '" 
-    + cmd.Parameters[0].Value + "','"   // FROMDate
-    + cmd.Parameters[1].Value + "','"   // TODate
-    + cmd.Parameters[2].Value + "','"   // phase
-    + cmd.Parameters[3].Value + "','"   // audittype
-    + cmd.Parameters[4].Value + "','"   // filtertype
-    + cmd.Parameters[5].Value + "','"   // billtype
-    + cmd.Parameters[6].Value + "','"   // billcode
-    + cmd.Parameters[7].Value + "','"   // clientid
-    + cmd.Parameters[8].Value + "','"   // billform
-    + cmd.Parameters[9].Value + "','"   // billmode
-    + cmd.Parameters[10].Value + "','"  // min amount
-    + cmd.Parameters[11].Value + "','"  // max amount
-    + cmd.Parameters[12].Value + "','"  // assigner_id
-    + cmd.Parameters[13].Value + "'"    // PERC
-    // hreid null rahega, received_type add hoga next page par
-    + ",''"                             // hreid
-    + ",'" + cmd.Parameters[14].Value + "'"; // received_type
-
-Summary Table:
-FileKahanKyaSPParameters, NULL check, filter@received_type addEntry .aspxBill Type ke baadReceivedType dropdown + checkboxEntry .csgetdata()SP parameter + session queryEntry .csfn_FormData()Session saveEntry .csupdateField()Restore on backAssignment .aspxGridView columnsreceived_type columnAssignment .aspxHidden fieldsstrReceivedTypeAssignment .csPage_LoadSession restoreAssignment .csbtnBack_ClickSession save
-Koi confusion ho toh batao! 😊
+PRINT @sql
+EXEC (@sql)
