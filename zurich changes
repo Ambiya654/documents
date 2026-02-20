@@ -1,29 +1,8 @@
-Theek hai, step by step debug karte hain!
-Yeh queries ek ek karke chalao:
+315969	2022-01-03 04:10:21.770	2025-09-16 13:31:02.017
 
-Query 1 — Basic data check:
-sqlSELECT COUNT(*) as TotalRecords
-FROM audit_inputsummary_v2
-WHERE Delete_Flag = 'N'
-AND IsMoved = 'Y'
 
-Query 2 — Date range check:
-sqlSELECT COUNT(*) as TotalRecords,
-MIN(Audit_Date) as MinDate,
-MAX(Audit_Date) as MaxDate
-FROM audit_inputsummary_v2
-WHERE Delete_Flag = 'N'
-AND IsMoved = 'Y'
-
-Query 3 — Emp_Master aur userlist join check:
-sqlSELECT TOP 5 
-    b.Cmb_hreid,
-    b.Auditor_Id,
-    x.fname,
-    x.lname
-FROM audit_inputsummary_v2 b
-JOIN Emp_Master x ON b.Auditor_Id = x.hreid
-WHERE b.Delete_Flag = 'N'
-AND b.IsMoved = 'Y'
-
-Teeno ka result share karo — tab exact problem pakad mein aayegi! 😊
+603235	54604	Mahalakshmi	Doreswamy Naidu
+222729	152788	Shankar	Bannikoppa
+246170	152132	Mohhammad	Iashak
+603237	152788	Shankar	Bannikoppa
+603674	210664	Floria	Pereira
