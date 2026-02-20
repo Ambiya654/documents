@@ -202,6 +202,58 @@ If(@filtertype='Associate' and @hreid is not null)
                           
 PRINT @sql                           
                           
-EXEC (@sql)                          
+EXEC (@sql)     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Bina filter ke test:
+exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
+'01/01/2022',
+'12/31/2022',
+'All',
+'All',
+'Associate',
+'','','','','',
+0, 0,
+'152788',
+100,
+null,
+null
+
+-- received_type filter ke saath test:
+exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
+'01/01/2022',
+'12/31/2022',
+'All',
+'All',
+'Associate',
+'','','','','',
+0, 0,
+'152788',
+100,
+null,
+'OCR'
                           
 end   
