@@ -1,13 +1,12 @@
--- Received Type filter ke saath:
-exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
-'01/01/2021',  -- from date
-'12/31/2021',  -- to date
-'All',          -- phase
-'All',          -- audit type
-'Associate',    -- filter type
-'','','','','', -- bill filters
-0, 0,           -- min/max amount
-'51486',        -- assigner_id
-100,            -- percentage
-null,           -- hreid
-'Electronic'    -- received_type jo tumhare DB mein ho
+SELECT TOP 5 
+    Audit_No,
+    IsMoved,
+    received_type,
+    Cmb_hreid,
+    Auditor_Id,
+    Phase_Name,
+    Audit_Type,
+    Audit_Date,
+    Delete_Flag
+FROM audit_inputsummary_v2
+WHERE Delete_Flag = 'N'
