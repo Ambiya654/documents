@@ -1,1 +1,174 @@
-API Error: BadRequest - {"error":"Category code is required"}
+<%-- BILL TYPE KI TR KE BAAD YEH ADD KARO --%>
+<tr>
+    <td class="Input" align="left">
+        Received Type
+    </td>
+    <td class="Input" align="left">
+        <asp:DropDownList runat="server" ID="Cmb_Received_Type" CssClass="textEntry" 
+            Width="210" BackColor="#ffffcc">
+        </asp:DropDownList>
+    </td>
+    <td class="Input" align="left">
+        <asp:CheckBox runat="server" ID="Chk_Received_Type" CssClass="Input" />
+    </td>
+</tr>
+
+
+
+
+string strReceivedType = string.Empty;  // ← YEH ADD KARO
+
+
+
+
+
+
+
+
+
+// EXISTING CODE (last dropdown bind):
+Cmb_Bill_Mode.DataSource = ds.Tables[4];
+Cmb_Bill_Mode.DataTextField = "VALUE";
+Cmb_Bill_Mode.DataValueField = "VALUE";
+Cmb_Bill_Mode.DataBind();
+Cmb_Bill_Mode.Items.Insert(0, "");
+
+// ↓ YAHAN KE BAAD YEH ADD KARO (using separate connection/command):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private void loadReceivedType()
+{
+    try
+    {
+        using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+        {
+            using (SqlCommand cmd = new SqlCommand("prc_get_received_type", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                {
+                    DataTable dtReceived = new DataTable();
+                    con.Open();
+                    da.Fill(dtReceived);
+                    Cmb_Received_Type.DataSource = dtReceived.Rows.Count > 0 ? dtReceived : null;
+                    Cmb_Received_Type.DataTextField = "received_type";
+                    Cmb_Received_Type.DataValueField = "received_type";
+                    Cmb_Received_Type.DataBind();
+                    Cmb_Received_Type.Items.Insert(0, "");
+                }
+            }
+        }
+    }
+    catch (Exception ex) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+loadDropdownlist();
+loadReceivedType();  // ← YEH ADD KARO
+
+
+
+
+
+
+
+
+
+
+
+// EXISTING:
+if (Chk_Bill_Type.Checked == true)
+{
+    strBillType = Cmb_Bill_Type.SelectedValue.Trim();
+    Session["sBillType"] = strBillType;
+}
+else
+{
+    Session["sBillType"] = null;
+}
+
+// ↓ YAHAN KE BAAD YEH ADD KARO:
+if (Chk_Received_Type.Checked == true)
+{
+    strReceivedType = Cmb_Received_Type.SelectedValue.Trim();
+    Session["sReceivedType"] = strReceivedType;
+}
+else
+{
+    Session["sReceivedType"] = null;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// EXISTING:
+if (!string.IsNullOrEmpty(strBillType))
+{
+    Chk_Bill_Type.Checked = true;
+    Cmb_Bill_Type.Items.FindByValue(strBillType).Selected = true;
+}
+
+// ↓ YAHAN KE BAAD YEH ADD KARO:
+if (!string.IsNullOrEmpty(strReceivedType))
+{
+    Chk_Received_Type.Checked = true;
+    Cmb_Received_Type.Items.FindByValue(strReceivedType).Selected = true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+strBillType = Convert.ToString(Session["sBillType"]);
+strReceivedType = Convert.ToString(Session["sReceivedType"]); // ← YEH ADD KARO
+
+
+
+
+
+
+
+Session["sReceivedType"] = strReceivedType;  // ← YEH ADD KARO
