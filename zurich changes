@@ -1,37 +1,29 @@
-Audit_No	IsMoved	received_type	Cmb_hreid	Auditor_Id	Phase_Name	Audit_Type	Audit_Date	Delete_Flag
-A1000883	Y	OCR	603235	54604	ZNBR	PrePay	2022-08-08 12:58:57.880	N
-A1000951	Y	Re-Eval	222729	152788	Re-Evaluations	PrePay	2022-08-08 14:48:56.077	N
-A1000952	Y	OCR	246170	152132	Code Review	PostPay	2022-08-08 14:49:30.307	N
-A1000953	Y	OCR	603237	152788	ZNBR	PrePay	2022-08-08 14:50:47.490	N
-A1000954	Y	OCR	603674	210664	Nurse Review	PrePay	2022-08-08 14:52:01.453	N
+Theek hai, step by step debug karte hain!
+Yeh queries ek ek karke chalao:
 
+Query 1 — Basic data check:
+sqlSELECT COUNT(*) as TotalRecords
+FROM audit_inputsummary_v2
+WHERE Delete_Flag = 'N'
+AND IsMoved = 'Y'
 
+Query 2 — Date range check:
+sqlSELECT COUNT(*) as TotalRecords,
+MIN(Audit_Date) as MinDate,
+MAX(Audit_Date) as MaxDate
+FROM audit_inputsummary_v2
+WHERE Delete_Flag = 'N'
+AND IsMoved = 'Y'
 
+Query 3 — Emp_Master aur userlist join check:
+sqlSELECT TOP 5 
+    b.Cmb_hreid,
+    b.Auditor_Id,
+    x.fname,
+    x.lname
+FROM audit_inputsummary_v2 b
+JOIN Emp_Master x ON b.Auditor_Id = x.hreid
+WHERE b.Delete_Flag = 'N'
+AND b.IsMoved = 'Y'
 
-exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
-'01/01/2022',
-'12/31/2022',
-'All',
-'All',
-'Associate',
-'','','','','',
-0, 0,
-'51486',
-100,
-null
-
-
-
-
-exec PRC_GET_AUDIT_SAMPLING_DATA_V1 
-'01/01/2022',
-'12/31/2022',
-'All',
-'All',
-'Associate',
-'','','','','',
-0, 0,
-'51486',
-100,
-null,
-'OCR'    -- received_type filter
+Teeno ka result share karo — tab exact problem pakad mein aayegi! 😊
