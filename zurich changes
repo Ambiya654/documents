@@ -1,11 +1,12 @@
-126608	NULL
-65234	NULL
-12600	Nurse Review,Code Review,Bill Review
-12604	Bill Review
-13466	NULL
-
-A946875	88472	88472	
-A946875	88472	88472	
-A946875	88472	88472	
-A946875	88472	88472	
-A946875	88472	88472	
+SELECT TOP 1
+    b.Cmb_hreid,
+    b.Auditor_Id,
+    b.Phase_Name,
+    b.Audit_Type,
+    b.Audit_Date,
+    b.Delete_Flag,
+    b.IsMoved
+FROM audit_inputsummary_v2 b
+INNER JOIN Audit_input_V2 a ON a.audit_no = b.audit_no
+WHERE b.Delete_Flag = 'N'
+AND b.IsMoved = 'Y'
