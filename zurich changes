@@ -1,0 +1,4134 @@
+<%@ Page Title="" Language="C#" MasterPageFile="~/PageMaster.master" AutoEventWireup="true" EnableEventValidation="true"
+    CodeFile="R1805_ATAEntry.aspx.cs" Inherits="R1805_ATAEntry" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <style type="text/css">
+        .PanelCss
+        {
+            margin-left: 30%;
+        }
+    </style>
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <div class="row">
+        <h1 style="margin-left: 30%; background-color: darkSlateBlue; width: 40%; color: White;
+            height: 30px; font-weight: bolder; text-align: center; font-family: Palatino Linotype;">
+            ATA Module
+        </h1>
+    </div>
+    <br />
+    <asp:Panel runat="server" ID="P1" CssClass="PanelCss" Width="40%" BorderWidth="0px"
+        Style="font-family: Palatino Linotype; background-color: lightSkyBlue; font-weight: bold;
+        color: Black;">
+        <center>
+            <table cellpadding="4" cellspacing="4">
+                <%--         <tr>
+                    <td align="left">
+                        From Date
+                    </td>
+                    <td align="left">
+                        <asp:TextBox runat="server" ID="txtFromDate" Width="210">
+                        </asp:TextBox>
+                        <asp:Button runat="server" ID="Btn_From_Date" Text="..." CssClass="Button" />
+                        <cc1:CalendarExtender runat="server" ID="calExtender1" TargetControlID="txtFromDate"
+                            PopupButtonID="Btn_From_Date" />
+                        <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator4" ControlToValidate="txtFromDate"
+                            ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        To Date
+                    </td>
+                    <td align="left">
+                        <asp:TextBox runat="server" ID="txtToDate" Width="210">
+                        </asp:TextBox>
+                        <asp:Button runat="server" ID="Btn_To_Date" Text="..." CssClass="Button" />
+                        <cc1:CalendarExtender runat="server" ID="CalendarExtender1" TargetControlID="txtToDate"
+                            PopupButtonID="Btn_To_Date" />
+                        <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator5" ControlToValidate="txtToDate"
+                            ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                    </td>
+                </tr>--%>
+                <tr>
+                    <td align="left">
+                        Select Phase
+                    </td>
+                    <td align="left">
+                        <asp:DropDownList runat="server" ID="ddlPhase" Width="210" BackColor="#ffffcc">
+                        </asp:DropDownList>
+                        <%--<asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator3" ControlToValidate="ddlPhase"
+                            ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <%--<asp:CheckBox runat="server" ID="chkPhase" CssClass="Input" />--%>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        Select Audit Type
+                    </td>
+                    <td align="left">
+                        <asp:DropDownList runat="server" ID="ddlAuditType" Width="210" BackColor="#ffffcc">
+                            <asp:ListItem Text="All" Value="All"></asp:ListItem>
+                            <asp:ListItem Text="PrePay" Value="PrePay"></asp:ListItem>
+                            <asp:ListItem Text="PostPay" Value="PostPay"></asp:ListItem>
+                            <asp:ListItem Text="Focused" Value="Focused"></asp:ListItem>
+                        </asp:DropDownList>
+                        <%--<asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator1" ControlToValidate="ddlAuditType"
+                            ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <%--<asp:CheckBox runat="server" ID="chkAuditType" CssClass="Input" />--%>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        Filter By
+                    </td>
+                    <td align="left">
+                        <asp:DropDownList runat="server" ID="ddlFilterType" AutoPostBack="false" OnSelectedIndexChanged="ddlFilterType_OnSelectedIndexChanged"
+                            Width="210" CausesValidation="true" BackColor="#ffffcc">
+                            <asp:ListItem Text="Auditor" Value="Auditor"></asp:ListItem>
+                            <asp:ListItem Text="Associate" Value="Associate"></asp:ListItem>
+                        </asp:DropDownList>
+                        <%--                        <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator2" ControlToValidate="ddlAuditType"
+                            ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <%--<asp:CheckBox runat="server" ID="chkFilterType" CssClass="Input" />--%>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        Bill Type
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:DropDownList runat="server" ID="Cmb_Bill_Type" CssClass="textEntry" Width="210"
+                            BackColor="#ffffcc">
+                        </asp:DropDownList>
+                        <%--                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator7" ControlToValidate="Cmb_Bill_Type"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_Bill_Type" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        Bill Code
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:DropDownList runat="server" ID="Cmb_Bill_Code" CssClass="textEntry" Width="210"
+                            BackColor="#ffffcc">
+                        </asp:DropDownList>
+                        <%--                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator8" ControlToValidate="Cmb_Bill_Code"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_Bill_Code" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        Client Id
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:DropDownList runat="server" ID="Cmb_Client_Id" CssClass="textEntry" Width="210"
+                            BackColor="#ffffcc">
+                        </asp:DropDownList>
+                        <%--<asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator9" ControlToValidate="Cmb_Client_Id"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_Client_Id" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        Bill Form
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:DropDownList runat="server" ID="Cmb_Bill_Form1" CssClass="textEntry" Width="210"
+                            BackColor="#ffffcc">
+                        </asp:DropDownList>
+                        <%--<asp:RequiredFieldValidator runat="server" ID="RR1" ControlToValidate="Cmb_Bill_Form1"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_Bill_Form1" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        Bill Mode
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:DropDownList runat="server" ID="Cmb_Bill_Mode" CssClass="textEntry" Width="210"
+                            BackColor="#ffffcc">
+                        </asp:DropDownList>
+                        <%--<asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator10" ControlToValidate="Cmb_Bill_Mode"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_Bill_Mode" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        Min Amount
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:TextBox runat="server" ID="Txt_Min_Amount" CssClass="textEntry" BackColor="#ffffcc"></asp:TextBox>
+                        <asp:RegularExpressionValidator runat="server" ID="Rg1" ControlToValidate="Txt_Min_Amount"
+                            ValidationExpression="[0-9]+" CssClass="Input" Display="Dynamic" ErrorMessage="Numeric"></asp:RegularExpressionValidator>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_Min_Amount" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        Max Amount
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:TextBox runat="server" ID="Txt_Max_Amount" CssClass="textEntry" BackColor="#ffffcc"></asp:TextBox>
+                        <asp:RegularExpressionValidator runat="server" ID="RegularExpressionValidator1" ControlToValidate="Txt_Max_Amount"
+                            ValidationExpression="[0-9]+" CssClass="Input" Display="Dynamic" ErrorMessage="Numeric"></asp:RegularExpressionValidator>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_Max_Amount" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        From Date*
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:TextBox runat="server" ID="txtFromDate" size="15" Width="100" CssClass="textEntry"
+                            BackColor="#ffffcc" />
+                        <asp:Button runat="server" ID="Button2" Visible="false" Text="..." CssClass="Button" />
+                        <%-- <cc1:CalendarExtender runat="server" ID="CalendarExtender2" TargetControlID="txtFromDate"
+                            PopupButtonID="Button2" />--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_From_Date" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        To Date*
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:TextBox runat="server" ID="txtToDate" size="15" Width="100" CssClass="textEntry"
+                            BackColor="#ffffcc" />
+                        <asp:Button runat="server" ID="Button3"  Visible="false" Text="..." CssClass="Button" />
+                        <%-- <cc1:CalendarExtender runat="server" ID="calExtender2" TargetControlID="txtToDate"
+                            PopupButtonID="Button3" />--%>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_To_Date" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        From Time
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:TextBox runat="server" ID="Txt_From_Time" CssClass="textEntry" BackColor="#ffffcc"></asp:TextBox>
+                        <asp:RegularExpressionValidator runat="server" ID="RegularExpressionValidator2" ControlToValidate="Txt_From_Time"
+                            ValidationExpression="([01]?[0-9]|2[0-3]):[0-5][0-9]" CssClass="Input" Display="Dynamic"
+                            ErrorMessage="HH:MM(24Hrs)">
+                        </asp:RegularExpressionValidator>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_From_Time" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="Input" align="left">
+                        To Time
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:TextBox runat="server" ID="Txt_To_Time" CssClass="textEntry" BackColor="#ffffcc"></asp:TextBox>
+                        <asp:RegularExpressionValidator runat="server" ID="RegularExpressionValidator3" ControlToValidate="Txt_To_Time"
+                            ValidationExpression="([01]?[0-9]|2[0-3]):[0-5][0-9]" CssClass="Input" Display="Dynamic"
+                            ErrorMessage="HH:MM(24Hrs)">
+                        </asp:RegularExpressionValidator>
+                    </td>
+                    <td class="Input" align="left">
+                        <asp:CheckBox runat="server" ID="Chk_To_Time" CssClass="Input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        Sampling %
+                    </td>
+                    <td align="left">
+                        <asp:TextBox runat="server" ID="txtSmplingperc" Width="210" onkeypress="return allowOnlyNumber(event);">
+                        </asp:TextBox>
+                        <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator6" ControlToValidate="txtSmplingperc"
+                            ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr align="center">
+                    <td colspan="2">
+                        <asp:Button runat="server" ID="Button1" Text="Submit" OnClick="btnSubmit1_OnClick"
+                            CssClass="textentry" Style="float: none; height: 30px; background-color: Maroon;
+                            color: White; font-bold: true;" />
+                        <asp:Button runat="server" ID="btnBack" Text="<< Back" OnClick="btnBack_OnClick"
+                            CssClass="textentry" Style="float: none; height: 30px; background-color: Maroon;
+                            color: White; font-bold: true;" CausesValidation="false" />
+                    </td>
+                </tr>
+            </table>
+        </center>
+        <%--<asp:Button runat="server" ID="btnSubmit" Text="Submit" OnClick="btnSubmit_OnClick"
+            CssClass="button" TabIndex="3" />--%>
+        <center>
+            <table>
+                <tr>
+                    <td>
+                        <asp:GridView runat="server" ID="gvReportAssociate" BackColor="White" ShowFooter="false"
+                            BorderColor="#336666" Font-Size="Small" HorizontalAlign="Left" CellPadding="4"
+                            Width="400px" AutoGenerateColumns="false" GridLines="Both" OnRowCommand="gvReportAssociate_OnRowCommand"
+                            OnRowDataBound="gvReportAssociate_OnRowDataBound" CssClass="table table-bordered table-condensed">
+                            <Columns>
+                                <asp:TemplateField HeaderText="#">
+                                    <ItemTemplate>
+                                        <%#Container.DataItemIndex + 1 %>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Associate Id">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblAssociateId" Text='<%#Eval("AssociateId") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="UserId" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblUserId" Text='<%#Eval("userId") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Associate Name">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblAssociateName" Text='<%#Eval("AssociateName") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Skill set">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblskill" Text='<%#Eval("Skill_set") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Total">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lbltotal" Text='<%#Eval("Total") %>' />
+                                        <asp:Button ID="btnTotal1" runat="server" Text='<%#Eval("Total") %>' CommandName="btnTotal"
+                                            Visible="false" CssClass="btn btn-success" CommandArgument="<%# ((GridViewRow)Container).RowIndex %>" />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Sample Count">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblsample" Text='<%#Eval("percent1") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <%--                        <asp:TemplateField HeaderText="Assigned Count">
+                                    <ItemTemplate>
+                                    <asp:Label runat="server" ID="lblassigned" Text='<%#Eval("assigned") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>--%>
+                                <asp:TemplateField HeaderText="Assigned Count Bill Review">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblassignedb" Text='<%#Eval("billreviewASSIGNEDTO") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Assigned Count Code Review">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblassignedc" Text='<%#Eval("codereviewASSIGNEDTO") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Assigned Count Nurse Review">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblassignedn" Text='<%#Eval("nursereviewASSIGNEDTO") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField>
+                                    <ItemTemplate>
+                                        <asp:Button ID="btnTotal" runat="server" Text=">>" CommandName="btnTotal" CssClass="btn btn-success"
+                                            CommandArgument="<%# ((GridViewRow)Container).RowIndex %>" />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                            </Columns>
+                            <EmptyDataTemplate>
+                                Associate Wise - No Data Exist
+                            </EmptyDataTemplate>
+                            <HeaderStyle HorizontalAlign="Left" BackColor="LightSeaGreen" ForeColor="White" />
+                            <EmptyDataRowStyle BackColor="IndianRed" ForeColor="White" />
+                        </asp:GridView>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:GridView runat="server" ID="gvReportAuditor" BackColor="White" ShowFooter="false"
+                            BorderColor="#336666" Font-Size="Small" HorizontalAlign="Left" Width="400px"
+                            CellPadding="4" AutoGenerateColumns="false" GridLines="Both" OnRowCommand="gvReportAuditor_OnRowCommand"
+                            OnRowDataBound="gvReportAuditor_OnRowDataBound" CssClass="table table-bordered table-condensed">
+                            <Columns>
+                                <asp:TemplateField HeaderText="#">
+                                    <ItemTemplate>
+                                        <%#Container.DataItemIndex + 1 %>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Auditor Id" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblAuditorId" Text='<%#Eval("Auditor_Id") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Auditor Name">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblAuditorName" Text='<%#Eval("AuditorName") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Skill set">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblskill" Text='<%#Eval("Skill_set") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Total">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lbltotal" Text='<%#Eval("Total") %>' />
+                                        <asp:Button ID="btnTotal1" runat="server" Text='<%#Eval("Total") %>' CommandName="btnTotal"
+                                            Visible="false" CssClass="btn btn-success" CommandArgument="<%# ((GridViewRow)Container).RowIndex %>" />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Sample Count">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblsample" Text='<%#Eval("percent1") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Assigned Count Bill Review">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblassignedb" Text='<%#Eval("billreviewASSIGNEDTO") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Assigned Count Code Review">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblassignedc" Text='<%#Eval("codereviewASSIGNEDTO") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Assigned Count Nurse Review">
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblassignedn" Text='<%#Eval("nursereviewASSIGNEDTO") %>' />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                                <asp:TemplateField>
+                                    <ItemTemplate>
+                                        <asp:Button ID="btnTotal" runat="server" Text=">>" CommandName="btnTotal" CssClass="btn btn-success"
+                                            CommandArgument="<%# ((GridViewRow)Container).RowIndex %>" />
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+                            </Columns>
+                            <EmptyDataTemplate>
+                                Auditor Wise - No Data Exist
+                            </EmptyDataTemplate>
+                            <HeaderStyle HorizontalAlign="Left" BackColor="LightSeaGreen" ForeColor="White" />
+                            <EmptyDataRowStyle BackColor="IndianRed" ForeColor="White" />
+                        </asp:GridView>
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </asp:Panel>
+    <script type="text/javascript">
+
+        function allowOnlyNumber(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
+        }
+    
+    </script>
+            <script src="UploadFiles/jquery.min.js" type="text/javascript"></script>
+        <script src="UploadFiles/jquery-ui.min.js" type="text/javascript"></script>
+        <link href="UploadFiles/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+
+        $(function () {
+            $("#<%= txtFromDate.ClientID %>").datepicker();
+            $("#<%= txtToDate.ClientID %>").datepicker();
+        });
+    </script>
+</asp:Content>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Data.SqlClient;
+
+public partial class R1805_ATAEntry : System.Web.UI.Page
+{
+    string userId = string.Empty;
+    string Query = string.Empty;
+    DataTable dt = new DataTable();
+    SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]);
+    string strQuery = string.Empty;
+    string strPhase = string.Empty;
+    string strAuditType = string.Empty;
+    string strFilterType = string.Empty;
+    string strBillType = string.Empty;
+    string strBillCode = string.Empty;
+    string strClientId = string.Empty;
+    string strBillForm = string.Empty;
+    string strBillMode = string.Empty;
+    string strMinAmount = string.Empty;
+    string strMaxAmount = string.Empty;
+    string strFromDate = string.Empty;
+    string strToDate = string.Empty;
+    string strFromTime = string.Empty;
+    string strToTime = string.Empty;
+    string strSamplingPercentage = string.Empty;
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+
+
+        if (!IsPostBack)
+        {
+            loadPhase();
+            //Load_Outcome();
+            //load_Bill_Type();
+            //Load_State();
+            //Load_Pay_Auth_Code();
+            //Load_Cmb_Form();
+            //Load_Sub_Process();
+            //txtFromDate.Focus();
+            loadDropdownlist();
+            string Q = Request.QueryString["Q"];
+            if (Q != null)
+            {
+
+                txtFromDate.Text = Convert.ToString(Session["R1805_From_Date"]);
+                txtToDate.Text = Convert.ToString(Session["R1805_To_Date"]);
+                ddlPhase.Items.FindByText(Convert.ToString(Session["R1805_Audit_Phase_Name"])).Selected = true;
+                ddlAuditType.Items.FindByText(Convert.ToString(Session["R1805_Audit_Type"])).Selected = true;
+                ddlFilterType.Items.FindByText(Convert.ToString(Session["R1805_Filter_By"])).Selected = true;
+                txtSmplingperc.Text = Convert.ToString(Session["txtSmplingperc"]);
+                
+                strBillType = Convert.ToString(Session["sBillType"]);
+                strBillCode = Convert.ToString(Session["sBillCode"]);
+                strClientId = Convert.ToString(Session["sClientId"]);
+                strBillForm= Convert.ToString(Session["sBillForm"]);
+                strBillMode = Convert.ToString(Session["sBillMode"]);
+                strMinAmount = Convert.ToString(Session["sMinAmount"]);
+                strMaxAmount = Convert.ToString(Session["sMaxAmount"]);
+                strFromDate = Convert.ToString(Session["sFromDate"]);
+                strToDate = Convert.ToString(Session["sToDate"]);
+                strFromTime = Convert.ToString(Session["sFromTime"]);
+                strToTime = Convert.ToString(Session["ToTime"]);
+
+                updateField();
+
+                bindEmpAuditData();
+            }
+
+        }
+    }
+
+    private void updateField()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(strBillType))
+            {
+                Chk_Bill_Type.Checked = true;
+                Cmb_Bill_Type.Items.FindByValue(strBillType).Selected = true;
+            }
+            if (!string.IsNullOrEmpty(strBillCode))
+            {
+                Chk_Bill_Code.Checked = true;
+                Cmb_Bill_Code.Items.FindByValue(strBillCode).Selected = true;
+            }
+            if (!string.IsNullOrEmpty(strClientId))
+            {
+                Chk_Client_Id.Checked = true;
+                Cmb_Client_Id.Items.FindByValue(strClientId).Selected = true;
+            }
+            
+            if (!string.IsNullOrEmpty(strBillForm))
+            {
+                Chk_Bill_Form1.Checked = true;
+                Cmb_Bill_Form1.Items.FindByValue(strBillForm).Selected = true;
+            }
+
+            if (!string.IsNullOrEmpty(strBillMode))
+            {
+                Chk_Bill_Mode.Checked = true;
+                Cmb_Bill_Mode.Items.FindByValue(strBillMode).Selected = true;
+            }
+            if (!string.IsNullOrEmpty(strMinAmount))
+            {
+                Chk_Min_Amount.Checked = true;
+                Txt_Min_Amount.Text = strMinAmount;
+            }
+            if (!string.IsNullOrEmpty(strMaxAmount))
+            {
+                Chk_Max_Amount.Checked = true;
+                Txt_Max_Amount.Text = strMaxAmount;
+            }
+            if (!string.IsNullOrEmpty(strFromTime))
+            {
+                Chk_From_Time.Checked = true;
+                Txt_From_Time.Text = strFromTime;
+            }
+            if (!string.IsNullOrEmpty(strToTime))
+            {
+                Chk_To_Time.Checked = true;
+                Txt_To_Time.Text = strToTime;
+            }
+            if(!string.IsNullOrEmpty(txtFromDate.Text))
+            {
+                Chk_From_Date.Checked=true;
+            }
+            if (!string.IsNullOrEmpty(txtToDate.Text))
+            {
+                Chk_To_Date.Checked = true;
+            }
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+
+    #region "Private Functions"
+
+    private void loadDropdownlist()
+    {
+        using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+        {
+            using (SqlCommand cmd = new SqlCommand("Exec E30_Prc_LoadDropdownlist"))
+            {
+                using (SqlDataAdapter sda = new SqlDataAdapter())
+                {
+                    cmd.Connection = con;
+                    sda.SelectCommand = cmd;
+                    using (DataSet ds = new DataSet())
+                    {
+                        sda.Fill(ds);
+                        Cmb_Bill_Type.DataSource = ds.Tables[0];
+                        Cmb_Bill_Type.DataTextField = "Bill_Type";
+                        Cmb_Bill_Type.DataValueField = "Bill_Type";
+                        Cmb_Bill_Type.DataBind();
+                        Cmb_Bill_Type.Items.Insert(0, "");
+
+
+                        Cmb_Bill_Code.DataSource = ds.Tables[1];
+                        Cmb_Bill_Code.DataTextField = "BILL_CODE";
+                        Cmb_Bill_Code.DataValueField = "BILL_CODE";
+                        Cmb_Bill_Code.DataBind();
+                        Cmb_Bill_Code.Items.Insert(0, "");
+
+                        Cmb_Bill_Form1.DataSource = ds.Tables[2];
+                        Cmb_Bill_Form1.DataTextField = "BILL_FORM";
+                        Cmb_Bill_Form1.DataValueField = "BILL_FORM";
+                        Cmb_Bill_Form1.DataBind();
+                        Cmb_Bill_Form1.Items.Insert(0, "");
+
+                        Cmb_Client_Id.DataSource = ds.Tables[3];
+                        Cmb_Client_Id.DataTextField = "CLIENT_ID";
+                        Cmb_Client_Id.DataValueField = "CLIENT_ID";
+                        Cmb_Client_Id.DataBind();
+                        Cmb_Client_Id.Items.Insert(0, "");
+
+
+                        Cmb_Bill_Mode.DataSource = ds.Tables[4];
+                        Cmb_Bill_Mode.DataTextField = "VALUE";
+                        Cmb_Bill_Mode.DataValueField = "VALUE";
+                        Cmb_Bill_Mode.DataBind();
+                        Cmb_Bill_Mode.Items.Insert(0, "");
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+    private void loadPhase()
+    {
+        try
+        {
+            Query = "Select Distinct Phase_Name from MSTR_AUDIT_PARAMETER_MAPPING where Delete_Flag='N'";
+            SqlCommand cmd = new SqlCommand(Query, con);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            ddlPhase.DataSource = dt.Rows.Count > 0 ? dt : null;
+            ddlPhase.DataTextField = "Phase_Name";
+            ddlPhase.DataValueField = "Phase_Name";
+            ddlPhase.DataBind();
+
+            ListItem lst = new ListItem();
+            lst.Value = "All";
+            lst.Text = "All";
+            ddlPhase.Items.Insert(0, lst);
+        }
+        finally
+        {
+        }
+    }
+    private void loadAssociateWise()
+    {
+        try
+        {
+            Query = "Exec R1805_Prc_LoadInputData " + GenericView.PrepString(txtFromDate.Text.Trim()) + "," + GenericView.PrepString(txtToDate.Text.Trim()) + "," + GenericView.PrepString(ddlPhase.Text.Trim()) + "," + GenericView.PrepString(ddlAuditType.Text.Trim()) + "," + GenericView.PrepString(ddlFilterType.Text.Trim());
+            dt = new DataTable();
+            dt = prepareDataTable(Query);
+            if (ddlFilterType.Text.Trim().Equals("Associate"))
+            {
+                gvReportAssociate.DataSource = dt.Rows.Count > 0 ? dt : null;
+                gvReportAssociate.DataBind();
+                gvReportAuditor.DataSource = null;
+                gvReportAuditor.DataBind();
+            }
+            else
+            {
+                gvReportAuditor.DataSource = dt.Rows.Count > 0 ? dt : null;
+                gvReportAuditor.DataBind();
+                gvReportAssociate.DataSource = null;
+                gvReportAssociate.DataBind();
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    private DataTable prepareDataTable(string q)
+    {
+        try
+        {
+            using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(q, con))
+                    {
+                        con.Open();
+                        cmd.CommandType = CommandType.Text;
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+                    }
+                }
+                catch (Exception ex) { }
+                finally
+                {
+                    con.Close();
+                    con.Dispose();
+                }
+            }
+        }
+        catch (Exception ex) { }
+        return dt;
+    }
+    #endregion
+
+    #region "Button Events"
+    protected void btnSubmit_OnClick(object sender, EventArgs e)
+    {
+        try
+        {
+            Session["R1805_Audit_Phase_Name"] = ddlPhase.Text.Trim();
+            Session["R1805_Audit_Type"] = ddlAuditType.Text.Trim();
+            Response.Redirect("R1805_ATAEntryDtl.aspx");
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private void getdata()
+    {
+        try
+        {
+            fn_FormData();
+
+            string pfrmDate = string.Empty;
+            string ptoDate = string.Empty;
+            string pPhase = string.Empty;
+            string pAuditType = string.Empty;
+            string pFilterType = string.Empty;
+            string pBillType = string.Empty;
+            string pBillCode = string.Empty;
+            string pClientId = string.Empty;
+            string pBillForm = string.Empty;
+            string pBillMode = string.Empty;
+            string pMinAmount = string.Empty;
+            string pMaxAmount = string.Empty;
+            string pSamplingPercentage = string.Empty;
+
+            int dataInserted = 0;
+
+            SqlCommand cmd = new SqlCommand("PRC_GET_AUDIT_SAMPLING_DATA_v1", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            if (!string.IsNullOrEmpty(strFromDate))
+            {
+                if (string.IsNullOrEmpty(strFromTime))
+                    pfrmDate = strFromDate;
+                else
+                    pfrmDate = strFromDate + " " + strFromTime;
+            }
+            if (!string.IsNullOrEmpty(strToDate))
+            {
+                if (string.IsNullOrEmpty(strToTime))
+                {
+                    ptoDate = strToDate;
+                }
+                else
+                {
+                    ptoDate = strToDate + " " + strToTime;
+                }
+
+            }
+            if (!string.IsNullOrEmpty(strPhase))
+            {
+                pPhase = strPhase;
+            }
+            if (!string.IsNullOrEmpty(strAuditType))
+            {
+                pAuditType = strAuditType;
+            }
+            if (!string.IsNullOrEmpty(strFilterType))
+            {
+                pFilterType = strFilterType;
+            }
+            if (!string.IsNullOrEmpty(strBillType))
+            {
+                pBillType = strBillType;
+            }
+            if (!string.IsNullOrEmpty(strBillCode))
+            {
+                pBillCode = strBillCode;
+            }
+
+            if (!string.IsNullOrEmpty(strClientId))
+            {
+                pClientId = strClientId;
+            }
+            if (!string.IsNullOrEmpty(strBillForm))
+            {
+                pBillForm = strBillForm;
+            }
+            if (!string.IsNullOrEmpty(strBillMode))
+            {
+                pBillMode = strBillMode;
+            }
+
+            if (!string.IsNullOrEmpty(strMinAmount))
+            {
+                pMinAmount = strMinAmount;
+            }
+            if (!string.IsNullOrEmpty(strMaxAmount))
+            {
+                pMaxAmount = strMaxAmount;
+            }
+            strSamplingPercentage = txtSmplingperc.Text.Trim();
+            cmd.Parameters.AddWithValue("@FROMDate", String.IsNullOrEmpty(pfrmDate) ? DBNull.Value : (object)pfrmDate);
+            cmd.Parameters.AddWithValue("@TODate", String.IsNullOrEmpty(ptoDate) ? DBNull.Value : (object)ptoDate);
+
+            cmd.Parameters.AddWithValue("@phase", String.IsNullOrEmpty(pPhase) ? DBNull.Value : (object)pPhase);
+            cmd.Parameters.AddWithValue("@audittype", String.IsNullOrEmpty(pAuditType) ? DBNull.Value : (object)pAuditType);
+            cmd.Parameters.AddWithValue("@filtertype", String.IsNullOrEmpty(pFilterType) ? DBNull.Value : (object)pFilterType);
+            cmd.Parameters.AddWithValue("@billtype", String.IsNullOrEmpty(pBillType) ? DBNull.Value : (object)pBillType);
+            cmd.Parameters.AddWithValue("@billcode", String.IsNullOrEmpty(pBillCode) ? DBNull.Value : (object)pBillCode);
+            cmd.Parameters.AddWithValue("@Clientid", String.IsNullOrEmpty(pClientId) ? DBNull.Value : (object)pClientId);
+            cmd.Parameters.AddWithValue("@billform", String.IsNullOrEmpty(pBillForm) ? DBNull.Value : (object)pBillForm);
+            cmd.Parameters.AddWithValue("@billmode", String.IsNullOrEmpty(pBillMode) ? DBNull.Value : (object)pBillMode);
+
+            cmd.Parameters.AddWithValue("@Min_Charge_Amount", String.IsNullOrEmpty(pMinAmount) ? 0 : (object)pMinAmount);
+            cmd.Parameters.AddWithValue("@Max_Charge_Amount", String.IsNullOrEmpty(pMaxAmount) ? 0 : (object)pMaxAmount);
+            cmd.Parameters.AddWithValue("@assigner_id", Convert.ToString(Session["uid"]));
+            cmd.Parameters.AddWithValue("@PERC", String.IsNullOrEmpty(strSamplingPercentage) ? 100 : (object)strSamplingPercentage);
+            cmd.CommandTimeout.Equals(180);
+
+
+            string strtest = string.Empty;
+            strtest = "exec PRC_GET_AUDIT_SAMPLING_DATA_V1 '" + cmd.Parameters[0].Value.ToString().Trim() + "','" + cmd.Parameters[1].Value.ToString().Trim() + "','" + cmd.Parameters[2].Value.ToString().Trim() + "','" + cmd.Parameters[3].Value.ToString().Trim() + "','" + cmd.Parameters[4].Value.ToString().Trim() + "','" + cmd.Parameters[5].Value.ToString().Trim() + "','" + cmd.Parameters[6].Value.ToString().Trim() + "','" + cmd.Parameters[7].Value.ToString().Trim() + "','" + cmd.Parameters[8].Value.ToString().Trim() + "','" + cmd.Parameters[9].Value.ToString().Trim() + "','" + cmd.Parameters[10].Value.ToString().Trim() + "','" + cmd.Parameters[11].Value.ToString().Trim() + "','" + cmd.Parameters[12].Value.ToString().Trim() + "','" + cmd.Parameters[13].Value.ToString().Trim() + "'";
+            //Session["SamplingQuery"] = "exec PRC_GET_AUDIT_SAMPLING_DATA '" + cmd.Parameters[0].Value.ToString().Trim() + "','" + cmd.Parameters[1].Value.ToString().Trim() + "','" + cmd.Parameters[2].Value.ToString().Trim() + "','" + cmd.Parameters[3].Value.ToString().Trim() + "','" + cmd.Parameters[4].Value.ToString().Trim() + "','" + cmd.Parameters[5].Value.ToString().Trim() + "','" + cmd.Parameters[6].Value.ToString().Trim() + "','" + cmd.Parameters[7].Value.ToString().Trim() + "','" + cmd.Parameters[8].Value.ToString().Trim() + "','" + cmd.Parameters[9].Value.ToString().Trim() + "','" + cmd.Parameters[10].Value.ToString().Trim() + "','" + cmd.Parameters[11].Value.ToString().Trim() + "','" + cmd.Parameters[12].Value.ToString().Trim() + "','" + cmd.Parameters[13].Value.ToString().Trim() + "'";
+
+            Session["SamplingQuery"] = "exec PRC_GET_AUDIT_SAMPLING_DATA_V1 '" + cmd.Parameters[0].Value.ToString().Trim() + "','" + cmd.Parameters[1].Value.ToString().Trim() + "','" + cmd.Parameters[2].Value.ToString().Trim() + "','" + cmd.Parameters[3].Value.ToString().Trim() + "','" + cmd.Parameters[4].Value.ToString().Trim() + "','" + cmd.Parameters[5].Value.ToString().Trim() + "','" + cmd.Parameters[6].Value.ToString().Trim() + "','" + cmd.Parameters[7].Value.ToString().Trim() + "','" + cmd.Parameters[8].Value.ToString().Trim() + "','" + cmd.Parameters[9].Value.ToString().Trim() + "','" + cmd.Parameters[10].Value.ToString().Trim() + "','" + cmd.Parameters[11].Value.ToString().Trim() + "','" + cmd.Parameters[12].Value.ToString().Trim() + "','" + cmd.Parameters[13].Value.ToString().Trim() + "'";
+            
+            
+            cmd.CommandTimeout = 100;
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            if (dt.Rows.Count > 0)
+            {
+                if (ddlFilterType.Text.Trim().Equals("Associate"))
+                {
+                    gvReportAssociate.DataSource = dt.Rows.Count > 0 ? dt : null;
+                    gvReportAssociate.DataBind();
+                    gvReportAuditor.DataSource = null;
+                    gvReportAuditor.DataBind();
+                }
+                else
+                {
+                    gvReportAuditor.DataSource = dt.Rows.Count > 0 ? dt : null;
+                    gvReportAuditor.DataBind();
+                    gvReportAssociate.DataSource = null;
+                    gvReportAssociate.DataBind();
+                }
+                dataInserted += 1;
+            }
+
+        }
+        catch (Exception ex)
+        {
+        }
+
+    }
+
+    private void fn_FormData()
+    {
+        strQuery = string.Empty;
+        strPhase = string.Empty;
+        strAuditType = string.Empty;
+        strFilterType = string.Empty;
+        strBillType = string.Empty;
+        strBillCode = string.Empty;
+        strClientId = string.Empty;
+        strBillForm = string.Empty;
+        strBillMode = string.Empty;
+        strMinAmount = string.Empty;
+        strMaxAmount = string.Empty;
+        strFromDate = string.Empty;
+        strToDate = string.Empty;
+        strFromTime = string.Empty;
+        strToTime = string.Empty;
+        strSamplingPercentage = string.Empty;
+
+        try
+        {
+            //if (chkPhase.Checked == true)
+            //{
+            strPhase = ddlPhase.SelectedValue.Trim();
+            Session["sPhase"] = strPhase;
+            //}
+            //else
+            //{
+            //    Session["sPhase"] = null;
+            //}
+            //if (chkAuditType.Checked == true)
+            //{
+            strAuditType = ddlAuditType.SelectedValue.Trim();
+            Session["sAuditType"] = strAuditType;
+            //}
+            //else
+            //{
+            //    Session["sAuditType"] = null;
+            //}
+            //if (chkFilterType.Checked == true)
+            //{
+
+            strFilterType = ddlFilterType.SelectedValue.Trim();
+            Session["sFilterType"] = strFilterType;
+            //}
+
+            //else
+            //{
+            //    Session["sFilterType"] = null;
+            //}
+            if (Chk_Bill_Type.Checked == true)
+            {
+                strBillType = Cmb_Bill_Type.SelectedValue.Trim();
+                Session["sBillType"] = strBillType;
+            }
+            else
+            {
+                Session["sBillType"] = null;
+            }
+            if (Chk_Bill_Code.Checked == true)
+            {
+                strBillCode = Cmb_Bill_Code.SelectedValue.Trim();
+                Session["sBillCode"] = strBillCode;
+            }
+            else
+            {
+                Session["sBillCode"] = null;
+            }
+
+            if (Chk_Client_Id.Checked == true)
+            {
+                strClientId = Cmb_Client_Id.SelectedValue.Trim();
+                Session["sClientId"] = strBillCode;
+            }
+            else
+            {
+                Session["sClientId"] = null;
+            }
+
+            if (Chk_Bill_Form1.Checked == true)
+            {
+                strBillForm = Cmb_Bill_Form1.SelectedValue.Trim();
+                Session["sBillForm"] = strBillForm;
+            }
+            else
+            {
+                Session["sBillForm"] = null;
+            }
+
+
+            if (Chk_Bill_Mode.Checked == true)
+            {
+                strBillMode = Cmb_Bill_Mode.SelectedValue.Trim();
+                Session["sBillMode"] = strBillMode;
+            }
+            else
+            {
+                Session["sBillMode"] = null;
+            }
+
+
+
+            if (Chk_Min_Amount.Checked == true)
+            {
+                if (Txt_Min_Amount.Text.Trim() != string.Empty)
+                {
+                    strMinAmount = Txt_Min_Amount.Text.Trim();
+                }
+                Session["sMinAmount"] = strMinAmount;
+            }
+            else
+            {
+                Session["sMinAmount"] = null;
+            }
+
+
+            if (Chk_Max_Amount.Checked == true)
+            {
+                if (Txt_Max_Amount.Text.Trim() != string.Empty)
+                {
+                    strMaxAmount = Txt_Max_Amount.Text.Trim();
+                }
+                Session["sMaxAmount"] = strMaxAmount;
+            }
+            else
+            {
+                Session["sMaxAmount"] = null;
+            }
+
+
+            if (txtFromDate.Text.Trim() != string.Empty)
+            {
+                strFromDate = txtFromDate.Text.Trim();
+
+                Session["sFromDate"] = strFromDate;
+            }
+            else
+            {
+                Session["sFromDate"] = null;
+            }
+            if (txtToDate.Text.Trim() != string.Empty)
+            {
+                strToDate = txtToDate.Text.Trim();
+
+                Session["sToDate"] = strToDate;
+            }
+            else
+            {
+                Session["sToDate"] = null;
+            }
+
+
+            if (Chk_From_Time.Checked == true)
+            {
+                if (Txt_From_Time.Text.Trim() != string.Empty)
+                {
+                    strFromTime = Txt_From_Time.Text.Trim();
+                }
+
+                Session["sFromTime"] = strFromTime;
+            }
+            else
+            {
+                Session["sFromTime"] = null;
+            }
+
+            if (Chk_To_Time.Checked == true)
+            {
+                if (Txt_To_Time.Text.Trim() != string.Empty)
+                {
+                    strToTime = Txt_To_Time.Text.Trim();
+                }
+
+                Session["sToTime"] = strToTime;
+            }
+            else
+            {
+                Session["ToTime"] = null;
+            }
+
+            if (txtSmplingperc.Text.Trim() != string.Empty)
+            {
+                strSamplingPercentage = txtSmplingperc.Text.Trim();
+
+                Session["SamplingPercentage"] = strSamplingPercentage;
+            }
+
+            //Session["sPhase"]=strPhase;
+            //Session["sAuditType"]=strAuditType;
+            //Session["sFilterType"]=strFilterType;
+            //Session["sBillType"]=strBillType;
+            //Session["sBillCode"]=strBillCode;
+            //Session["sClientId"]=strClientId;
+            //Session["sBillMode"]=strBillMode;
+            //Session["sMinAmount"]=strMinAmount;
+            //Session["sMaxAmount"]=strMaxAmount;
+            //Session["sFromDate"]=strFromDate;
+            //Session["sToDate"]=strToDate;
+            //Session["sFromTime"]=strFromTime;
+            //Session["ToTime"]=strToTime;
+            //Session["SamplingPercentage"] = strSamplingPercentage;
+
+
+            //Session["ProcessList"] = strProcessList;
+            //Session["BillTypeList"] = strBillTypeList;
+            //Session["StateList"] = strStateList;
+            //Session["ClientCodeList"] = strClientCodeList;
+            //Session["EmployeeName"] = strEmployeeName;
+            //Session["MinAmount"] = strMinAmount;
+            //Session["MaxAmount"] = strMaxAmount;
+            //Session["FromDate"] = strFromDate;
+            //Session["ToDate"] = strToDate;
+            //Session["FromTime"] = strFromTime;
+            //Session["ToTime"] = strToTime;
+            //Session["SamplingPercentage"] = strSamplingPercentage;
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    protected void btnSubmit1_OnClick(object sender, EventArgs e)
+    {
+        try
+        {
+            bindEmpAuditData();
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+
+
+    protected void btnBack_OnClick(object sender, EventArgs e)
+    {
+        try
+        {
+            Response.Redirect("Default.aspx", false);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    #endregion
+
+    #region "Dropdown Events"
+    protected void ddlFilterType_OnSelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+
+    private void bindEmpAuditData()
+    {
+        try
+        {
+            gvReportAssociate.DataSource = gvReportAuditor.DataSource = null;
+            gvReportAssociate.DataBind();
+            gvReportAuditor.DataBind();
+            //loadAssociateWise();
+            getdata();
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    #endregion
+
+    #region "Gridview Events"
+    protected void gvReportAssociate_OnRowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    protected void gvReportAssociate_OnRowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        try
+        {
+            int rowIndex = Convert.ToInt32(e.CommandArgument);
+            GridViewRow row = gvReportAssociate.Rows[rowIndex];
+            string associateId = (row.FindControl("lblAssociateId") as Label).Text;
+            string userId = (row.FindControl("lblUserId") as Label).Text;
+            string name = (row.FindControl("lblAssociateName") as Label).Text;
+            Session["R1805_From_Date"] = txtFromDate.Text.Trim();
+            Session["R1805_To_Date"] = txtToDate.Text.Trim();
+            Session["R1805_Audit_Phase_Name"] = ddlPhase.Text.Trim();
+            Session["R1805_Audit_Type"] = ddlAuditType.Text.Trim();
+            Session["R1805_Filter_By"] = ddlFilterType.SelectedItem.Text.Trim();
+            Session["R1805_AssociateId"] = associateId.Trim();
+            Session["R1805_Name"] = name.Trim();
+            Session["R1805_UserId"] = userId.Trim();
+            Session["R1805_AuditorId"] = "";
+            Session["txtSmplingperc"] = txtSmplingperc.Text;
+            Session["clicked_id"] = associateId.Trim();
+
+            fn_FormData();
+            Session["sPhase"] = strPhase;
+            Session["sAuditType"] = strAuditType;
+            Session["sFilterType"] = strFilterType;
+            Session["sBillType"] = strBillType;
+            Session["sBillCode"] = strBillCode;
+            Session["sClientId"] = strClientId;
+            Session["sBillForm"] = strBillForm;
+            
+            Session["sBillMode"] = strBillMode;
+            Session["sMinAmount"] = strMinAmount;
+            Session["sMaxAmount"] = strMaxAmount;
+            Session["sFromDate"] = strFromDate;
+            Session["sToDate"] = strToDate;
+            Session["sFromTime"] = strFromTime;
+            Session["ToTime"] = strToTime;
+            Session["SamplingPercentage"] = strSamplingPercentage;
+
+            //Response.Redirect("R1805_ATAEntryDtl.aspx", false);
+            Response.Redirect("R1805_ATA_assignement.aspx", false);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    protected void gvReportAuditor_OnRowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    protected void gvReportAuditor_OnRowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        try
+        {
+            int rowIndex = Convert.ToInt32(e.CommandArgument);
+            GridViewRow row = gvReportAuditor.Rows[rowIndex];
+            string auditorId = (row.FindControl("lblAuditorId") as Label).Text;
+            string name = (row.FindControl("lblAuditorName") as Label).Text;
+            Session["R1805_From_Date"] = txtFromDate.Text.Trim();
+            Session["R1805_To_Date"] = txtToDate.Text.Trim();
+            Session["R1805_Audit_Phase_Name"] = ddlPhase.Text.Trim();
+            Session["R1805_Audit_Type"] = ddlAuditType.Text.Trim();
+            Session["R1805_Filter_By"] = ddlFilterType.SelectedItem.Text.Trim();
+            Session["R1805_AuditorId"] = auditorId.Trim();
+            Session["R1805_Name"] = name.Trim();
+            Session["R1805_AssociateId"] = "";
+            Session["R1805_UserId"] = "";
+            Session["txtSmplingperc"] = txtSmplingperc.Text;
+            Session["clicked_id"] = auditorId.Trim();
+
+            fn_FormData();
+            Session["sPhase"] = strPhase;
+            Session["sAuditType"] = strAuditType;
+            Session["sFilterType"] = strFilterType;
+            Session["sBillType"] = strBillType;
+            Session["sBillCode"] = strBillCode;
+            Session["sClientId"] = strClientId;
+            Session["sBillForm"] = strBillForm;
+
+            Session["sBillMode"] = strBillMode;
+            Session["sMinAmount"] = strMinAmount;
+            Session["sMaxAmount"] = strMaxAmount;
+            Session["sFromDate"] = strFromDate;
+            Session["sToDate"] = strToDate;
+            Session["sFromTime"] = strFromTime;
+            Session["ToTime"] = strToTime;
+            Session["SamplingPercentage"] = strSamplingPercentage;
+
+            //Response.Redirect("R1805_ATAEntryDtl.aspx", false);
+            Response.Redirect("R1805_ATA_assignement.aspx", false);
+            
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    #endregion
+}
+
+
+
+<%@ Page Title="" Language="C#" MasterPageFile="~/PageMaster.master" AutoEventWireup="true"
+    CodeFile="E30_AuditSelectionDtl_V2.aspx.cs" Inherits="E30_AuditSelectionDtl_V2" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="Server">
+    <script type="text/javascript" language="javascript">
+
+        let activityTimer;
+
+        function resetSession() {
+            clearTimeout(activityTimer);
+            activityTimer = setTimeout(() => {
+                fetch('/extend-session', { method: 'POST' });
+            }, 5 * 60 * 1000); // Adjust time as needed
+        }
+
+        ['mousemove', 'keydown', 'click'].forEach(event => {
+            document.addEventListener(event, resetSession);
+        });
+
+        var varCount = 0;
+        function fn_RestrictKey() {
+            return false;
+        }
+
+        function HideColumn() {
+            var rows = document.getElementById('<%=gvParameter.ClientID %>').rows;
+            for (i = 0; i < rows.length; i++) {
+                rows[i].cells[7].style.display = "none";
+            }
+
+        };
+
+
+
+        function fn_CheckChangeProc(id) {
+            var GridView = document.getElementById('<%=gvParameter.ClientID %>');
+            var inputList = GridView.getElementsByTagName("input");
+            var procErrCount = 0;
+
+
+            for (var i = 0; i < inputList.length; i++) {
+                if (inputList[i].type == "checkbox") {
+                    if (inputList[i].checked == true) {
+
+                        if (i % 2 == 0) {
+                            procErrCount = Number(procErrCount) + 1;
+                        }
+                    }
+                }
+            }
+
+            var status = $("[id*=txt_Proc_Err_Scale1]");
+            status.val(procErrCount);
+            //            alert(status.val());
+            //            document.getElementById('<%=txt_Proc_Err_Scale1.ClientID %>').innerText = procErrCount;
+            fn_Calc();
+            fn_VarianceCalc();
+        }
+
+        function fn_CheckChangeFin(id) {
+            var GridView = document.getElementById('<%=gvParameter.ClientID %>');
+            var inputList = GridView.getElementsByTagName("input");
+            var FinErrCount = 0;
+            for (var i = 0; i < inputList.length; i++) {
+                if (inputList[i].type == "checkbox") {
+                    if (inputList[i].checked == true) {
+                        if (i % 2 == 1) {
+                            FinErrCount = Number(FinErrCount) + 1;
+                        }
+                    }
+                }
+            }
+            var status = $("[id*=txt_Fin_Err_Scale1]");
+            status.val(FinErrCount);
+            /// document.getElementById('<%=txt_Fin_Err_Scale1.ClientID %>').innerText = FinErrCount;
+            fn_Calc();
+            fn_VarianceCalc();
+
+        }
+
+
+        function MyFunction(ddlid, lblprocid, chkprocid, lblfinid, chkfinid) {
+            var ddlid = document.getElementById(ddlid);
+            var chkprocid = document.getElementById(chkprocid);
+            var chkfinid = document.getElementById(chkfinid);
+            var lblprocid = document.getElementById(lblprocid);
+            var lblfinid = document.getElementById(lblfinid);
+
+            if (ddlid.value == 'Yes') {
+                chkprocid.disabled = true;
+                chkfinid.disabled = true;
+
+                ddlid.style.color = "White";
+                ddlid.style.backgroundColor = "Green";
+            }
+            else if (ddlid.value == 'No') {
+                chkprocid.disabled = false;
+
+                if (lblfinid == '0')
+                    chkfinid.disabled = true;
+                else
+                    chkfinid.disabled = false
+
+                ddlid.style.color = "White";
+                ddlid.style.backgroundColor = "Red";
+            }
+            else {
+                chkprocid.disabled = true;
+                chkfinid.disabled = true;
+
+                ddlid.style.color = "White";
+                ddlid.style.backgroundColor = "Blue";
+            }
+
+        }
+
+        function GetEnable1(ddlid, lblprocid, chkprocid, lblfinid, chkfinid) {
+            var ddlid = document.getElementById(ddlid);
+            var chkprocid = document.getElementById(chkprocid);
+            var chkfinid = document.getElementById(chkfinid);
+            var lblprocid = document.getElementById(lblprocid);
+            var lblfinid = document.getElementById(lblfinid);
+
+            if (ddlid.value == 'Yes') {
+                chkprocid.disabled = true;
+                chkfinid.disabled = true;
+
+                ddlid.style.color = "White";
+                ddlid.style.backgroundColor = "Green";
+            }
+            else if (ddlid.value == 'No') {
+                chkprocid.disabled = false;
+
+                if (lblfinid == '0')
+                    chkfinid.disabled = true;
+                else
+                    chkfinid.disabled = false
+
+                ddlid.style.color = "White";
+                ddlid.style.backgroundColor = "Red";
+            }
+            else {
+                chkprocid.disabled = true;
+                chkfinid.disabled = true;
+
+                ddlid.style.color = "White";
+                ddlid.style.backgroundColor = "Blue";
+            }
+
+        }
+
+
+
+
+
+        function fn_CheckGridChangeProc(id) {
+            var GridView = document.getElementById('<%=gvParameterV2.ClientID %>');
+            var inputList = GridView.getElementsByTagName("input");
+            var procErrCount = 0;
+            var status = $("[id*=Txt_Proc_Error]");
+            var procExistCount = status.val();
+
+            //var procExistCount = document.getElementById('<%=Txt_Proc_Error.ClientID %>').value;
+            for (var i = 0; i < inputList.length; i++) {
+                if (inputList[i].type == "checkbox") {
+                    if (inputList[i].checked == true) {
+                        if (i % 2 == 0) {
+                            procErrCount = Number(procErrCount) + 1;
+
+                        }
+                    }
+                }
+            }
+            var status = $("[id*=txt_Proc_Err_Scale2]");
+            status.val(procErrCount);
+            // document.getElementById('<%=txt_Proc_Err_Scale2.ClientID %>').innerText = procErrCount;
+            fn_Calc();
+            fn_VarianceCalc();
+        }
+        function fn_CheckGridChangeFin(id) {
+            var GridView = document.getElementById('<%=gvParameterV2.ClientID %>');
+            var inputList = GridView.getElementsByTagName("input");
+            var FinErrCount = 0;
+            for (var i = 0; i < inputList.length; i++) {
+                if (inputList[i].type == "checkbox") {
+                    if (inputList[i].checked == true) {
+                        if (i % 2 == 1) {
+                            FinErrCount = Number(FinErrCount) + 1;
+                        }
+                    }
+                }
+            }
+            var status = $("[id*=txt_Fin_Err_Scale2]");
+            status.val(FinErrCount);
+            // document.getElementById('<%=txt_Fin_Err_Scale2.ClientID %>').innerText = FinErrCount;
+            fn_Calc();
+            fn_VarianceCalc();
+
+        }
+
+        function fn_checkComments() {
+            var GridView = document.getElementById('<%=gvParameter.ClientID %>');
+            var inputList = GridView.getElementsByTagName("input");
+            var inputList1 = GridView.getElementsByTagName("select");
+            var inputList2 = GridView.getElementsByTagName("textarea");
+
+
+
+            for (var i = 0; i < inputList1.length; i++) {
+                var dropdown;
+                var textbox;
+                var checkboxPROC;
+                var checkboxFIN;
+
+                if (inputList1[i].type == "select-one") {
+                    dropdown = inputList1[i];
+                    var test = dropdown.id;
+                }
+                if (inputList2[i].type == "textarea") {
+                    textbox = inputList2[i];
+                    var test = textbox.id;
+                }
+                if (inputList[i].type == "checkbox") {
+                    checkboxPROC = inputList[i * 2];
+                    checkboxFIN = inputList[(i * 2) + 1];
+
+                    var test = checkboxPROC.id;
+                    var test1 = checkboxFIN.id;
+                }
+
+                if (dropdown.value == "No") {
+                    var ddlpaymentErrorCat = document.getElementById('<%=ddlPaymentErrCategory.ClientID %>').value;
+
+                    if (checkboxPROC.checked != true || checkboxPROC.checked != true) {
+                        dropdownV2.focus();
+                        alert("Please select Incorrect Parameter");
+                        return false;
+                    }
+                    if (textbox.value.trim() == "") {
+                        textbox.focus();
+                        alert("Please enter the comment.");
+                        return false;
+                    }
+                    if (i == 2) {
+                        if (ddlpaymentErrorCat == '0') {
+
+                            alert("Please select PaymentErrorCategory");
+
+                            return false;
+                            ddlpaymentErrorCat.focus();
+                        }
+                    }
+                }
+            }
+            var GridViewV2 = document.getElementById('<%=gvParameterV2.ClientID %>');
+            var inputListV2 = GridViewV2.getElementsByTagName("input");
+            var inputList1V2 = GridViewV2.getElementsByTagName("select");
+            var inputList2V2 = GridViewV2.getElementsByTagName("textarea");
+
+
+            for (var i = 0; i < inputList1V2.length; i++) {
+                var dropdownV2;
+                var textboxV2;
+                var checkboxPROCV2;
+                var checkboxFINV2;
+
+                if (inputList1V2[i].type == "select-one") {
+                    var test = inputList1V2[i].id;
+                    dropdownV2 = inputList1V2[i];
+                }
+                if (inputList2V2[i].type == "textarea") {
+                    var test = inputList2V2[i].id;
+                    textboxV2 = inputList2V2[i];
+                }
+                if (inputListV2[i].type == "checkbox") {
+                    checkboxPROCV2 = inputListV2[i * 2];
+                    checkboxFINV2 = inputListV2[(i * 2) + 1];
+                    var test = checkboxPROCV2.id;
+                    var test1 = checkboxFINV2.id;
+                }
+
+                if (dropdownV2.value == "No") {
+
+                    if (i == 14 || i == 15) {
+                    }
+                    else {
+                        if (checkboxPROCV2.checked != true || checkboxPROCV2.checked != true) {
+                            dropdownV2.focus();
+                            alert("Please select Incorrect Parameter");
+                            return false;
+                        }
+                    }
+                    if (textboxV2.value.trim() == "") {
+                        textboxV2.focus();
+                        alert("Please enter the comment.");
+                        return false;
+                    }
+                }
+
+            }
+            return true;
+        }
+
+
+        function fn_Calc() {
+
+            //var ProcErrCountSale1 = document.getElementById('<%=txt_Proc_Err_Scale1.ClientID %>').value;
+            var ProcErrCountSale1 = $("[id*=txt_Proc_Err_Scale1]").val();
+            //var ProcErrCountSale2 = document.getElementById('<%=txt_Proc_Err_Scale2.ClientID %>').value;
+            var ProcErrCountSale2 = $("[id*=txt_Proc_Err_Scale2]").val();
+            // var FinErrCountSale1 = document.getElementById('<%=txt_Fin_Err_Scale1.ClientID %>').value;
+            var FinErrCountSale1 = $("[id*=txt_Fin_Err_Scale1]").val();
+            // var FinErrCountSale2 = document.getElementById('<%=txt_Fin_Err_Scale2.ClientID %>').value;
+            var FinErrCountSale2 = $("[id*=txt_Fin_Err_Scale2]").val();
+
+            var status = $("[id*=Txt_Proc_Error]");
+            status.val(Number(ProcErrCountSale1) + Number(ProcErrCountSale2));
+
+            var status = $("[id*=txt_fin_error]");
+            status.val(Number(FinErrCountSale1) + Number(FinErrCountSale2));
+
+            //document.getElementById('<%=Txt_Proc_Error.ClientID %>').innerText = Number(ProcErrCountSale1) + Number(ProcErrCountSale2);
+            //document.getElementById('<%=txt_fin_error.ClientID %>').innerText = Number(FinErrCountSale1) + Number(FinErrCountSale2);
+            var CurrentProcErrCount = Number(ProcErrCountSale1) + Number(ProcErrCountSale2);
+            var CurrentFinErrCount = Number(FinErrCountSale1) + Number(FinErrCountSale2);
+            if (CurrentProcErrCount == 0 && CurrentFinErrCount == 0) {
+                var status = $("[id*=Txt_Audit_Status]");
+                status.val("Correct");
+                //document.getElementById('<%=Txt_Audit_Status.ClientID %>').innerText = "Correct";
+            }
+            else if (CurrentProcErrCount >= 1 || CurrentFinErrCount >= 1) {
+                var status = $("[id*=Txt_Audit_Status]");
+                status.val("Incorrect");
+                // document.getElementById('<%=Txt_Audit_Status.ClientID %>').innerText = "Incorrect";
+
+            }
+        }
+
+        function fn_VarianceCalc() {
+
+            var RevAmount = $("[id*=Txt_Rev_Amount]").val()
+            var CorrAmount = $("[id*=Txt_Corr_Amount]").val()
+            var eorrmsg = $("[id*=lblerrormsg]").val();
+
+            if (RevAmount == "") {
+                RevAmount = '0';
+            }
+
+            if (CorrAmount == "") {
+                CorrAmount = '0';
+            }
+
+            var VarPercen;
+            if (Number(RevAmount) >= Number(CorrAmount)) {
+                var test1 = Number(RevAmount);
+                var test2 = Number(CorrAmount);
+
+                var test3 = test1 - test2;
+                $("[id*=Txt_Dollar_Variance]").val(test3.toFixed(2))
+                VarPercen = (Number($("[id*=Txt_Dollar_Variance]").val()).toFixed(2) / test1.toFixed(2)) * 100;
+                if (isNaN(VarPercen))
+                    $("[id*=Txt_Dollar_Variance_Per]").val("0");
+                else
+                    $("[id*=Txt_Dollar_Variance_Per]").val(VarPercen.toFixed(2))
+                if (Number($("[id*=Txt_Dollar_Variance_Per]").val()) >= 6) {
+                    $("[id*=lblerrormsg]").val("Contributing Fatal Error :" + VarPercen.toFixed(2));
+                }
+                else {
+                    $("[id*=lblerrormsg]").val("");
+                }
+            }
+            else {
+                var test1 = Number(CorrAmount);
+                var test2 = Number(RevAmount);
+                alert('Corr Amount cannot be greater than Rev Amount');
+                $("[id*=Txt_Corr_Amount]").val("")
+                $("[id*=Txt_Dollar_Variance_Per]").val("")
+                $("[id*=Txt_Dollar_Variance]").val(Number($("[id*=Txt_Rev_Amount]").val()) - Number(0))
+                $("[id*=lblerrormsg]").val("");
+                varCount = 1;
+                return false;
+            }
+        }
+
+
+
+        function checkAmt() {
+
+            fn_VarianceCalc();
+        }
+
+        function roundToTwo(num) {
+            return +(Math.round(num + "e+2") + "e-2");
+        }
+
+        function fn_Validate() {
+            var EmpId = document.getElementById('<%=Cmb_hreid.ClientID %>').value
+            var UserId = document.getElementById('<%=Txt_User_Id.ClientID %>').value.trim()
+            var BatchDate = document.getElementById('<%=Txt_Batch_Date.ClientID %>').value.trim()
+            var BillType = document.getElementById('<%=Cmb_Bill_Type.ClientID %>').value
+            var BillCode = document.getElementById('<%=Cmb_Bill_Code.ClientID %>').value
+            var ClientId = document.getElementById('<%=Cmb_Client_Id.ClientID %>').value
+            var BillId = document.getElementById('<%=Txt_Bill_Id.ClientID %>').value.trim()
+            var OriginalBillId = document.getElementById('<%=Txt_Org_bill_Id.ClientID %>').value.trim()
+            var RevAmount = document.getElementById('<%=Txt_Rev_Amount.ClientID %>').value.trim()
+            var CorrAmount = document.getElementById('<%=Txt_Corr_Amount.ClientID %>').value.trim()
+            var ClaimNo = document.getElementById('<%=Txt_Claim_No.ClientID %>').value.trim()
+            var ProcError = document.getElementById('<%=Txt_Proc_Error.ClientID %>').value
+            var FinError = document.getElementById('<%=txt_fin_error.ClientID %>').value
+
+            var phase_name = document.getElementById('<%=Txt_Phase_Name.ClientID %>').value.trim();
+            var Txt_Dollar_Variance_Per = document.getElementById('<%=Txt_Dollar_Variance_Per.ClientID %>').value.trim();
+
+
+            fn_VarianceCalc()
+            fn_Calc()
+
+            var Txt_Dollar_Variance_Chk = document.getElementById('<%=Txt_Dollar_Variance.ClientID %>').value.trim();
+            var ProcErrorChk = document.getElementById('<%=Txt_Proc_Error.ClientID %>').value
+            var FinErrorChk = document.getElementById('<%=txt_fin_error.ClientID %>').value
+
+            if (EmpId == '') {
+                alert('Field Emp Id Cannot Be Blank');
+                return false;
+            }
+
+            if (UserId == '') {
+                alert('Field User Id Cannot Be Blank');
+                return false;
+            }
+            if (BatchDate == '') {
+                alert('Field Batch Date Cannot Be Blank');
+                return false;
+            }
+            if (BillType == '') {
+                alert('Field Bill Type Cannot Be Blank');
+                return false;
+            }
+            if (BillCode == '') {
+                alert('Field Bill Code Cannot Be Blank');
+                return false;
+            }
+            if (BillId == '') {
+                alert('Field Bill Id Cannot Be Blank');
+                return false;
+            }
+            if (ClientId == '') {
+                alert('Field Bill Id Cannot Be Blank');
+                return false;
+            }
+            if (RevAmount == '') {
+                alert('Field Rev Amount Cannot Be Blank');
+                return false;
+            }
+            if (CorrAmount == '') {
+                alert('Field Corr Amount Cannot Be Blank');
+                return false;
+            }
+            if (ClaimNo == '') {
+                alert('Field Claim Number Cannot Be Blank');
+                return false;
+            }
+
+
+            //            if ((ProcError >= 1 || FinError >= 1) && comment == "") {
+            //                alert('Field Comments Cannot Be Blank');
+            //                return false;
+            //            }
+            if ((BatchDate == 'MM/DD/YYYY') || (BatchDate == 'mm/dd/yyyy')) {
+                alert('Select Date');
+                return false;
+            }
+            if (Txt_Dollar_Variance_Chk > 0) {
+                if ((Number(ProcErrorChk) + Number(FinErrorChk)) == 0) {
+
+                    alert('Please select Incorrect Parameter');
+                    return false;
+                }
+            }
+
+            return fn_checkComments();
+
+            if (varCount == 0) {
+                var CheckConfirm;
+                if (Number(Txt_Dollar_Variance_Per) >= 6) {
+                    CheckConfirm = confirm("Fatal Error : Do you want to save?");
+                }
+                else {
+                    CheckConfirm = confirm("Do you want to save?");
+                }
+
+                if (CheckConfirm == true) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            if (varCount == 1) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        function txt_comment_foucus() {
+
+        }
+        function saveMessage() {
+            swal("Success!", "Data Saved !", "success")
+        }
+        function ErrorMessage() {
+            sweetAlert("Error !", "Something went wrong!", "error");
+        }
+    </script>
+    <style type="text/css">
+        .pagination-ys {
+            /*display: inline-block;*/
+            padding-left: 0;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+            .pagination-ys table > tbody > tr > td {
+                display: inline;
+            }
+
+                .pagination-ys table > tbody > tr > td > a, .pagination-ys table > tbody > tr > td > span {
+                    position: relative;
+                    float: left;
+                    padding: 8px 12px;
+                    line-height: 1.42857143;
+                    text-decoration: none;
+                    color: #dd4814;
+                    background-color: #ffffff;
+                    border: 1px solid #dddddd;
+                    margin-left: -1px;
+                }
+
+                .pagination-ys table > tbody > tr > td > span {
+                    position: relative;
+                    float: left;
+                    padding: 8px 12px;
+                    line-height: 1.42857143;
+                    text-decoration: none;
+                    margin-left: -1px;
+                    z-index: 2;
+                    color: #aea79f;
+                    background-color: #f5f5f5;
+                    border-color: #dddddd;
+                    cursor: default;
+                }
+
+                .pagination-ys table > tbody > tr > td:first-child > a, .pagination-ys table > tbody > tr > td:first-child > span {
+                    margin-left: 0;
+                    border-bottom-left-radius: 4px;
+                    border-top-left-radius: 4px;
+                }
+
+                .pagination-ys table > tbody > tr > td:last-child > a, .pagination-ys table > tbody > tr > td:last-child > span {
+                    border-bottom-right-radius: 4px;
+                    border-top-right-radius: 4px;
+                }
+
+                .pagination-ys table > tbody > tr > td > a:hover, .pagination-ys table > tbody > tr > td > span:hover, .pagination-ys table > tbody > tr > td > a:focus, .pagination-ys table > tbody > tr > td > span:focus {
+                    color: #97310e;
+                    background-color: #eeeeee;
+                    border-color: #dddddd;
+                }
+
+        .blur {
+            background-color: black;
+            filter: alpha(opacity=50);
+            opacity: 0.7;
+            z-index: 120;
+        }
+
+        .divWaiting {
+            position: absolute;
+            background-color: LightGray;
+            z-index: 2147483647 !important;
+            opacity: 0.8;
+            overflow: hidden;
+            text-align: center;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            padding-top: 20%;
+        }
+
+        .modalBackground {
+            background-color: Black;
+            filter: alpha(opacity=90);
+            opacity: 0.4;
+        }
+
+        .modalPopup {
+            background-color: #FFFFFF;
+            border-width: 3px;
+            border-style: solid;
+            border-color: black;
+            padding-top: 10px;
+            padding-left: 10px;
+            width: 300px;
+            height: 140px;
+        }
+    </style>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <style type="text/css">
+        table tr td {
+            font-family: Palatino Linotype;
+            font-size: 13px;
+            font-weight: bold;
+        }
+    </style>
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <asp:UpdateProgress runat="server" ID="uProgress" AssociatedUpdatePanelID="up1">
+        <ProgressTemplate>
+            <div id="Imgt" style="position: fixed; width: 100%; height: 100%;" align="center"
+                runat="server" class="divWaiting">
+                Processing...<br />
+                <img src="Images\getdata.gif" style="position: static; right: 100px" /><br />
+            </div>
+        </ProgressTemplate>
+    </asp:UpdateProgress>
+    <asp:UpdatePanel ID="up1" runat="server">
+        <ContentTemplate>
+            <cc1:RoundedCornersExtender ID="dropQuestions" runat="server" TargetControlID="P1"
+                Radius="6" Corners="All">
+            </cc1:RoundedCornersExtender>
+            <asp:Panel runat="server" ID="P1" CssClass="Panel_CSS" Width="100%" BorderColor="#B5C7DE"
+                Style="font-family: Palatino Linotype; font-weight: bold; color: Black;">
+                <div align="left">
+                    <asp:HiddenField runat="server" ID="hiddenAId" />
+                    <br />
+                    <br />
+                    <center>
+                        <asp:Label runat="server" ID="Lbl_Heading" CssClass="textentry" ForeColor="Red" Font-Bold="true"
+                            Font-Size="Large"></asp:Label></center>
+                    <br />
+                    <asp:Label runat="server" ID="Lbl_Last_Detail" CssClass="Input" ForeColor="Red"></asp:Label>
+                </div>
+                <center style="background-color: lightSkyBlue;">
+                    <table cellpadding="6" cellspacing="4">
+                        <tr>
+                            <td align="left">Process
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList BackColor="#ffffcc" runat="server" ID="ddlPhase" CssClass="textEntry"
+                                    TabIndex="1" Width="210" OnSelectedIndexChanged="ddlPhase_SelectedIndexChanged"
+                                    AutoPostBack="true">
+                                </asp:DropDownList>
+                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator3" ControlToValidate="ddlPhase"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                            </td>
+                            <td align="left">Received Type
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList BackColor="#ffffcc" AutoPostBack="true" runat="server" ID="ddlrecievedtype"
+                                    CssClass="textEntry" TabIndex="1" Width="210" OnSelectedIndexChanged="ddlrecievedtype_SelectedIndexChanged">
+                                </asp:DropDownList>
+                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator2" ControlToValidate="ddlrecievedtype"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                            </td>
+                            <td align="left">Audit For
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList BackColor="#ffffcc" AutoPostBack="true" runat="server" ID="ddlauditfor"
+                                    CssClass="textEntry" TabIndex="1" Width="210" OnSelectedIndexChanged="ddlauditfor_SelectedIndexChanged">
+                                    <asp:ListItem Text="Code Review" Value="Code Review"></asp:ListItem>
+                                    <asp:ListItem Text="Bill Review" Value="Bill Review"></asp:ListItem>
+                                    <asp:ListItem Text="Nurse Review" Value="Nurse Review"></asp:ListItem>
+                                </asp:DropDownList>
+                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator4" ControlToValidate="ddlrecievedtype"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                            </td>
+                            <td align="left"></td>
+                            <td align="left">
+                                <asp:Button runat="server" ID="Btn_Search" Text="Search" Visible="false" OnClientClick="return checkAmt();"
+                                    CssClass="button" TabIndex="29" />
+                                <asp:Button runat="server" TabIndex="30" ID="Btn_Back" Text="<< Back" CssClass="button"
+                                    CausesValidation="false" PostBackUrl="~/E30_AuditSelection_V2.aspx" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">Emp Id
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList runat="server" ID="Cmb_hreid" OnSelectedIndexChanged="Cmb_hreid_OnSelectedIndexChanged"
+                                    CssClass="textEntry" BackColor="#ffffcc" TabIndex="1" AutoPostBack="true">
+                                </asp:DropDownList>
+                            </td>
+                            <td align="left">User Id
+                            </td>
+                            <td align="left">
+                                <asp:TextBox runat="server" ID="Txt_User_Id" CssClass="textEntry" Width="100" BackColor="#ffffcc"
+                                    TabIndex="2"></asp:TextBox>
+                            </td>
+                            <td align="left">Batch Date*
+                            </td>
+                            <td align="left">
+                                <asp:TextBox runat="server" ID="Txt_Batch_Date" size="15" Width="100" CssClass="textEntry"
+                                    BackColor="#ffffcc" TabIndex="3" />
+                                <cc1:CalendarExtender runat="server" ID="calExtender1" TargetControlID="Txt_Batch_Date"
+                                    PopupButtonID="Txt_Batch_Date" />
+                            </td>
+                            <td align="left">Bill Type
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList runat="server" ID="Cmb_Bill_Type" CssClass="textEntry" Width="100"
+                                    BackColor="#ffffcc" TabIndex="4">
+                                </asp:DropDownList>
+                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator1" ControlToValidate="Cmb_Bill_Type"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">Bill Code
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList runat="server" ID="Cmb_Bill_Code" CssClass="textEntry" Width="100"
+                                    BackColor="#ffffcc" TabIndex="5">
+                                </asp:DropDownList>
+                            </td>
+                            <td align="left">Client Id
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList runat="server" ID="Cmb_Client_Id" CssClass="textEntry" Width="100"
+                                    BackColor="#ffffcc" TabIndex="6">
+                                </asp:DropDownList>
+                            </td>
+                            <td align="left">Bill Id
+                            </td>
+                            <td align="left">
+                                <asp:TextBox runat="server" ID="Txt_Bill_Id" CssClass="textEntry" Width="100" BackColor="#ffffcc"
+                                    TabIndex="7"></asp:TextBox>
+                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator7" ControlToValidate="Txt_Bill_Id"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                            </td>
+                            <td align="left">Original Bill Id
+                            </td>
+                            <td align="left">
+                                <asp:TextBox runat="server" ID="Txt_Org_bill_Id" CssClass="textEntry" Width="100"
+                                    BackColor="#ffffcc" TabIndex="8"></asp:TextBox>
+                                <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator8" ControlToValidate="Txt_Org_bill_Id"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">Paid Amount
+                            </td>
+                            <td align="left">
+                                <asp:TextBox runat="server" ID="Txt_Rev_Amount" CssClass="textEntry" onblur="checkAmt();"
+                                    BackColor="#ffffcc" TabIndex="9" Width="100"></asp:TextBox>
+                            </td>
+                            <td align="left">Payable Amount
+                            </td>
+                            <td align="left">
+                                <asp:TextBox runat="server" ID="Txt_Corr_Amount" CssClass="textEntry" onblur="checkAmt();"
+                                    BackColor="#ffffcc" TabIndex="10" Width="100"></asp:TextBox>
+                            </td>
+                            <td align="left">Claim No
+                            </td>
+                            <td align="left">
+                                <asp:TextBox runat="server" ID="Txt_Claim_No" CssClass="textEntry" Width="100" BackColor="#ffffcc"
+                                    MaxLength="13" TabIndex="11"></asp:TextBox>
+                                <asp:RegularExpressionValidator Display="Dynamic" ControlToValidate="Txt_Claim_No"
+                                    ID="RegularExpressionValidator3" ValidationExpression="^[a-zA-Z\d]{13}$" runat="server"
+                                    ErrorMessage="Claim # - 13 Digits-ONly Numeric."></asp:RegularExpressionValidator>
+                            </td>
+                            <td align="left">Bill Form
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList runat="server" ID="Cmb_Bill_Form1" CssClass="textEntry" Width="100"
+                                    BackColor="#ffffcc" TabIndex="12">
+                                </asp:DropDownList>
+                                <asp:RequiredFieldValidator runat="server" ID="RR1" ControlToValidate="Cmb_Bill_Form1"
+                                    ErrorMessage="***" Display="Dynamic" CssClass="Input"></asp:RequiredFieldValidator>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">Bill Mode
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList runat="server" ID="Cmb_Bill_Mode" CssClass="textEntry" Width="100"
+                                    BackColor="#ffffcc" TabIndex="13">
+                                </asp:DropDownList>
+                            </td>
+                            <td align="left">Focused Audit Category
+                            </td>
+                            <td align="left">
+                                <asp:DropDownList ID="ddlCastCrew" runat="server" CssClass="textEntry" Width="100"
+                                    TabIndex="14">
+                                    <asp:ListItem Text="" Value="0"></asp:ListItem>
+                                    <asp:ListItem Text="Normal Audit" Value="Normal Audit"></asp:ListItem>
+                                    <asp:ListItem Text="Telemedicine Bill" Value="Telemedicine Bill"></asp:ListItem>
+                                    <asp:ListItem Text="Medical Responsibility Termination Date" Value="Medical Responsibility Termination Date"></asp:ListItem>
+                                    <asp:ListItem Text="FL Bill" Value="FL Bill"></asp:ListItem>
+                                    <asp:ListItem Text="NY Bill" Value="NY Bill"></asp:ListItem>
+                                    <asp:ListItem Text="TX Bill" Value="TX Bill"></asp:ListItem>
+                                    <asp:ListItem Text="Occ Acc Bill" Value="Occ Acc Bill"></asp:ListItem>
+                                    <asp:ListItem Text="Emails" Value="Emails"></asp:ListItem>
+                                    <asp:ListItem Text="Salesforce" Value="Salesforce"></asp:ListItem>
+                                    <asp:ListItem Text="Overpayment" Value="Overpayment"></asp:ListItem>
+                                    <asp:ListItem Text="URDM" Value="URDM"></asp:ListItem>
+                                    <asp:ListItem Text="Preferred Provider" Value="Preferred Provider"></asp:ListItem>
+                                    <asp:ListItem Text="Formulary" Value="Formulary"></asp:ListItem>
+                                    <asp:ListItem Text="CO NDC" Value="CO NDC"></asp:ListItem>
+                                    <asp:ListItem Text="Stanford" Value="Stanford"></asp:ListItem>
+                                    <asp:ListItem Text="Random Audits" Value="Random Audits"></asp:ListItem>
+                                    <asp:ListItem Text="Accurate Coding/ Denials" Value="Accurate Coding/ Denials"></asp:ListItem>
+                                    <asp:ListItem Text="Jayakar’s" Value="Jayakar’s"></asp:ListItem>
+                                   
+
+
+                                </asp:DropDownList>
+                            </td>
+                            <td>Treatment Plan
+                            </td>
+                            <td>
+                                <asp:DropDownList runat="server" ID="ddlCasePlan" CssClass="textEntry" Width="100"
+                                    TabIndex="15">
+                                    <asp:ListItem Text="" Value="0"></asp:ListItem>
+                                    <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
+                                    <asp:ListItem Text="No" Value="2"></asp:ListItem>
+                                </asp:DropDownList>
+                            </td>
+                            <td>Payment Error Category
+                            </td>
+                            <td>
+                                <asp:DropDownList runat="server" ID="ddlPaymentErrCategory" Enabled="False" CssClass="textPayment" Width="100"
+                                    TabIndex="16">
+                                    <asp:ListItem Text="" Value="0"></asp:ListItem>
+                                    <asp:ListItem Text="Knowledge/Documentation Gap" Value="Knowledge/Documentation Gap"></asp:ListItem>
+                                    <asp:ListItem Text="Keying Error" Value="Keying Error"></asp:ListItem>
+                                    <asp:ListItem Text="System fee schedule" Value="System fee schedule"></asp:ListItem>
+                                </asp:DropDownList>
+                            </td>
+                        </tr>
+                    </table>
+                    <%--              <table>
+                                <tr>
+                                    <td class="Input" align="center" colspan="2">
+                                        <asp:TextBox runat="server" ID="TextBox1" Width="100%" Enabled="false" ForeColor="Red"
+                                            Style="outline: none; border-color: transparent; font-size: large; font-weight: bold;
+                                            text-align: center;" BackColor="Transparent"></asp:TextBox>
+                                    </td>
+                                
+                                    <td class="Input" align="left">
+                                        Comments
+                                    </td>
+                                    <td class="Input" align="left">
+                                        <asp:TextBox runat="server" ID="TextBox2" CssClass="textEntry" Visible="false" TextMode="MultiLine"
+                                            onblur="checkAmt();" TabIndex="18" Columns="50" Rows="12"></asp:TextBox>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="Input" align="left">
+                                        Fin Error
+                                    </td>
+                                    <td class="Input" align="left">
+                                        <asp:TextBox runat="server" ID="TextBox3" Text="0" CssClass="textEntry" Width="100"
+                                            onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                                    </td>
+                                
+                                    <td class="Input" align="left">
+                                        Proc Error
+                                    </td>
+                                    <td class="Input" align="left">
+                                        <asp:TextBox runat="server" ID="TextBox4" Text="0" CssClass="textEntry" Width="100"
+                                            onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                                    </td>
+                                
+                                    <td class="Input" align="left">
+                                        $ Variance
+                                    </td>
+                                    <td class="Input" align="left">
+                                        <asp:TextBox runat="server" ID="TextBox5" CssClass="textEntry" Width="100"
+                                            onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="Input" align="left">
+                                        $ Variance %
+                                    </td>
+                                    <td class="Input" align="left">
+                                        <asp:TextBox runat="server" ID="TextBox6" CssClass="textEntry" Width="100"
+                                            onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                                    </td>
+                                
+                                    <td class="Input" align="left">
+                                        Audit Status
+                                    </td>
+                                    <td class="Input" align="left">
+                                        <asp:TextBox runat="server" ID="TextBox7" Text="Correct" CssClass="textEntry"
+                                            Width="100" onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                                    </td>
+                                
+                                    <td class="Input" align="left">
+                                        Oppr
+                                    </td>
+                                    <td class="Input" align="left">
+                                        <asp:TextBox runat="server" ID="TextBox8" Text="" CssClass="textEntry" Width="100"
+                                            onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="Input" align="center" colspan="2">
+                                        <asp:Button runat="server" ID="Button1" Text="Submit" OnClick="Btn_Submit_OnClick"
+                                            CssClass="button" OnClientClick="return fn_Validate();" TabIndex="19" />
+                                    </td>
+                                </tr>
+                            </table>
+                    --%>
+                </center>
+                <br />
+                <center style="background-color: lightSkyBlue;">
+                    <table>
+                        <tr>
+                            <td class="Input" align="center" colspan="13">
+                                <asp:TextBox runat="server" ID="lblerrormsg" Width="100%" Enabled="false" ForeColor="Red"
+                                    Style="outline: none; border-color: transparent; font-size: large; font-weight: bold; text-align: center;"
+                                    BackColor="Transparent"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="Txt_Comments" Visible="false" Text="test" CssClass="textEntry"
+                                    TextMode="MultiLine" onblur="checkAmt();" TabIndex="18" Columns="50" Rows="12"></asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="Input" align="left">Fin Error
+                            </td>
+                            <td class="Input" align="left">
+                                <asp:TextBox runat="server" ID="txt_fin_error" Text="0" CssClass="textEntry" Width="100"
+                                    onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                            </td>
+                            <td class="Input" align="left">Proc Error
+                            </td>
+                            <td class="Input" align="left">
+                                <asp:TextBox runat="server" ID="Txt_Proc_Error" Text="0" CssClass="textEntry" Width="100"
+                                    onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                            </td>
+                            <td class="Input" align="left">$ Variance
+                            </td>
+                            <td class="Input" align="left">
+                                <asp:TextBox runat="server" ID="Txt_Dollar_Variance" CssClass="textEntry" Width="100"
+                                    onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                            </td>
+                            <td class="Input" align="left">$ Variance %
+                            </td>
+                            <td class="Input" align="left">
+                                <asp:TextBox runat="server" ID="Txt_Dollar_Variance_Per" CssClass="textEntry" Width="100"
+                                    onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                            </td>
+                            <td class="Input" align="left">Audit Status
+                            </td>
+                            <td class="Input" align="left">
+                                <asp:TextBox runat="server" ID="Txt_Audit_Status" Text="Correct" CssClass="textEntry"
+                                    Width="100" onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                            </td>
+                            <td class="Input" align="left">Oppr
+                            </td>
+                            <td class="Input" align="left">
+                                <asp:TextBox runat="server" ID="Txt_Oppr" Text="" CssClass="textEntry" Width="100"
+                                    onkeypress="return fn_RestrictKey();"></asp:TextBox>
+                            </td>
+                        </tr>
+                    </table>
+                    <table>
+                        <tr>
+                            <td>
+                                <asp:UpdatePanel ID="updatePanel" runat="server" UpdateMode="Conditional">
+                                    <ContentTemplate>
+                                        <asp:FileUpload ID="FileUploadControl" runat="server" />
+                                        <br />
+                                        <asp:Label runat="server" ID="StatusLabel" Text="Upload status: " Visible="false" />
+                                    </ContentTemplate>
+                                    <Triggers>
+                                        <asp:PostBackTrigger ControlID="Btn_Submit" />
+                                    </Triggers>
+                                </asp:UpdatePanel>
+                            </td>
+                            <td class="Input" align="center" colspan="2">
+                                <asp:Button runat="server" ID="Btn_Submit" Text="Submit" OnClick="Btn_Submit_OnClick"
+                                    CssClass="button" OnClientClick="return fn_Validate();" TabIndex="19" />
+                            </td>
+                        </tr>
+                    </table>
+                </center>
+                <hr />
+                <%
+                    int counter = 0;
+                %>
+                <table id="Tbl_Parameter" runat="server" visible="false">
+                    <tr>
+                        <td valign="top">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <asp:GridView runat="server" ID="gvParameter" CssClass="table table-responsive table-bordered"
+                                            OnRowDataBound="gvParameter_OnRowDataBound" AutoGenerateColumns="false" CellPadding="7"
+                                            BackColor="White" GridLines="None" BorderColor="#3366CC" BorderStyle="None" BorderWidth="1px">
+                                            <AlternatingRowStyle BackColor="#ace7f9" />
+                                            <HeaderStyle Font-Bold="True" ForeColor="#CCCCFF" BackColor="#00302b" CssClass="DG"></HeaderStyle>
+                                            <FooterStyle ForeColor="#003399" BackColor="#99CCCC" CssClass="DG"></FooterStyle>
+                                            <RowStyle BackColor="White" BorderStyle="None" CssClass="DG" ForeColor="#003399"></RowStyle>
+                                            <Columns>
+                                                <asp:TemplateField HeaderText="#">
+                                                    <ItemTemplate>
+                                                        <%#Container.DataItemIndex + 1 %>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Parameter">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="lblParameter" runat="server" Text='<%#Eval("Parameter") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Weightage">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="lblWeightage1" runat="server" Text='<%#Eval("Weightage") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField>
+                                                    <ItemTemplate>
+                                                        <asp:DropDownList ID="ddltest1" runat="server" OnSelectedIndexChanged="fn_ddltest1"
+                                                            CssClass="textEntry" AutoPostBack="true">
+                                                            <asp:ListItem Text="Yes" Value="Yes"></asp:ListItem>
+                                                            <asp:ListItem Text="No" Value="No"></asp:ListItem>
+                                                            <asp:ListItem Text="NA" Value="NA"></asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="P">
+                                                    <ItemTemplate>
+                                                        <asp:CheckBox runat="server" ID="Chk_Scale1_Proc" onclick="return fn_CheckChangeProc(this);" />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="F">
+                                                    <ItemTemplate>
+                                                        <asp:CheckBox runat="server" ID="Chk_Scale1_Fin" onclick="return fn_CheckChangeFin(this);"
+                                                            OnCheckedChanged="gvParameter_CheckBoxChanged" AutoPostBack="true" />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Definition">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="lbldefinition1" runat="server" Text='<%#Eval("definition") %>' ToolTip='<%#Eval("Action") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Skill Set">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" Width="100px" ID="lblskill_set1" Text='<%#Eval("skill_set") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Comment">
+                                                    <ItemTemplate>
+                                                        <asp:TextBox ID="txtRemark1" runat="server" TextMode="MultiLine" Height="70px" Width="300px"></asp:TextBox>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField Visible="false">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblId" Text='<%#Eval("Id") %>' />
+                                                        <asp:Label runat="server" ID="lblScale" Text='<%#Eval("Scale") %>' />
+                                                        <asp:Label runat="server" ID="lblWeightage" Text='<%#Eval("Weightage") %>' />
+                                                        <asp:Label runat="server" ID="lblProcFlag" Text='<%#Eval("Proc_Flag") %>' />
+                                                        <asp:Label runat="server" ID="lblFinFlag" Text='<%#Eval("Fin_Flag") %>' />
+                                                        <asp:Label runat="server" ID="lblcoding1" Text='<%#Eval("coding") %>' />
+                                                        <asp:Label runat="server" ID="lblBill_review1" Text='<%#Eval("Bill_review") %>' />
+                                                        <asp:Label runat="server" ID="lblNurse_review1" Text='<%#Eval("Nurse_review") %>' />
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                            </Columns>
+                                        </asp:GridView>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <asp:GridView runat="server" ID="gvParameterV2" AutoGenerateColumns="False" ShowHeader="False"
+                                            CssClass="table table-responsive table-bordered" OnRowDataBound="gvParameterV2_OnRowDataBound"
+                                            CellPadding="7" BackColor="White" GridLines="None" BorderColor="#3366CC" BorderStyle="None"
+                                            BorderWidth="1px">
+                                            <AlternatingRowStyle BackColor="#ace7f9" />
+                                            <HeaderStyle Font-Bold="True" ForeColor="#CCCCFF" BackColor="#00302b" CssClass="DG"></HeaderStyle>
+                                            <FooterStyle ForeColor="#003399" BackColor="#99CCCC" CssClass="DG"></FooterStyle>
+                                            <RowStyle BackColor="White" BorderStyle="None" CssClass="DG" ForeColor="#003399"></RowStyle>
+                                            <Columns>
+                                                <asp:TemplateField HeaderText="#">
+                                                    <ItemTemplate>
+                                                        <%#Container.DataItemIndex + 1 %>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Parameter">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="lblParameter" runat="server" Text='<%#Eval("Parameter") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Weightage">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="lblWeightage2" runat="server" Text='<%#Eval("Weightage") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField>
+                                                    <ItemTemplate>
+                                                        <asp:DropDownList ID="ddltest2" runat="server" OnSelectedIndexChanged="fn_ddltest2"
+                                                            CssClass="textEntry" AutoPostBack="true">
+                                                            <asp:ListItem Text="Yes" Value="Yes"></asp:ListItem>
+                                                            <asp:ListItem Text="No" Value="No"></asp:ListItem>
+                                                            <asp:ListItem Text="NA" Value="NA"></asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="P">
+                                                    <ItemTemplate>
+                                                        <asp:CheckBox runat="server" ID="Chk_Scale2_Proc" onclick="return fn_CheckGridChangeProc(this);" />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="F">
+                                                    <ItemTemplate>
+                                                        <asp:CheckBox runat="server" ID="Chk_Scale2_Fin" onclick="return fn_CheckGridChangeFin(this);" />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Definition">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="lbldefinition2" runat="server" Text='<%#Eval("definition") %>' ToolTip='<%#Eval("Action") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Skill Set">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" Width="100px" ID="lblskill_set2" Text='<%#Eval("skill_set") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Comment">
+                                                    <ItemTemplate>
+                                                        <asp:TextBox ID="txtRemark2" runat="server" TextMode="MultiLine" Height="70px" Width="300px"></asp:TextBox>
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField Visible="false">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblId" Text='<%#Eval("Id") %>' />
+                                                        <asp:Label runat="server" ID="lblScale" Text='<%#Eval("Scale") %>' />
+                                                        <asp:Label runat="server" ID="lblWeightage" Text='<%#Eval("Weightage") %>' />
+                                                        <asp:Label runat="server" ID="lblProcFlag" Text='<%#Eval("Proc_Flag") %>' />
+                                                        <asp:Label runat="server" ID="lblFinFlag" Text='<%#Eval("Fin_Flag") %>' />
+                                                        <asp:Label runat="server" ID="lblcoding2" Text='<%#Eval("coding") %>' />
+                                                        <asp:Label runat="server" ID="lblBill_review2" Text='<%#Eval("Bill_review") %>' />
+                                                        <asp:Label runat="server" ID="lblNurse_review2" Text='<%#Eval("Nurse_review") %>' />
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                            </Columns>
+                                        </asp:GridView>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <input type="hidden" runat="server" id="txt_total_rows_Scale1" />
+                <input type="hidden" runat="server" id="txt_total_rows_Scale2" />
+                <input type="hidden" runat="Server" id="Txt_Save_Trigger" />
+                <input type="hidden" runat="Server" id="AUDITOR_ID" />
+                <input type="hidden" runat="server" id="txt_Proc_Err_Scale1" />
+                <input type="hidden" runat="server" id="txt_Fin_Err_Scale1" />
+                <input type="hidden" runat="server" id="txt_Proc_Err_Scale2" />
+                <input type="hidden" runat="server" id="txt_Fin_Err_Scale2" />
+                <input type="hidden" runat="server" id="Txt_Phase_Name" />
+                <input type="hidden" runat="server" id="Txt_Audit_Type" />
+            </asp:Panel>
+        </ContentTemplate>
+    </asp:UpdatePanel>
+</asp:Content>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.Services;
+using System.Data.SqlClient;
+using System.Data;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Web.UI.HtmlControls;
+
+public partial class E30_AuditSelectionDtl_V2 : System.Web.UI.Page
+{
+    string Query = string.Empty;
+    string userId = string.Empty;
+    int dup_count = 0;
+    DataTable dt;
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        Session["E30_Hreid_Dup_Check"] = string.Empty;
+        Session["E30_Org_Bill_Id_Dup_Check"] = string.Empty;
+        if (Session["uid"] == null)
+        {
+            Response.Write("<script language='javascript'>alert('Session Expired. Login Again');window.location.href='logout.aspx';</script>");
+        }
+        else
+        {
+            userId = Convert.ToString(Session["uid"]);
+            AUDITOR_ID.Value = Convert.ToString(Session["uid"]);
+        }
+
+        if (!IsPostBack)
+        {
+            if (Session["uid"] == null)
+            {
+                Response.Write("<script language='javascript'>alert('Session Expired. Login Again');window.location.href='logout.aspx';</script>");
+            }
+            else
+            {
+                loadGrade();
+                LoadReceivedType();
+                ddlPhase.Focus();
+                if (Session["E30_Audit_Type"] != null)
+                {
+                    //Txt_Phase_Name.Value = Session["E30_Audit_Phase_Name"].ToString();
+                    Txt_Audit_Type.Value = Session["E30_Audit_Type"].ToString();
+                    Lbl_Heading.Text = "Audit Sheet for " + Txt_Phase_Name.Value.ToString() + "-" + Txt_Audit_Type.Value.ToString();
+                }
+                loadEmpId();
+                loadDropdownlist();
+                AUDITOR_ID.Value = userId.ToString();
+
+                getLastWorkedPhase();
+                loadOpportunities();
+
+                if (ddlrecievedtype.SelectedIndex < 2)
+                {
+                    Txt_Org_bill_Id.Text = "0";
+                    Txt_Org_bill_Id.Enabled = false;
+
+                }
+            }
+        }
+    }
+
+
+    private void LoadReceivedType()
+    {
+        try
+        {
+            Query = "Select Distinct Phase_Name from MSTR_AUDIT_PARAMETER_MAPPING where Delete_Flag='N'";
+            dt = prepareDataTable(Query);
+            ddlPhase.DataSource = dt.Rows.Count > 0 ? dt : null;
+            ddlPhase.DataTextField = "Phase_Name";
+            ddlPhase.DataValueField = "Phase_Name";
+            ddlPhase.DataBind();
+        }
+        catch (Exception ex)
+        {
+        }
+        finally
+        {
+        }
+    }
+
+    public void loadGrade()
+    {
+        try
+        {
+            Query = "prc_get_received_type";
+            dt = prepareDataTable(Query);
+            ddlrecievedtype.DataSource = dt.Rows.Count > 0 ? dt : null;
+            ddlrecievedtype.DataTextField = "received_type";
+            ddlrecievedtype.DataValueField = "received_type";
+            ddlrecievedtype.DataBind();
+        }
+        catch (Exception ex)
+        {
+        }
+        finally
+        {
+        }
+    }
+
+    #region "Private Functions"
+
+    public void loadEmpId()
+    {
+        try
+        {
+            Query = "Select Distinct Hreid,USERID +'-'+fname+' '+lname as Emp_Name,fname+' '+lname as EMp_Name1 from Emp_Master where (Resigned is null or Resigned = '') and UserId <> '' Order by fname+' '+lname";
+            dt = prepareDataTable(Query);
+            Cmb_hreid.DataSource = dt.Rows.Count > 0 ? dt : null;
+            Cmb_hreid.DataTextField = "Emp_Name";
+            Cmb_hreid.DataValueField = "Hreid";
+            Cmb_hreid.DataBind();
+            Cmb_hreid.Items.Insert(0, "");
+            Cmb_hreid.Items.Insert(1, "Other");
+        }
+        finally
+        {
+        }
+    }
+
+    private void getLastWorkedPhase()
+    {
+        try
+        {
+            SqlDataReader dr = default(SqlDataReader);
+            Query = " Select TOP 1 * from Audit_inputSummary_V2 " +
+                    " Where " +
+                            " AUDITOR_ID=" + GenericView.PrepString(AUDITOR_ID.Value) +
+                            " and AUDIT_DATE >=Convert(char,getdate(),101)  " +
+                            " and AUDIT_DATE < Dateadd(dd,1,Convert(Char,getdate(),101))  " +
+                    " Order By AUDIT_DATE Desc ";
+            using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+            {
+                try
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand(Query, con))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                        if (dr.Read())
+                        {
+                            Lbl_Last_Detail.Text = "Last Phase Audited - " + dr["PHASe_NAME"] + " : Last Actual Bill Id - " + dr["Cmb_Bill_Code"] + dr["Cmb_Client_Id"] + dr["Txt_Bill_Id"];
+                            //result = Convert.ToString(cmd.ExecuteScalar());
+                        }
+                    }
+                }
+                catch (Exception ex) { }
+                finally
+                {
+                    con.Close();
+                    con.Dispose();
+                }
+            }
+        }
+        catch (Exception ex) { }
+    }
+    private void updateSummary()
+    {
+        Query = "  Update Audit_inputSummary_V2 " +
+                   " Set Audit_No= " + GenericView.PrepString(hiddenAId.Value.ToString()) +
+                   " WHERE Row_No= " + GenericView.PrepString(hiddenAId.Value.ToString().TrimStart('A'));
+        using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+        {
+            try
+            {
+                con.Open();
+                using (SqlCommand cmd = new SqlCommand(Query, con))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "updateSummary", Query);
+            }
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+        }
+    }
+
+    private DataTable prepareDataTable(string q)
+    {
+        try
+        {
+            dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(q, con))
+                    {
+                        con.Open();
+                        cmd.CommandType = CommandType.Text;
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+                    }
+                }
+                catch (Exception ex) { }
+                finally
+                {
+                    con.Close();
+                    con.Dispose();
+                }
+            }
+        }
+        catch (Exception ex) { }
+        return dt;
+    }
+    private void loadDropdownlist()
+    {
+        using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+        {
+            using (SqlCommand cmd = new SqlCommand("Exec E30_Prc_LoadDropdownlist 'No'"))
+            {
+                using (SqlDataAdapter sda = new SqlDataAdapter())
+                {
+                    cmd.Connection = con;
+                    sda.SelectCommand = cmd;
+                    using (DataSet ds = new DataSet())
+                    {
+                        sda.Fill(ds);
+                        Cmb_Bill_Type.DataSource = ds.Tables[0];
+                        Cmb_Bill_Type.DataTextField = "Bill_Type";
+                        Cmb_Bill_Type.DataValueField = "Bill_Type";
+                        Cmb_Bill_Type.DataBind();
+                        Cmb_Bill_Type.Items.Insert(0, "");
+
+
+                        Cmb_Bill_Code.DataSource = ds.Tables[1];
+                        Cmb_Bill_Code.DataTextField = "BILL_CODE";
+                        Cmb_Bill_Code.DataValueField = "BILL_CODE";
+                        Cmb_Bill_Code.DataBind();
+                        Cmb_Bill_Code.Items.Insert(0, "");
+
+                        Cmb_Bill_Form1.DataSource = ds.Tables[2];
+                        Cmb_Bill_Form1.DataTextField = "BILL_FORM";
+                        Cmb_Bill_Form1.DataValueField = "BILL_FORM";
+                        Cmb_Bill_Form1.DataBind();
+                        Cmb_Bill_Form1.Items.Insert(0, "");
+
+                        Cmb_Client_Id.DataSource = ds.Tables[3];
+                        Cmb_Client_Id.DataTextField = "CLIENT_ID";
+                        Cmb_Client_Id.DataValueField = "CLIENT_ID";
+                        Cmb_Client_Id.DataBind();
+                        Cmb_Client_Id.Items.Insert(0, "");
+
+
+                        Cmb_Bill_Mode.DataSource = ds.Tables[4];
+                        Cmb_Bill_Mode.DataTextField = "VALUE";
+                        Cmb_Bill_Mode.DataValueField = "VALUE";
+                        Cmb_Bill_Mode.DataBind();
+                        Cmb_Bill_Mode.Items.Insert(0, "");
+                    }
+                }
+            }
+        }
+    }
+
+    private void clearPrevAuditScreen()
+    {
+        txt_fin_error.Text = string.Empty;
+        Txt_Proc_Error.Text = string.Empty;
+        txt_Fin_Err_Scale1.Value = string.Empty;
+        txt_Fin_Err_Scale2.Value = string.Empty;
+        txt_Proc_Err_Scale1.Value = string.Empty;
+        txt_Proc_Err_Scale2.Value = string.Empty;
+        Txt_Dollar_Variance.Text = string.Empty;
+        Txt_Dollar_Variance_Per.Text = string.Empty;
+        Txt_Audit_Status.Text = string.Empty;
+        Txt_Comments.Text = string.Empty;
+    }
+    private void prepareOpporunity()
+    {
+        //int totRowsScaleV1 = txt_total_rows_Scale1.Value.Trim().Length > 0 ? int.Parse(txt_total_rows_Scale1.Value.ToString()) : 0;
+        //int totRowsScaleV2 = txt_total_rows_Scale2.Value.Trim().Length > 0 ? int.Parse(txt_total_rows_Scale2.Value.ToString()) : 0;
+        int totRowsScaleV1 = 0;
+        int totRowsScaleV2 = 0;
+
+        for (int i = 0; i < gvParameter.Rows.Count; i++)
+        {
+            DropDownList ddltest1 = (DropDownList)gvParameter.Rows[i].FindControl("ddltest1");
+            if (ddltest1.SelectedValue.Trim() != "NA")
+            {
+                totRowsScaleV1 = totRowsScaleV1 + 1;
+            }
+        }
+
+        for (int j = 0; j < gvParameterV2.Rows.Count; j++)
+        {
+            DropDownList ddltest2 = (DropDownList)gvParameterV2.Rows[j].FindControl("ddltest2");
+            if (ddltest2.SelectedValue.Trim() != "NA")
+            {
+                totRowsScaleV2 = totRowsScaleV2 + 1;
+            }
+        }
+        //if (lblerrormsg.Text.Contains("Contributing Fatal Error"))
+        //{
+        //    Txt_Oppr.Text = "1";
+        //}
+        //else
+        //{
+        int Opportunity = totRowsScaleV1 + totRowsScaleV2;
+        Txt_Oppr.Text = Opportunity.ToString();
+        // }
+    }
+
+    private void loadScaleV1Details()
+    {
+        try
+        {
+            dt = prepareDataTable(getLoadParameterQuery("1"));
+            gvParameter.DataSource = dt;
+            gvParameter.DataBind();
+        }
+        catch (Exception ex) { }
+    }
+    private void loadScaleV2Details()
+    {
+        try
+        {
+            dt = prepareDataTable(getLoadParameterQuery("2"));
+            gvParameterV2.DataSource = dt;
+            gvParameterV2.DataBind();
+        }
+        catch (Exception ex) { }
+    }
+    private string getLoadParameterQuery(string scale)
+    {
+        string selectedAuditValue = ddlauditfor.SelectedItem.Value;
+
+        Query = "Select Id,Parameter,Scale,Weightage,definition,Proc_Flag,Fin_Flag,skill_set,coding,Bill_review,Nurse_review,Action from R1805_ATA_Parameters " +
+            " where " +
+                    " IsActive='Y' and Scale=" + GenericView.PrepString(scale);
+        if(selectedAuditValue.ToUpper()=="Code Review".ToUpper())
+        {
+            //AND ((A.Audit_for='Bill Review' AND p.Bill_review=1) OR (A.Audit_for='Code Review' AND p.Coding=1) OR (A.Audit_for='Nurse Review' AND p.Nurse_review=1))
+            Query += "  AND Coding=1 ";
+        }
+        else if (selectedAuditValue.ToUpper() == "Nurse Review".ToUpper())
+        {
+            Query += "  AND Nurse_Review=1 ";
+        }
+        else if (selectedAuditValue.ToUpper() == "Bill Review".ToUpper())
+        {
+            Query += "  AND Bill_Review=1 ";
+        }
+        Query +=" Order by Id Asc";
+        return Query;
+    }
+
+    private void checkDuplicate()
+    {
+        try
+        {
+            Query = "select top 1 Audit_no from AUDIT_INPUT_V2 where Delete_Flag='N' and " +
+              " Cmb_Bill_Code=" + GenericView.PrepString(Cmb_Bill_Code.Text.Trim()) +
+              " and Cmb_Client_Id=" + GenericView.PrepString(Cmb_Client_Id.Text.Trim()) +
+              " and Txt_Bill_Id=" + GenericView.PrepString(Txt_Bill_Id.Text.Trim());
+            using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(Query, con))
+                    {
+                        con.Open();
+                        cmd.CommandType = CommandType.Text;
+                        SqlDataReader dr = default(SqlDataReader);
+                        dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                        if (dr.Read())
+                        {
+                            dup_count = 1;
+                        }
+                    }
+                }
+                finally
+                {
+                    con.Close();
+                    con.Dispose();
+                }
+            }
+            if (dup_count > 0)
+            {
+                Session["E30_Hreid_Dup_Check"] = Cmb_hreid.Text.Trim();
+                Session["E30_Org_Bill_Id_Dup_Check"] = Txt_Org_bill_Id.Text.Trim();
+                Response.Redirect("E30_Audit_Selection_Dtl_Duplicate.aspx");
+            }
+            else
+            {
+                Tbl_Parameter.Visible = true;
+            }
+            ScriptManager.RegisterStartupScript(Page, typeof(Page), "", "txt_comment_foucus();", true);
+        }
+        catch (Exception ex) { }
+
+
+    }
+
+    private string prepareInsertQuery(string param, string pProc, string pFin, string Myscale, string ErrorComment, string IsCorrect, string weightage)
+    {
+        try
+        {
+            string empname1 = Cmb_hreid.SelectedItem.Text.Trim();
+            string dollarVariancePercent = Txt_Dollar_Variance_Per.Text.Trim().Equals("NaN") ? "0" : Txt_Dollar_Variance_Per.Text.Trim();
+            string mySource = Cmb_hreid.Text.Trim().ToUpper().Equals("OTHERS") ? "EXTERNAL" : "INTERNAL";
+            string MyempName = Cmb_hreid.Text.Trim().ToUpper().Equals("OTHERS") ? Txt_User_Id.Text.Trim() : empname1.Substring(3, empname1.Length - 3);
+
+            Query = "Insert into AUDIT_INPUT_V2" +
+            "(" +
+                " AUDIT_NO," +
+                " Cmb_hreid," +
+                " Txt_User_Id," +
+                " Txt_Batch_Date," +
+                " Cmb_Bill_Type," +
+                " Cmb_Bill_Code," +
+                " Cmb_Client_Id," +
+                " Txt_Bill_Id," +
+                " Txt_Org_bill_Id," +
+                " Txt_Rev_Amount," +
+                " Txt_Corr_Amount," +
+                " Txt_Claim_No," +
+                " PARAMETER," +
+                " PARAMETER_VALUE_PROC," +
+                " PARAMETER_VALUE_Fin," +
+                " Txt_Comments," +
+                " txt_fin_error," +
+                " Txt_Proc_Error," +
+                " Txt_Dollar_Variance," +
+                " Txt_Dollar_Variance_Per," +
+                " AUDITOR_ID," +
+                " AUDIT_DATE," +
+                " DELETE_FLAG," +
+                " AUDIT_STATUS," +
+                " PHASE_NAME," +
+                " AUDIT_TYPE," +
+                " Txt_Oppr," +
+                " Cmb_Bill_Form1," +
+                " Cmb_Bill_Mode, " +
+                "CAST_CREW, " +
+                "Txt_Source, " +
+                "Emp_Name, " +
+                "Scale, " +
+                "TreatmentPlan," +
+                "IsCorrect," +
+                "ErrorComment," +
+                "Audit_for,Weightage," +
+                "PaymentErrorCategory" +
+
+
+            " ) VALUES ( " +
+                GenericView.PrepString(hiddenAId.Value.ToString()) +
+                "," + GenericView.PrepString(Cmb_hreid.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_User_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Batch_Date.Text.Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Type.Text.Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Code.Text.Trim()) +
+                "," + GenericView.PrepString(Cmb_Client_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Bill_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Org_bill_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Rev_Amount.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Corr_Amount.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Claim_No.Text.Trim()) +
+                "," + GenericView.PrepString(param) +
+                "," + GenericView.PrepString(pProc) +
+                "," + GenericView.PrepString(pFin) +
+                "," + GenericView.PrepString(Txt_Comments.Text.Trim()) +
+                "," + GenericView.PrepString(txt_fin_error.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Proc_Error.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Dollar_Variance.Text.Trim()) +
+                "," + GenericView.PrepString(dollarVariancePercent) +
+                "," + GenericView.PrepString(AUDITOR_ID.Value) +
+                ",getdate() " +
+                ",'N' " +
+                "," + GenericView.PrepString(Txt_Audit_Status.Text.Trim()) +
+                "," + GenericView.PrepString(ddlPhase.SelectedValue.Trim()) +
+                "," + GenericView.PrepString(Txt_Audit_Type.Value.ToString().Trim()) +
+                "," + GenericView.PrepString(Txt_Oppr.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Form1.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Mode.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(ddlCastCrew.SelectedItem.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(mySource) +
+                "," + GenericView.PrepString(MyempName) +
+                "," + GenericView.PrepString(Myscale) +
+                "," + GenericView.PrepString(ddlCasePlan.SelectedItem.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(IsCorrect) +
+                "," + GenericView.PrepString(ErrorComment) +
+                "," + GenericView.PrepString(ddlauditfor.SelectedValue.Trim()) +
+                "," + GenericView.PrepString(weightage) +
+                "," + GenericView.PrepString(ddlPaymentErrCategory.SelectedValue.Trim()) +
+                ") ";
+            return Query;
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "prepareInsertQuery", Query);
+            return string.Empty;
+
+        }
+    }
+
+    public void ErroLog(string Audit_no, string Message, string InnerEx, string Source, string stackTrace, string TargetSite, string Tostr, string Auditor, string Fuction, string Query)
+    {
+        try
+        {
+            //string Query1 = "exec R1805_INSERT_ERROR_LOG '" + Audit_no + "','" + Message + "','" + InnerEx + "','" + Source + "','" + stackTrace + "','" + TargetSite + "','" + Tostr + "','" + Auditor + "','" + Fuction + "','" + Query + "'";
+            using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "R1805_INSERT_ERROR_LOG";
+                        cmd.Parameters.AddWithValue("@Audit_no", Audit_no);
+                        cmd.Parameters.AddWithValue("@Message", Message);
+                        cmd.Parameters.AddWithValue("@InnerException", InnerEx);
+                        cmd.Parameters.AddWithValue("@Source", Source);
+                        cmd.Parameters.AddWithValue("@StackTrace", stackTrace);
+                        cmd.Parameters.AddWithValue("@TargetSite", TargetSite);
+                        cmd.Parameters.AddWithValue("@Tostring", Tostr);
+                        cmd.Parameters.AddWithValue("@Auditor", Auditor);
+                        cmd.Parameters.AddWithValue("@Function", Fuction);
+                        cmd.Parameters.AddWithValue("@Query", Query);
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex) { }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+
+    }
+
+    private string prepareInsertQueryForSummary()
+    {
+        try
+        {
+            string empname1 = Cmb_hreid.SelectedItem.Text.Trim();
+            string dollarVariancePercent = Txt_Dollar_Variance_Per.Text.Trim().Equals("NaN") ? "0" : Txt_Dollar_Variance_Per.Text.Trim();
+            string mySource = Cmb_hreid.Text.Trim().ToUpper().Equals("OTHERS") ? "EXTERNAL" : "INTERNAL";
+            string MyempName = Cmb_hreid.Text.Trim().ToUpper().Equals("OTHERS") ? Txt_User_Id.Text.Trim() : empname1.Substring(3, empname1.Length - 3);
+            Query = "Insert into AUDIT_INPUTSummary_V2" +
+            "(" +
+                " Cmb_hreid," +
+                " Txt_User_Id," +
+                " Txt_Batch_Date," +
+                " Cmb_Bill_Type," +
+                " Cmb_Bill_Code," +
+                " Cmb_Client_Id," +
+                " Txt_Bill_Id," +
+                " Txt_Org_bill_Id," +
+                " Txt_Rev_Amount," +
+                " Txt_Corr_Amount," +
+                " Txt_Claim_No," +
+                " Txt_Comments," +
+                " txt_fin_error," +
+                " Txt_Proc_Error," +
+                " Txt_Dollar_Variance," +
+                " Txt_Dollar_Variance_Per," +
+                " AUDITOR_ID," +
+                " AUDIT_DATE," +
+                " DELETE_FLAG," +
+                " AUDIT_STATUS," +
+                " PHASE_NAME," +
+                " AUDIT_TYPE," +
+                " Txt_Oppr," +
+                " Cmb_Bill_Form1," +
+                " Cmb_Bill_Mode, " +
+                "CAST_CREW, " +
+                "Txt_Source, " +
+                "Emp_Name, " +
+                "TreatmentPlan,received_type,Audit_for,PaymentErrorCategory" +
+            " ) VALUES ( " +
+                " " + GenericView.PrepString(Cmb_hreid.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_User_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Batch_Date.Text.Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Type.Text.Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Code.Text.Trim()) +
+                "," + GenericView.PrepString(Cmb_Client_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Bill_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Org_bill_Id.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Rev_Amount.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Corr_Amount.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Claim_No.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Comments.Text.Trim()) +
+                "," + GenericView.PrepString(txt_fin_error.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Proc_Error.Text.Trim()) +
+                "," + GenericView.PrepString(Txt_Dollar_Variance.Text.Trim()) +
+                "," + GenericView.PrepString(dollarVariancePercent) +
+                "," + GenericView.PrepString(AUDITOR_ID.Value) +
+                ",getdate() " +
+                ",'N' " +
+                "," + GenericView.PrepString(Txt_Audit_Status.Text.Trim()) +
+                //"," + GenericView.PrepString(Txt_Phase_Name.Value.ToString().Trim()) +
+                "," + GenericView.PrepString(ddlPhase.SelectedItem.Text) +
+                "," + GenericView.PrepString(Txt_Audit_Type.Value.ToString().Trim()) +
+                "," + GenericView.PrepString(Txt_Oppr.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Form1.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(Cmb_Bill_Mode.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(ddlCastCrew.SelectedItem.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(mySource) +
+                "," + GenericView.PrepString(MyempName) +
+                "," + GenericView.PrepString(ddlCasePlan.SelectedItem.Text.ToString().Trim()) +
+                "," + GenericView.PrepString(ddlrecievedtype.SelectedValue.Trim()) +
+                "," + GenericView.PrepString(ddlauditfor.SelectedValue.Trim()) +
+                "," + GenericView.PrepString(ddlPaymentErrCategory.SelectedValue.Trim()) +
+            ");SELECT SCOPE_IDENTITY();";
+            return Query;
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "prepareInsertQueryForSummary", Query);
+            return string.Empty;
+        }
+
+    }
+
+    private void getAuditId()
+    {
+        try
+        {
+            using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+            {
+                string Query = string.Empty;
+                try
+                {
+                    Query = prepareInsertQueryForSummary();
+                    using (SqlCommand cmd = new SqlCommand(prepareInsertQueryForSummary(), con))
+                    {
+                        con.Open();
+                        string s = cmd.ExecuteScalar().ToString();
+                        if (s.Length > 0)
+                        {
+                            hiddenAId.Value = "A" + s.ToString();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "Inner getAuditId", Query);
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "getAuditId", Query);
+
+        }
+    }
+
+    private void prepareV1Data()
+    {
+        try
+        {
+            for (int i = 0; i < gvParameter.Rows.Count; i++)
+            {
+                Label lblParameter = (Label)gvParameter.Rows[i].FindControl("lblParameter");
+                CheckBox Chk_Scale1_Proc = (CheckBox)gvParameter.Rows[i].FindControl("Chk_Scale1_Proc");
+                CheckBox Chk_Scale1_Fin = (CheckBox)gvParameter.Rows[i].FindControl("Chk_Scale1_Fin");
+                TextBox txtRemark1 = (TextBox)gvParameter.Rows[i].FindControl("txtRemark1");
+                DropDownList ddltest1 = (DropDownList)gvParameter.Rows[i].FindControl("ddltest1");
+                Label lblWeightage1 = (Label)gvParameter.Rows[i].FindControl("lblWeightage1");
+
+
+                string parameter = lblParameter.Text.ToString();
+                string Value_Chk_Scale1_Proc = Chk_Scale1_Proc.Checked.ToString();
+                string Value_Chk_Scale1_Fin = Chk_Scale1_Fin.Checked.ToString();
+                Query = prepareInsertQuery(parameter, Value_Chk_Scale1_Proc, Value_Chk_Scale1_Fin, "1", txtRemark1.Text.Replace("'", "''").Trim(), ddltest1.SelectedValue.Trim(), lblWeightage1.Text.Trim());
+                if (Session["uid"] == null)
+                {
+                    Response.Write("<script language='javascript'>alert('Session Expired. Login Again');window.location.href='logout.aspx';</script>");
+                }
+                else
+                {
+                    saveData(Query);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "prepareV1Data", Query);
+        }
+    }
+
+    private void prepareV2Data()
+    {
+        try
+        {
+            for (int i = 0; i < gvParameterV2.Rows.Count; i++)
+            {
+                Label lblParameter = (Label)gvParameterV2.Rows[i].FindControl("lblParameter");
+                CheckBox Chk_Scale2_Proc = (CheckBox)gvParameterV2.Rows[i].FindControl("Chk_Scale2_Proc");
+                CheckBox Chk_Scale2_Fin = (CheckBox)gvParameterV2.Rows[i].FindControl("Chk_Scale2_Fin");
+                Label lblWeightage2 = (Label)gvParameterV2.Rows[i].FindControl("lblWeightage2");
+
+                string parameter = lblParameter.Text.ToString();
+                string Value_Chk_Scale2_Proc = Chk_Scale2_Proc.Checked.ToString();
+                string Value_Chk_Scale2_Fin = Chk_Scale2_Fin.Checked.ToString();
+
+                TextBox txtRemark2 = (TextBox)gvParameterV2.Rows[i].FindControl("txtRemark2");
+                DropDownList ddltest2 = (DropDownList)gvParameterV2.Rows[i].FindControl("ddltest2");
+
+                Query = prepareInsertQuery(parameter, Value_Chk_Scale2_Proc, Value_Chk_Scale2_Fin, "2", txtRemark2.Text.Replace("'", "''").Trim(), ddltest2.SelectedValue.Trim(), lblWeightage2.Text.Trim());
+                if (Session["uid"] == null)
+                {
+                    Response.Write("<script language='javascript'>alert('Session Expired. Login Again');window.location.href='logout.aspx';</script>");
+                }
+                else
+                {
+                    saveData(Query);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "prepareV2Data", Query);
+        }
+    }
+
+    private void saveData(string q)
+    {
+        using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+        {
+            using (SqlCommand cmd = new SqlCommand(q, con))
+            {
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+                catch (Exception ex)
+                {
+                    ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "saveData", Query);
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region "Dropdown Events"
+    protected void Cmb_hreid_OnSelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+
+            if (Cmb_hreid.Text.ToUpper().Equals("OTHER"))
+            {
+                Txt_User_Id.Enabled = true;
+                Txt_User_Id.Focus();
+                Txt_User_Id.Text = string.Empty;
+                Txt_User_Id.Focus();
+            }
+            else
+            {
+                Txt_User_Id.Text = Cmb_hreid.SelectedItem.Text.ToString().Substring(0, 2);
+                Txt_User_Id.Enabled = false;
+                Txt_Batch_Date.Focus();
+            }
+        }
+        catch (Exception ex)
+        {
+
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "Cmb_hreid_OnSelectedIndexChanged", Query);
+        }
+    }
+
+    #endregion
+
+    #region "Button Events"
+
+    //protected void Btn_Search_OnClick(object sender, EventArgs e)
+    //{
+    //    loadOpportunities();
+    //}
+
+    private void loadOpportunities()
+    {
+        clearPrevAuditScreen();
+        loadScaleV1Details();
+        loadScaleV2Details();
+        prepareOpporunity();
+        checkDuplicate();
+    }
+
+    protected void Btn_Submit_OnClick(object sender, EventArgs e)
+    {
+
+        SqlDataReader dr = default(SqlDataReader);
+        string billid = Cmb_Bill_Code.SelectedValue.Trim() + Cmb_Client_Id.SelectedValue.Trim() + "-" + Txt_Bill_Id.Text.Trim();
+        Query = " exec r1805_check_bill_id '" + AUDITOR_ID.Value + "','" + billid + "','" + Txt_Audit_Type.Value.Trim() + "','" + ddlPhase.SelectedValue.Trim() + "'";
+        using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+        {
+            try
+            {
+                con.Open();
+                using (SqlCommand cmd = new SqlCommand(Query, con))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                    if (dr.Read())
+                    {
+                        if (Convert.ToString(dr["output"]) == "1")
+                        {
+                            string Message = "Bill Id already exists.";
+                            string Title = "Bill Id already exists.";
+                            ScriptManager.RegisterStartupScript(Page, this.GetType(), "alert", string.Format("alert('{1}', '{0}');", Message, Title), true);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                getAuditId();
+                                uploadFile(hiddenAId.Value);
+                                prepareV1Data();
+                                prepareV2Data();
+                                updateSummary();
+                                Response.Write("<script language='javascript'>alert('Audit Data Saved !');window.location.href='E30_AuditSelectionDtl_V2.aspx';</script>");
+                                //  Response.Redirect("E30_AuditSelectionDtl_V2.aspx");
+
+                                // load();
+                            }
+                            catch (Exception ex)
+                            {
+                                ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "inner Btn_Submit_OnClick", Query);
+                            }
+
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "Btn_Submit_OnClick", Query);
+            }
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+
+
+        }
+    }
+
+    protected void uploadFile(string ATAAudit_no)
+    {
+        string folderPath = "D:\\RebuttalDocs\\";
+        if (FileUploadControl.HasFile)
+        {
+            try
+            {
+                string filename = DateTime.Now.ToString("yyyy-MMM-ddHHmmss") + "_" + Path.GetFileName(FileUploadControl.FileName);
+                //FileUploadControl.SaveAs(Server.MapPath("~/") + filename);
+                FileUploadControl.SaveAs(folderPath + filename);
+                StatusLabel.Text = "Upload status: File uploaded!";
+                StatusLabel.Visible = false;
+
+                string Query = " INSERT INTO RebuttalFiles (filename,filepath,AuditNo,Eneterd_id,Entered_date,Type,Status,Deleteflag) VALUES ";
+                Query += "('" + filename + "','" + folderPath + filename + "','" + ATAAudit_no + "','" + userId + "',getdate(),'INTerror','','N')";
+
+                using (SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings[GpmsConstants.db_ZURICH]))
+                {
+                    using (SqlCommand cmd = new SqlCommand(Query, con))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusLabel.Text = "Upload status: The file could not be uploaded. The following error occured: " + ex.Message;
+                ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "uploadFile", Query);
+            }
+        }
+    }
+
+
+    #endregion
+
+    #region "Gridview Events"
+    protected void gvParameter_OnRowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        try
+        {
+
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+
+                txt_total_rows_Scale1.Value = gvParameter.Rows.Count.ToString();
+                CheckBox Chk_Scale1_Proc = ((CheckBox)e.Row.FindControl("Chk_Scale1_Proc"));
+                CheckBox Chk_Scale1_Fin = ((CheckBox)e.Row.FindControl("Chk_Scale1_Fin"));
+                Chk_Scale1_Proc.Attributes.Add("onclick", "javascript:fn_CheckChangeProc('" + ((CheckBox)e.Row.FindControl("Chk_Scale1_Proc")).ClientID + "')");
+                Chk_Scale1_Fin.Attributes.Add("onclick", "javascript:fn_CheckChangeFin('" + ((CheckBox)e.Row.FindControl("Chk_Scale1_Fin")).ClientID + "')");
+
+
+
+
+                Label lblcoding1 = (Label)e.Row.FindControl(Convert.ToString("lblcoding1"));
+                Label lblBill_review1 = (Label)e.Row.FindControl(Convert.ToString("lblBill_review1"));
+                Label lblNurse_review1 = (Label)e.Row.FindControl(Convert.ToString("lblNurse_review1"));
+                TextBox txtRemark1 = (TextBox)e.Row.FindControl(Convert.ToString("txtRemark1"));
+                DropDownList ddltest1 = (DropDownList)e.Row.FindControl(Convert.ToString("ddltest1"));
+
+                Label lblId = (Label)e.Row.FindControl(Convert.ToString("lblId"));
+                Label lblScale = (Label)e.Row.FindControl(Convert.ToString("lblScale"));
+                Label lblWeightage = (Label)e.Row.FindControl(Convert.ToString("lblWeightage"));
+                Label lblProcFlag = (Label)e.Row.FindControl(Convert.ToString("lblProcFlag"));
+                Label lblFinFlag = (Label)e.Row.FindControl(Convert.ToString("lblFinFlag"));
+
+
+
+                //ddltest1.Attributes.Add("onchange", "javascript:GetEnable1('" + ddltest1.ClientID + "','" + lblProcFlag.ClientID + "','" + Chk_Scale1_Proc.ClientID + "','" + lblFinFlag.ClientID + "','" + Chk_Scale1_Fin.ClientID + "')");
+                //Page.ClientScript.RegisterStartupScript(this.GetType(), "CallMyFunction", "MyFunction('" + ddltest1.ClientID + "','" + lblProcFlag.Text + "','" + Chk_Scale1_Proc.ClientID + "','" + lblFinFlag.Text + "','" + Chk_Scale1_Fin.ClientID + "')", true);
+
+                if (ddlauditfor.SelectedValue.Trim() == "Code Review")
+                {
+                    if (lblcoding1.Text == "1")
+                    {
+                        ddltest1.Items.FindByValue("Yes").Selected = true;
+                    }
+                    else
+                    {
+                        ddltest1.Items.FindByValue("NA").Selected = true;
+                    }
+
+                }
+                else if (ddlauditfor.SelectedValue.Trim() == "Bill Review")
+                {
+                    if (lblBill_review1.Text == "1")
+                    {
+                        ddltest1.Items.FindByValue("Yes").Selected = true;
+                    }
+                    else
+                    {
+                        ddltest1.Items.FindByValue("NA").Selected = true;
+                    }
+                }
+                else if (ddlauditfor.SelectedValue.Trim() == "Nurse Review")
+                {
+                    if (lblNurse_review1.Text == "1")
+                    {
+                        ddltest1.Items.FindByValue("Yes").Selected = true;
+                    }
+                    else
+                    {
+                        ddltest1.Items.FindByValue("NA").Selected = true;
+                    }
+                }
+
+
+                if (lblId.Text.Equals("1") || lblId.Text.Equals("2") || lblId.Text.Equals("3"))
+                    e.Row.BackColor = Color.IndianRed;
+                //if (lblProcFlag.Text.Equals("0"))
+                //    ((CheckBox)e.Row.FindControl("Chk_Scale1_Proc")).Enabled = false;
+                if (lblFinFlag.Text.Equals("0"))
+                    ((CheckBox)e.Row.FindControl("Chk_Scale1_Fin")).Enabled = false;
+
+                if (ddltest1.SelectedValue == "Yes")
+                {
+                    ddltest1.BackColor = Color.Green;
+                    ddltest1.ForeColor = Color.White;
+
+                    Chk_Scale1_Fin.Checked = false;
+                    Chk_Scale1_Proc.Checked = false;
+
+                    Chk_Scale1_Fin.Enabled = false;
+                    Chk_Scale1_Proc.Enabled = false;
+
+                    txtRemark1.Enabled = false;
+
+                }
+                else if (ddltest1.SelectedValue == "No")
+                {
+                    ddltest1.BackColor = Color.Red;
+                    ddltest1.ForeColor = Color.White;
+
+                    Chk_Scale1_Proc.Enabled = true;
+                    if (lblFinFlag.Text.Equals("0"))
+                        Chk_Scale1_Fin.Enabled = false;
+                    else
+                        Chk_Scale1_Fin.Enabled = true;
+
+                    Chk_Scale1_Fin.Checked = false;
+                    Chk_Scale1_Proc.Checked = false;
+
+                    txtRemark1.Enabled = true;
+                }
+                else
+                {
+                    ddltest1.BackColor = Color.Blue;
+                    ddltest1.ForeColor = Color.White;
+
+                    Chk_Scale1_Fin.Checked = false;
+                    Chk_Scale1_Proc.Checked = false;
+
+                    Chk_Scale1_Fin.Enabled = false;
+                    Chk_Scale1_Proc.Enabled = false;
+
+                    txtRemark1.Enabled = false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "gvParameter_OnRowDataBound", Query);
+        }
+
+    }
+
+    protected void gvParameterV2_OnRowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        try
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                Label lblcoding2 = (Label)e.Row.FindControl(Convert.ToString("lblcoding2"));
+                Label lblBill_review2 = (Label)e.Row.FindControl(Convert.ToString("lblBill_review2"));
+                Label lblNurse_review2 = (Label)e.Row.FindControl(Convert.ToString("lblNurse_review2"));
+
+                DropDownList ddltest2 = (DropDownList)e.Row.FindControl(Convert.ToString("ddltest2"));
+
+                if (ddlauditfor.SelectedValue.Trim() == "Code Review")
+                {
+                    if (lblcoding2.Text == "1")
+                    {
+                        ddltest2.Items.FindByValue("Yes").Selected = true;
+                    }
+                    else
+                    {
+                        ddltest2.Items.FindByValue("NA").Selected = true;
+                    }
+
+                }
+                else if (ddlauditfor.SelectedValue.Trim() == "Bill Review")
+                {
+                    if (lblBill_review2.Text == "1")
+                    {
+                        ddltest2.Items.FindByValue("Yes").Selected = true;
+                    }
+                    else
+                    {
+                        ddltest2.Items.FindByValue("NA").Selected = true;
+                    }
+                }
+                else if (ddlauditfor.SelectedValue.Trim() == "Nurse Review")
+                {
+                    if (lblNurse_review2.Text == "1")
+                    {
+                        ddltest2.Items.FindByValue("Yes").Selected = true;
+                    }
+                    else
+                    {
+                        ddltest2.Items.FindByValue("NA").Selected = true;
+                    }
+                }
+
+                txt_total_rows_Scale2.Value = gvParameterV2.Rows.Count.ToString();
+
+                CheckBox Chk_Scale2_Proc = ((CheckBox)e.Row.FindControl("Chk_Scale2_Proc"));
+                CheckBox Chk_Scale2_Fin = ((CheckBox)e.Row.FindControl("Chk_Scale2_Fin"));
+                Chk_Scale2_Proc.Attributes.Add("onclick", "javascript:fn_CheckGridChangeProc('" + ((CheckBox)e.Row.FindControl("Chk_Scale2_Proc")).ClientID + "')");
+                Chk_Scale2_Fin.Attributes.Add("onclick", "javascript:fn_CheckGridChangeFin('" + ((CheckBox)e.Row.FindControl("Chk_Scale2_Fin")).ClientID + "')");
+
+                Label lblId = (Label)e.Row.FindControl(Convert.ToString("lblId"));
+                Label lblScale = (Label)e.Row.FindControl(Convert.ToString("lblScale"));
+                Label lblWeightage = (Label)e.Row.FindControl(Convert.ToString("lblWeightage"));
+                Label lblProcFlag = (Label)e.Row.FindControl(Convert.ToString("lblProcFlag"));
+                Label lblFinFlag = (Label)e.Row.FindControl(Convert.ToString("lblFinFlag"));
+                TextBox txtRemark2 = (TextBox)e.Row.FindControl(Convert.ToString("txtRemark2"));
+
+
+                //ddltest2.Attributes.Add("onchange", "javascript:GetEnable1('" + ddltest2.ClientID + "','" + lblProcFlag.ClientID + "','" + Chk_Scale2_Proc.ClientID + "','" + lblFinFlag.ClientID + "','" + Chk_Scale2_Fin.ClientID + "')");
+
+                //Page.ClientScript.RegisterStartupScript(this.GetType(), "CallMyFunction", "MyFunction('" + ddltest2.ClientID + "','" + lblProcFlag.ClientID + "','" + Chk_Scale2_Proc.ClientID + "','" + lblFinFlag.ClientID + "','" + Chk_Scale2_Fin.ClientID + "')", true);
+
+                //if (lblProcFlag.Text.Equals("0"))
+                //    ((CheckBox)e.Row.FindControl("Chk_Scale2_Proc")).Enabled = false;
+                if (lblFinFlag.Text.Equals("0"))
+                    ((CheckBox)e.Row.FindControl("Chk_Scale2_Fin")).Enabled = false;
+
+                if (ddltest2.SelectedValue == "Yes")
+                {
+                    ddltest2.BackColor = Color.Green;
+                    ddltest2.ForeColor = Color.White;
+
+                    Chk_Scale2_Fin.Checked = false;
+                    Chk_Scale2_Proc.Checked = false;
+
+                    Chk_Scale2_Fin.Enabled = false;
+                    Chk_Scale2_Proc.Enabled = false;
+
+                    txtRemark2.Enabled = false;
+                }
+                else if (ddltest2.SelectedValue == "No")
+                {
+                    ddltest2.BackColor = Color.Red;
+                    ddltest2.ForeColor = Color.White;
+
+                    Chk_Scale2_Proc.Enabled = true;
+                    if (lblFinFlag.Text.Equals("0"))
+                        Chk_Scale2_Fin.Enabled = false;
+                    else
+                        Chk_Scale2_Fin.Enabled = true;
+
+                    Chk_Scale2_Fin.Checked = false;
+                    Chk_Scale2_Proc.Checked = false;
+
+                    txtRemark2.Enabled = true;
+                }
+                else
+                {
+                    ddltest2.BackColor = Color.Blue;
+                    ddltest2.ForeColor = Color.White;
+
+                    Chk_Scale2_Fin.Checked = false;
+                    Chk_Scale2_Proc.Checked = false;
+
+                    Chk_Scale2_Fin.Enabled = false;
+                    Chk_Scale2_Proc.Enabled = false;
+
+                    txtRemark2.Enabled = false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "gvParameterV2_OnRowDataBound", Query);
+        }
+    }
+    protected void gvParameter_CheckBoxChanged(object sender, EventArgs e)
+    {
+        //GridViewRow row = (sender as CheckBox).Parent.Parent as GridViewRow;
+        //int rowIndex = row.RowIndex;
+        //Boolean isChecked = (gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Fin") as CheckBox).Checked;
+        //Boolean isEnabled = (gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Fin") as CheckBox).Checked;
+        //int procErrorCount = 0;
+        //int finErrorCount = 0;
+        //if (rowIndex == 0 || rowIndex == 1 || rowIndex == 2)
+        //{
+        //    if (Txt_Rev_Amount.Text.Trim() == "" || Txt_Corr_Amount.Text.Trim() == "")
+        //    {
+        //        string Message = "Amount field cannot be empty";
+        //        string Title = "Amount field cannot be empty";
+        //        loadOpportunities();
+        //        ScriptManager.RegisterStartupScript(Page, this.GetType(), "alert", string.Format("alert('{1}', '{0}');", Message, Title), true);
+        //    }
+        //    else
+        //    {
+        //        double test = Convert.ToDouble(Txt_Dollar_Variance_Per.Text);
+        //        if (isChecked == true)
+        //        {
+        //            if (test >= 6)
+        //            {
+        //                for (int i = 0; i < gvParameter.Rows.Count; i++)
+        //                {
+
+        //                    CheckBox chk_Scale1_Proc = (CheckBox)gvParameter.Rows[i].FindControl("Chk_Scale1_Proc");
+        //                    CheckBox chk_Scale1_Fin = (CheckBox)gvParameter.Rows[i].FindControl("Chk_Scale1_Fin");
+        //                    if (i != rowIndex)
+        //                    {
+        //                        (gvParameter.Rows[i].FindControl("Chk_Scale1_Proc") as CheckBox).Enabled = !isEnabled;
+        //                        (gvParameter.Rows[i].FindControl("Chk_Scale1_Fin") as CheckBox).Enabled = !isEnabled;
+        //                        (gvParameter.Rows[i].FindControl("Chk_Scale1_Proc") as CheckBox).Checked = !isEnabled;
+        //                        (gvParameter.Rows[i].FindControl("Chk_Scale1_Fin") as CheckBox).Checked = !isEnabled;
+
+        //                    }
+        //                    if (chk_Scale1_Proc.Checked == true)
+        //                        procErrorCount = procErrorCount + 1;
+        //                    if (chk_Scale1_Fin.Checked == true)
+        //                        finErrorCount = finErrorCount + 1;
+        //                }
+        //                for (int j = 0; j < gvParameterV2.Rows.Count; j++)
+        //                {
+        //                    (gvParameterV2.Rows[j].FindControl("Chk_Scale2_Proc") as CheckBox).Enabled = !isEnabled;
+        //                    (gvParameterV2.Rows[j].FindControl("Chk_Scale2_Fin") as CheckBox).Enabled = !isEnabled;
+        //                    (gvParameterV2.Rows[j].FindControl("Chk_Scale2_Proc") as CheckBox).Checked = !isEnabled;
+        //                    (gvParameterV2.Rows[j].FindControl("Chk_Scale2_Fin") as CheckBox).Checked = !isEnabled;
+
+        //                    CheckBox chk_Scale2_Proc = (CheckBox)gvParameterV2.Rows[j].FindControl("Chk_Scale2_Proc");
+        //                    CheckBox chk_Scale2_Fin = (CheckBox)gvParameterV2.Rows[j].FindControl("Chk_Scale2_Fin");
+        //                    if (chk_Scale2_Proc.Checked == true)
+        //                        procErrorCount = procErrorCount + 1;
+        //                    if (chk_Scale2_Fin.Checked == true)
+        //                        finErrorCount = finErrorCount + 1;
+
+        //                }
+        //                Txt_Proc_Error.Text = procErrorCount.ToString();
+        //                txt_fin_error.Text = finErrorCount.ToString();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            loadOpportunities();
+        //        }
+        //    }
+        //}
+    }
+    #endregion
+
+
+    protected void fn_ddltest1(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow row = (sender as DropDownList).Parent.Parent as GridViewRow;
+            int rowIndex = row.RowIndex;
+            Boolean isChecked = (gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Fin") as CheckBox).Checked;
+            Boolean isEnabled = (gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Fin") as CheckBox).Checked;
+
+            txt_total_rows_Scale1.Value = gvParameter.Rows.Count.ToString();
+            CheckBox Chk_Scale1_Proc = ((CheckBox)gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Proc"));
+            CheckBox Chk_Scale1_Fin = ((CheckBox)gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Fin"));
+            Chk_Scale1_Proc.Attributes.Add("onclick", "javascript:fn_CheckChangeProc('" + ((CheckBox)gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Proc")).ClientID + "')");
+            Chk_Scale1_Fin.Attributes.Add("onclick", "javascript:fn_CheckChangeFin('" + ((CheckBox)gvParameter.Rows[rowIndex].FindControl("Chk_Scale1_Fin")).ClientID + "')");
+
+
+
+            Label lblcoding1 = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblcoding1"));
+            Label lblBill_review1 = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblBill_review1"));
+            Label lblNurse_review1 = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblNurse_review1"));
+
+            Label lblId = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblId"));
+            Label lblScale = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblScale"));
+            Label lblWeightage = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblWeightage"));
+            Label lblProcFlag = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblProcFlag"));
+            Label lblFinFlag = (Label)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("lblFinFlag"));
+
+            TextBox txtRemark1 = (TextBox)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("txtRemark1"));
+
+            DropDownList ddltest1 = (DropDownList)gvParameter.Rows[rowIndex].FindControl(Convert.ToString("ddltest1"));
+
+            if (ddltest1.SelectedValue == "Yes")
+            {
+                ddltest1.BackColor = Color.Green;
+                ddltest1.ForeColor = Color.White;
+
+                Chk_Scale1_Fin.Checked = false;
+                Chk_Scale1_Proc.Checked = false;
+
+                Chk_Scale1_Fin.Enabled = false;
+                Chk_Scale1_Proc.Enabled = false;
+                txtRemark1.Enabled = false;
+
+            }
+            else if (ddltest1.SelectedValue == "No")
+            {
+                ddltest1.BackColor = Color.Red;
+                ddltest1.ForeColor = Color.White;
+
+                Chk_Scale1_Proc.Enabled = true;
+                if (lblFinFlag.Text.Equals("0"))
+                    Chk_Scale1_Fin.Enabled = false;
+                else
+                    Chk_Scale1_Fin.Enabled = true;
+
+                Chk_Scale1_Fin.Checked = false;
+                Chk_Scale1_Proc.Checked = false;
+
+                txtRemark1.Enabled = true;
+            }
+            else
+            {
+                ddltest1.BackColor = Color.Blue;
+                ddltest1.ForeColor = Color.White;
+
+                Chk_Scale1_Fin.Checked = false;
+                Chk_Scale1_Proc.Checked = false;
+
+                Chk_Scale1_Fin.Enabled = false;
+                Chk_Scale1_Proc.Enabled = false;
+
+                txtRemark1.Enabled = false;
+            }
+
+
+            int procErrorCount = 0;
+            int finErrorCount = 0;
+            if (rowIndex == 0 || rowIndex == 1 || rowIndex == 2)
+            {
+                
+                if (Txt_Rev_Amount.Text.Trim() == "" || Txt_Corr_Amount.Text.Trim() == "")
+                {
+                    string Message = "Amount field cannot be empty";
+                    string Title = "Amount field cannot be empty";
+                    loadOpportunities();
+                    Txt_Rev_Amount.Focus();
+                    ScriptManager.RegisterStartupScript(Page, this.GetType(), "alert", string.Format("alert('{1}', '{0}');", Message, Title), true);
+                }
+                else
+                {
+                    double test = Convert.ToDouble(Txt_Dollar_Variance_Per.Text);
+
+                    if (rowIndex == 2 && ddltest1.SelectedValue == "No")
+                    {
+                        ddlPaymentErrCategory.Enabled = true;
+                        //string Message = "PaymentErrCategory field cannot be empty";
+                        //string Title = "PaymentErrCategory field cannot be empty";
+                        
+                        //ddlPaymentErrCategory.Focus();
+                        //ScriptManager.RegisterStartupScript(Page, this.GetType(), "alert", string.Format("alert('{1}', '{0}');", Message, Title), true);
+
+                    }
+                    else
+                    {
+                        ddlPaymentErrCategory.Enabled = false;
+                    }
+
+                    if (ddltest1.SelectedValue == "No")
+                    {
+                        if (test >= 6)
+                        {
+                            for (int i = 0; i < gvParameter.Rows.Count; i++)
+                            {
+                                DropDownList ddltest11 = (DropDownList)gvParameter.Rows[i].FindControl("ddltest1");
+                                CheckBox chk_Scale1_Proc = (CheckBox)gvParameter.Rows[i].FindControl("Chk_Scale1_Proc");
+                                CheckBox chk_Scale1_Fin = (CheckBox)gvParameter.Rows[i].FindControl("Chk_Scale1_Fin");
+                                if (i != rowIndex)
+                                {
+                                    chk_Scale1_Proc.Enabled = false;
+                                    chk_Scale1_Fin.Enabled = false;
+                                    chk_Scale1_Proc.Checked = false;
+                                    chk_Scale1_Fin.Checked = false;
+                                    ddltest11.ClearSelection();
+                                    ddltest11.Items.FindByText("NA").Selected = true;
+                                    ddltest11.Enabled = false;
+                                    ddltest11.BackColor = Color.Blue;
+                                }
+                                if (chk_Scale1_Proc.Checked == true)
+                                    procErrorCount = procErrorCount + 1;
+                                if (chk_Scale1_Fin.Checked == true)
+                                    finErrorCount = finErrorCount + 1;
+                            }
+
+                            for (int j = 0; j < gvParameterV2.Rows.Count; j++)
+                            {
+                                DropDownList ddltest12 = (DropDownList)gvParameterV2.Rows[j].FindControl("ddltest2");
+                                CheckBox chk_Scale2_Proc = (CheckBox)gvParameterV2.Rows[j].FindControl("Chk_Scale2_Proc");
+                                CheckBox chk_Scale2_Fin = (CheckBox)gvParameterV2.Rows[j].FindControl("Chk_Scale2_Fin");
+
+                                if (j == 14)
+                                {
+                                    chk_Scale2_Proc.Enabled = true;
+                                    chk_Scale2_Fin.Enabled = true;
+                                    chk_Scale2_Proc.Checked = false;
+                                    chk_Scale2_Fin.Checked = false;
+                                    ddltest12.ClearSelection();
+                                    ddltest12.Items.FindByText("NA").Selected = true;
+                                    ddltest12.Enabled = true;
+                                    ddltest12.BackColor = Color.Blue;
+                                }
+                                else
+                                {
+                                    chk_Scale2_Proc.Enabled = false;
+                                    chk_Scale2_Fin.Enabled = false;
+                                    chk_Scale2_Proc.Checked = false;
+                                    chk_Scale2_Fin.Checked = false;
+                                    ddltest12.ClearSelection();
+                                    ddltest12.Items.FindByText("NA").Selected = true;
+                                    ddltest12.Enabled = false;
+                                    ddltest12.BackColor = Color.Blue;
+                                }
+
+
+
+                                if (chk_Scale2_Proc.Checked == true)
+                                    procErrorCount = procErrorCount + 1;
+                                if (chk_Scale2_Fin.Checked == true)
+                                    finErrorCount = finErrorCount + 1;
+                            }
+
+                            Txt_Proc_Error.Text = procErrorCount.ToString();
+                            txt_fin_error.Text = finErrorCount.ToString();
+
+                        }
+
+                    }
+                    else
+                    {
+                        loadOpportunities();
+                        Txt_Rev_Amount.Focus();
+
+                    }
+                }
+
+            }
+            
+            
+            prepareOpporunity();
+
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "fn_ddltest1", Query);
+        }
+    }
+
+    protected void fn_ddltest2(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow row = (sender as DropDownList).Parent.Parent as GridViewRow;
+            int rowIndex = row.RowIndex;
+            Boolean isChecked = (gvParameterV2.Rows[rowIndex].FindControl("Chk_Scale2_Fin") as CheckBox).Checked;
+            Boolean isEnabled = (gvParameterV2.Rows[rowIndex].FindControl("Chk_Scale2_Fin") as CheckBox).Checked;
+
+            CheckBox Chk_Scale2_Proc = ((CheckBox)gvParameterV2.Rows[rowIndex].FindControl("Chk_Scale2_Proc"));
+            CheckBox Chk_Scale2_Fin = ((CheckBox)gvParameterV2.Rows[rowIndex].FindControl("Chk_Scale2_Fin"));
+
+            Label lblcoding2 = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblcoding2"));
+            Label lblBill_review2 = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblBill_review2"));
+            Label lblNurse_review2 = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblNurse_review2"));
+
+            Label lblId = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblId"));
+            Label lblScale = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblScale"));
+            Label lblWeightage = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblWeightage"));
+            Label lblProcFlag = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblProcFlag"));
+            Label lblFinFlag = (Label)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("lblFinFlag"));
+
+            DropDownList ddltest2 = (DropDownList)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("ddltest2"));
+
+            TextBox txtRemark2 = (TextBox)gvParameterV2.Rows[rowIndex].FindControl(Convert.ToString("txtRemark2"));
+
+
+            if (ddltest2.SelectedValue == "Yes")
+            {
+                ddltest2.BackColor = Color.Green;
+                ddltest2.ForeColor = Color.White;
+
+                Chk_Scale2_Fin.Checked = false;
+                Chk_Scale2_Proc.Checked = false;
+
+                Chk_Scale2_Fin.Enabled = false;
+                Chk_Scale2_Proc.Enabled = false;
+
+                txtRemark2.Enabled = false;
+            }
+            else if (ddltest2.SelectedValue == "No")
+            {
+                ddltest2.BackColor = Color.Red;
+                ddltest2.ForeColor = Color.White;
+
+
+
+                if (rowIndex == 14 || rowIndex == 15)
+                {
+                    Chk_Scale2_Proc.Enabled = false;
+                    Chk_Scale2_Fin.Enabled = false;
+                }
+                else
+                {
+                    Chk_Scale2_Proc.Enabled = true;
+                    if (lblFinFlag.Text.Equals("0"))
+                        Chk_Scale2_Fin.Enabled = false;
+                    else
+                        Chk_Scale2_Fin.Enabled = true;
+                }
+
+                Chk_Scale2_Fin.Checked = false;
+                Chk_Scale2_Proc.Checked = false;
+
+                txtRemark2.Enabled = true;
+            }
+            else
+            {
+                ddltest2.BackColor = Color.Blue;
+                ddltest2.ForeColor = Color.White;
+
+                Chk_Scale2_Fin.Checked = false;
+                Chk_Scale2_Proc.Checked = false;
+
+                Chk_Scale2_Fin.Enabled = false;
+                Chk_Scale2_Proc.Enabled = false;
+
+                txtRemark2.Enabled = false;
+            }
+            prepareOpporunity();
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "fn_ddltest2", Query);
+        }
+    }
+
+
+    protected void ddlPhase_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            Txt_Phase_Name.Value = ddlPhase.SelectedItem.Text;
+            if (Txt_Phase_Name.Value.ToString().ToUpper().Equals("RE-EVALUATIONS"))
+            {
+                Txt_Org_bill_Id.Enabled = true;
+            }
+            else
+            {
+                Txt_Org_bill_Id.Enabled = false;
+                Txt_Org_bill_Id.Text = "0";
+            }
+            ddlPhase.Focus();
+
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "ddlPhase_SelectedIndexChanged", Query);
+        }
+    }
+    protected void ddlrecievedtype_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlrecievedtype.SelectedIndex < 2)
+            {
+                Txt_Org_bill_Id.Text = "0";
+                Txt_Org_bill_Id.Enabled = false;
+
+            }
+            else
+            {
+                Txt_Org_bill_Id.Text = "";
+                Txt_Org_bill_Id.Enabled = true;
+            }
+            ddlrecievedtype.Focus();
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "ddlrecievedtype_SelectedIndexChanged", Query);
+        }
+    }
+    protected void ddlauditfor_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            //string selectedAuditValue =ddlauditfor.SelectedItem.Value;
+
+            loadScaleV1Details();
+            loadScaleV2Details();
+            prepareOpporunity();
+            ddlauditfor.Focus();
+        }
+        catch (Exception ex)
+        {
+            ErroLog(hiddenAId.Value.ToString(), ex.Message, ex.InnerException.ToString(), ex.Source, ex.StackTrace, ex.TargetSite.ToString(), ex.ToString(), AUDITOR_ID.Value, "ddlauditfor_SelectedIndexChanged", Query);
+        }
+    }
+}
