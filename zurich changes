@@ -1,1 +1,692 @@
-Literal content ('aspx') is not allowed within a 'System.Web.UI.WebControls.DataControlFieldCollection'.
+<%@ Page Title="" Language="C#" MasterPageFile="~/PageMaster.master" AutoEventWireup="true"
+    CodeFile="R1805_ATA_assignement.aspx.cs" Inherits="R1805_ATA_assignement" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <link href="Content/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="Content/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <asp:ScriptManager ID="sm" runat="server">
+    </asp:ScriptManager>
+    <style type="text/css">
+        #page-bg
+        {
+            position: absolute;
+            margin: 0 0 0 0px;
+            padding: 0 30px;
+            width: 100%;
+            margin-top: 0%;
+            height: 100%;
+            max-height: 100%;
+            background-color: White;
+        }
+        body
+        {
+            margin-top: 0%;
+        }
+        .cal_Theme1 .ajax__calendar_container
+        {
+            background-color: #DEF1F4;
+            border: solid 1px #77D5F7;
+            width: 201px;
+        }
+        
+        .cal_Theme1 .ajax__calendar_header
+        {
+            background-color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .cal_Theme1 .ajax__calendar_title, .cal_Theme1 .ajax__calendar_next, .cal_Theme1 .ajax__calendar_prev
+        {
+            color: #004080;
+            padding-top: 3px;
+        }
+        
+        .cal_Theme1 .ajax__calendar_body
+        {
+            background-color: #bce8f1;
+            border: solid 1px #77D5F7;
+            color: White;
+        }
+        
+        .cal_Theme1 .ajax__calendar_dayname
+        {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 4px;
+            margin-top: 2px;
+            color: #004080;
+        }
+        
+        .cal_Theme1 .ajax__calendar_day
+        {
+            color: #004080;
+            text-align: center;
+        }
+        
+        
+        .cal_Theme1 .ajax__calendar_hover .ajax__calendar_day, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_month, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_year, .cal_Theme1 .ajax__calendar_active
+        {
+            color: #004080;
+            font-weight: bold;
+            background-color: #DEF1F4;
+        }
+        
+        .cal_Theme1 .ajax__calendar_today
+        {
+            font-weight: bold;
+        }
+        
+        .cal_Theme1 .ajax__calendar_other, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_today, .cal_Theme1 .ajax__calendar_hover .ajax__calendar_title
+        {
+            color: #bbbbbb;
+        }
+        .cal_Theme1
+        {
+            position: absolute;
+            z-index: 1000;
+        }
+        .heading
+        {
+            color: rgba(255, 255, 255, 1);
+        }
+        .heading1
+        {
+            color: rgba(255, 255, 265, 1);
+            font-family: @GungsuhChe;
+            font-size: medium;
+        }
+        .heading3
+        {
+            color: rgba(49, 166, 201, 1);
+            font-family: @BatangChe;
+            font-size: large;
+        }
+        .bodyShadow
+        {
+            box-shadow: 10px 10px 29px 1px rgba(0,0,0,0.4);
+        }
+        .bodyShadow1
+        {
+            box-shadow: 10px 10px 29px 1px rgba(0,0,0,0.2);
+        }
+        .txt
+        {
+            background-color: rgba(32, 108, 131, 1);
+            color: White;
+        }
+        .pnl
+        {
+            background-color: #3498DB;
+            color: White;
+            font-family: @MS PMincho;
+            border-radius: 15px 15px 15px 15px;
+        }
+        .hr:before
+        {
+            /* Not really supposed to work, but does */
+            display: block;
+            content: "";
+            height: 30px;
+            margin-top: -31px;
+            border-style: solid;
+            border-color: black;
+            border-width: 0 0 1px 0;
+            border-radius: 20px;
+        }
+        .hr1
+        {
+            height: 30px;
+            border-style: solid;
+            border-color: #2471A3;
+            border-width: 5px 0 0 0;
+            border-radius: 20px;
+        }
+        .style-seven
+        {
+            /* Not really supposed to work, but does */
+            display: block;
+            content: "";
+            height: 30px;
+            border-style: solid;
+            border-color: #2471A3;
+            border-width: 0 0 5px 0;
+            border-radius: 20px;
+        }
+        .btn.btn-primary_test
+        {
+            color: #2B669A;
+            background-color: #428BCA;
+            background-image: linear-gradient(to bottom, #ffffff, #ffffff);
+            border-color: #2B669A #2B669A #2B669A;
+        }
+        .btn.btn-primary_test:hover
+        {
+            color: #ffffff;
+            background-color: #2D6CA2;
+            background-image: linear-gradient(to bottom, #2D6CA2, #2D6CA2);
+            border-color: #2B669A #2B669A #2B669A;
+            box-shadow: 10px 10px 29px 1px rgba(0,0,0,0.2);
+        }
+        .modalBackground
+        {
+            background-color: Black;
+            filter: alpha(opacity=90);
+            opacity: 0.8;
+        }
+        .modalPopup
+        {
+            background-color: #FFFFFF;
+            border-width: 3px;
+            border-style: solid;
+            border-color: black;
+            padding-top: 10px;
+            padding-left: 10px;
+            width: 300px;
+            height: 140px;
+        }
+    </style>
+    <div id="page-bg" class="jumbotron">
+        <asp:UpdatePanel ID="up1" runat="server">
+            <ContentTemplate>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-xs-12" style="margin-left: 0%;">
+                        <div class="pnl">
+                            <div class="panel-body text-center  bodyShadow">
+                                <div class="row">
+                                    <div class=" col-lg-12 col-md-12 col-sm-12 " runat="server" id="divDummy" visible="false">
+                                        <div class="form-group input-group  has-feedback">
+                                            <div class=" col-lg-3 col-md-3 col-sm-3 ">
+                                                <div class="form-group input-group ">
+                                                    <span class="input-group-addon labelcolor">PR : </span>
+                                                    <asp:DropDownList runat="server" ID="ddlPR" class="form-control  input-sm">
+                                                    </asp:DropDownList>
+                                                </div>
+                                            </div>
+                                            <div class=" col-lg-1 col-md-1 col-sm-1 ">
+                                                <asp:Button runat="server" ID="btnView" Text="View" CssClass="btn btn-primary_test" />
+                                            </div>
+                                            <div class=" col-lg-3 col-md-3 col-sm-3 ">
+                                                <div class="form-group input-group ">
+                                                    <span class="input-group-addon labelcolor">Process : </span>
+                                                    <asp:DropDownList runat="server" ID="ddlcategory" class="form-control  input-sm">
+                                                    </asp:DropDownList>
+                                                </div>
+                                            </div>
+                                            <div class=" col-lg-3 col-md-3 col-sm-3 ">
+                                                <div class="form-group input-group ">
+                                                    <span class="input-group-addon labelcolor">Week : </span>
+                                                    <asp:DropDownList runat="server" ID="ddlWeek" class="form-control  input-sm">
+                                                    </asp:DropDownList>
+                                                </div>
+                                            </div>
+                                            <div class=" col-lg-2 col-md-2 col-sm-2 ">
+                                                <asp:Button runat="server" ID="btnAssign" Text="Assign" OnClientClick="return TestCheckBoxcorr();"
+                                                    CssClass="btn btn-primary_test" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table>
+                                    <tr>
+                                        <td align="left" style="padding: 15px">
+                                            <asp:Label runat="server" Text="From Date " Visible="false" CssClass="label label-info bodyShadow"
+                                                ID="Label1"></asp:Label>
+                                            <asp:TextBox runat="server" ID="txtFromDate" Visible="false" CssClass="form-control input"
+                                                size="15" Width="150" BackColor="#ffffff" TabIndex="3" />
+                                            <%--<cc1:calendarextender runat="server" id="calExtender1" targetcontrolid="txtFromDate"
+                                                format="MM/dd/yyyy" popupbuttonid="Txt_Batch_Date" />--%>
+                                        </td>
+                                        <td align="left" style="padding: 15px">
+                                            <asp:Label runat="server" Text="To Date " Visible="false" CssClass="label label-info bodyShadow"
+                                                ID="lblTodate"></asp:Label>
+                                            <asp:TextBox runat="server" ID="txtToDate" Visible="false" CssClass="form-control input"
+                                                size="15" Width="150" BackColor="#ffffff" TabIndex="3" />
+                                            <%--<cc1:calendarextender runat="server" id="calExtender11" targetcontrolid="txtToDate"
+                                                format="MM/dd/yyyy" popupbuttonid="Txt_Batch_Date" />--%>
+                                            <asp:Label runat="server" Visible="false" Text="Audit Status" CssClass="label label-info bodyShadow"
+                                                ID="Label3"></asp:Label>
+                                            <asp:DropDownList runat="server" Visible="false" ID="ddlStatus" CssClass="form-control input"
+                                                Width="300">
+                                                <asp:ListItem Text="Correct" Value="Correct"></asp:ListItem>
+                                                <asp:ListItem Text="Incorrect" Value="Incorrect"></asp:ListItem>
+                                            </asp:DropDownList>
+                                        </td>
+                                        <td align="left" style="padding: 15px">
+                                        </td>
+                                        <td align="left" style="padding: 15px" colspan="6">
+                                            <asp:Label runat="server" Text="Select Skill Set" CssClass="label label-info bodyShadow"
+                                                ID="Label4"></asp:Label>
+                                            <asp:DropDownList runat="server" ID="ddlSkillSet" CssClass="form-control input" Width="210"
+                                                OnSelectedIndexChanged="ddlSkillSet_OnSelectedIndexChanged" AutoPostBack="true">
+                                                <asp:ListItem Text="Nurse Review" Value="Nurse Review"></asp:ListItem>
+                                                <asp:ListItem Text="Code Review" Value="Code Review"></asp:ListItem>
+                                                <asp:ListItem Text="Bill Review" Value="Bill Review"></asp:ListItem>
+                                            </asp:DropDownList>
+                                        </td>
+                                        <td align="left" style="padding: 15px" colspan="6">
+                                            <asp:Label runat="server" Text="Select Auditor" CssClass="label label-info bodyShadow"
+                                                ID="Label2"></asp:Label>
+                                            <asp:DropDownList runat="server" ID="ddluserids" CssClass="form-control input" Width="210">
+                                            </asp:DropDownList>
+                                        </td>
+                                        <td align="left" style="padding: 15px">
+                                            <asp:Button runat="server" ID="Button1" Text="Submit" CssClass="btn btn-default"
+                                                Font-Bold="true" CausesValidation="false" OnClick="Btn_Save_Click" />
+                                            <asp:Button runat="server" ID="Btn_Back" Text="Back" CssClass="btn btn-default" Font-Bold="true"
+                                                CausesValidation="false" OnClick="btnBack_Click" PostBackUrl="~/R1805_ATAEntry.aspx?Q=1" />
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ">
+                                        <asp:GridView ID="gvAuditReport" runat="server" BackColor="white" ForeColor="#2E86C1"
+                                            OnRowDataBound="gvAuditReport_RowDataBound" AutoGenerateColumns="False" BorderColor="#CCFF66"
+                                            BorderStyle="Inset" CssClass="table table-bordered" BorderWidth="1px" CellPadding="1"
+                                            ShowFooter="True" Font-Names="DokChampa" Font-Size="Small" HorizontalAlign="Center"
+                                            CellSpacing="1" Width="100%" Style="overflow: hidden; height: auto;" OnRowCommand="gvAuditReport_RowCommand">
+                                            <Columns>
+                                                <asp:TemplateField HeaderText="#" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <%# Container.DataItemIndex +1 %>
+                                                        <%--       <asp:Label ID="lblId" runat="server" Text='<%# Eval("Row_No") %>' Visible="false"></asp:Label>--%>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Audit No" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAuditNo" Text='<%#Eval("Audit_No") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Bill Id" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblbillid" Text='<%#Eval("billid") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Phase Name" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblPhaseName" Text='<%#Eval("Phase_Name") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Audit Type" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAuditType" Text='<%#Eval("Audit_Type") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="UserId" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblUserId" Text='<%#Eval("txt_User_Id") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Associate Id" HeaderStyle-HorizontalAlign="Left" Visible="false">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAssociateId" Text='<%#Eval("Cmb_hreid") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Associate Name" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAssociateName" Text='<%#Eval("AssociateName") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Auditor Id" HeaderStyle-HorizontalAlign="Left" Visible="false">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAuditorId" Text='<%#Eval("Auditor_Id") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Auditor Name" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAuditorName" Text='<%#Eval("AuditorName") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Audited Date" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAuditedDate" Text='<%#Eval("Audit_Date") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Audit Status" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblIsAudited" Visible="false" Text='<%#Eval("IsAudited") %>' />
+                                                        <asp:Label runat="server" ID="lblAuditStatus" Text='<%#Eval("Audit_Status") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <%--                                                <asp:TemplateField HeaderText="Assigned to" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblAssignedto" Text='<%#Eval("Assigned_to") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>--%>
+                                                <asp:TemplateField HeaderText="Nurse Review Assigned to" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblNurseReviewAssignedto" Text='<%#Eval("NurseReviewAssignedto") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Code Review Assigned to" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblCodeReviewAssignedto" Text='<%#Eval("CodeReviewAssignedto") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Bill Review Assigned to" HeaderStyle-HorizontalAlign="Left">
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" ID="lblBillReviewAssignedto" Text='<%#Eval("BillReviewAssignedto") %>' />
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+
+                                                aspx<asp:TemplateField HeaderText="Received Type" HeaderStyle-HorizontalAlign="Left">
+                                                 <ItemTemplate>
+                                                       <asp:Label runat="server" ID="lblReceivedType" Text='<%#Eval("received_type") %>' />
+                                                 </ItemTemplate>
+                                               <ItemStyle HorizontalAlign="Left" />
+                                                  </asp:TemplateField>
+
+
+
+                                                <asp:TemplateField HeaderText="Number" Visible="false">
+                                                    <HeaderTemplate>
+                                                        <span>Enter Number : </span>
+                                                        <asp:TextBox runat="server" Style="color: Black;" MaxLength="4" ID="htxtNumber" onkeyup="GetGroup();"
+                                                            onkeypress="return isNumber(event)" CssClass="input-sm"></asp:TextBox>
+                                                    </HeaderTemplate>
+                                                    <ItemTemplate>
+                                                        <asp:TextBox runat="server" ID="txtNumber" MaxLength="4" onkeypress="return isNumber(event)"
+                                                            CssClass="input-sm"></asp:TextBox>
+                                                    </ItemTemplate>
+                                                    <FooterTemplate>
+                                                        <asp:Label ID="lblFotTotClaimProcessing" runat="server" Font-Bold="true" Font-Size="Small"></asp:Label>
+                                                    </FooterTemplate>
+                                                </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="Move">
+                                                    <%--<ItemTemplate>
+                                                        <asp:Button runat="server" ID="btnProcess" Text="Assign" CommandName="Assign" CommandArgument='<%#Container.DataItemIndex%>' />
+                                                    </ItemTemplate>--%>
+                                                    <HeaderTemplate>
+                                                        <asp:CheckBox ID="checkAll" runat="server" onclick="checkAll(this);" />
+                                                    </HeaderTemplate>
+                                                    <ItemTemplate>
+                                                        <asp:CheckBox ID="CheckBox1" runat="server" onclick="Check_Click(this)" />
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                            </Columns>
+                                            <HeaderStyle BackColor="#2471A3" ForeColor="White" />
+                                            <FooterStyle BackColor="#2471A3" ForeColor="White" />
+                                        </asp:GridView>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="container col-lg-8 col-md-8 col-xs-8 col-lg-offset-2" id="divWarning"
+                                        runat="server" visible="false">
+                                        <div class="alert alert-warning  bodyShadow">
+                                            <strong>Warning!</strong> Data Not Available
+                                        </div>
+                                        <asp:GridView runat="server" ID="gvExcel">
+                                            <HeaderStyle BackColor="#2471A3" ForeColor="White" />
+                                            <FooterStyle BackColor="#2471A3" ForeColor="White" />
+                                        </asp:GridView>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+            </ContentTemplate>
+        </asp:UpdatePanel>
+        <asp:UpdateProgress runat="server" ID="uProgress" AssociatedUpdatePanelID="up1">
+            <ProgressTemplate>
+                <div id="Imgt" style="position: fixed; width: 100%; height: 100%;" align="center"
+                    runat="server" class="divWaiting">
+                    Processing...<br />
+                    <img src="Images\spiffygif_30x30.gif" style="position: static; right: 100px" /><br />
+                </div>
+            </ProgressTemplate>
+        </asp:UpdateProgress>
+    </div>
+    <asp:HiddenField runat="server" ID="txtUserId" />
+    <asp:HiddenField runat="server" ID="txtAssociateId" />
+    <asp:HiddenField runat="server" ID="txtAuditorId" />
+    <asp:HiddenField runat="server" ID="txtEmpName" />
+    <asp:HiddenField runat="server" ID="txtFilterType" />
+    <asp:HiddenField runat="server" ID="txtPhaseName" />
+    <asp:HiddenField runat="server" ID="txtAuditType" />
+    <asp:HiddenField runat="server" ID="txtSmplingperc" />
+    <asp:HiddenField runat="server" ID="txtQuery" />
+    <asp:HiddenField runat="server" ID="clicked_id" />
+    <asp:HiddenField runat="server" ID="strBillType" />
+    <asp:HiddenField runat="server" ID="strBillCode" />
+    <asp:HiddenField runat="server" ID="strClientId" />
+    <asp:HiddenField runat="server" ID="strBillForm" />
+    <asp:HiddenField runat="server" ID="strBillMode" />
+    <asp:HiddenField runat="server" ID="strMinAmount" />
+    <asp:HiddenField runat="server" ID="strMaxAmount" />
+    <asp:HiddenField runat="server" ID="strFromDate" />
+    <asp:HiddenField runat="server" ID="strToDate" />
+    <asp:HiddenField runat="server" ID="strFromTime" />
+    <asp:HiddenField runat="server" ID="strToTime" />
+    <asp:HiddenField runat="server" ID="strReceivedType" />
+    <asp:HiddenField runat="server" ID="HiddenField23" />
+    <asp:HiddenField runat="server" ID="HiddenField24" />
+    <asp:HiddenField runat="server" ID="HiddenField25" />
+    <asp:HiddenField runat="server" ID="HiddenField26" />
+    <asp:HiddenField runat="server" ID="HiddenField27" />
+    <script type="text/javascript">
+        //        function GetGroup() {
+        //            var header = $("[id*=htxtNumber]");
+        //            var item = $("[id*=txtNumber]");
+        //            var Result = header.val()
+        //            item.val(Result);
+
+        //        }
+
+    </script>
+    <script type="text/javascript">
+
+        function isNumber(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script type="text/javascript">
+        function Check_Click(objRef) {
+            //Get the Row based on checkbox
+            var row = objRef.parentNode.parentNode;
+            if (objRef.checked) {
+                //If checked change color to Aqua
+                row.style.backgroundColor = "aqua";
+            }
+            else {
+                //If not checked change back to original color
+                if (row.rowIndex % 2 == 0) {
+                    //Alternating Row Color
+                    row.style.backgroundColor = "white";
+                }
+                else {
+                    row.style.backgroundColor = "white";
+                }
+            }
+
+            //Get the reference of GridView
+            var GridView = row.parentNode;
+
+            //Get all input elements in Gridview
+            var inputList = GridView.getElementsByTagName("input");
+
+            for (var i = 0; i < inputList.length; i++) {
+                //The First element is the Header Checkbox
+                var headerCheckBox = inputList[0];
+
+                //Based on all or none checkboxes
+                //are checked check/uncheck Header Checkbox
+                var checked = true;
+                if (inputList[i].type == "checkbox" && inputList[i] != headerCheckBox) {
+                    if (!inputList[i].checked) {
+                        checked = false;
+                        break;
+                    }
+                }
+            }
+            headerCheckBox.checked = checked;
+
+        }
+    </script>
+    <script type="text/javascript">
+        function checkAll(objRef) {
+            var GridView = objRef.parentNode.parentNode.parentNode;
+            var inputList = GridView.getElementsByTagName("input");
+            for (var i = 0; i < inputList.length; i++) {
+                //Get the Cell To find out ColumnIndex
+                var row = inputList[i].parentNode.parentNode;
+                if (inputList[i].type == "checkbox" && objRef != inputList[i]) {
+                    if (objRef.checked) {
+                        //If the header checkbox is checked
+                        //check all checkboxes
+                        //and highlight all rows
+                        row.style.backgroundColor = "aqua";
+                        inputList[i].checked = true;
+                    }
+                    else {
+                        //If the header checkbox is checked
+                        //uncheck all checkboxes
+                        //and change rowcolor back to original
+                        if (row.rowIndex % 2 == 0) {
+                            //Alternating Row Color
+                            row.style.backgroundColor = "white";
+                        }
+                        else {
+                            row.style.backgroundColor = "white";
+                        }
+                        inputList[i].checked = false;
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function Validate(lnkUpdate) {
+            var txtName, ddlCountries;
+
+            //Find the GridView Row using the LinkButton reference.
+            var row = lnkUpdate.parentNode.parentNode;
+
+            //Fetch all controls in GridView Row.
+            var controls = row.getElementsByTagName("*");
+
+            //Loop through the fetched controls.
+            for (var i = 0; i < controls.length; i++) {
+
+                //Find the TextBox control.
+                if (controls[i].id.indexOf("txtName") != -1) {
+                    txtName = controls[i];
+                }
+
+                //Find the DropDownList control.
+                if (controls[i].id.indexOf("ddlCountries") != -1) {
+                    ddlCountries = controls[i];
+                }
+            }
+            var message = "";
+
+            //Validate the TextBox control.
+            if (txtName.value.replace(/\s/g, '') == "") {
+                message += "Please enter Name.\n";
+            }
+
+            //Validate the DropDownList control.
+            if (ddlCountries.value == "") {
+                message += "Please select Country";
+            }
+
+            //Display error message.
+            if (message != "") {
+                alert(message);
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script type="text/javascript">
+
+
+        function TestCheckBoxcorr() {
+            var TargetBaseControlcorr = null;
+            var TargetBaseControlcru = null;
+            var flag = false;
+            var ddlcategory = document.getElementById("<%=ddlcategory.ClientID %>");
+            var ddlweek = document.getElementById("<%=ddlWeek.ClientID %>");
+
+
+            if (ddlcategory.value != "-- Select Category --") {
+                if (ddlweek.value != "-- Select Week --") {
+
+                    TargetBaseControlcorr = document.getElementById('<%= this.gvAuditReport.ClientID %>');
+                    if (TargetBaseControlcorr == null) return false;
+
+                    //get target child control.
+                    var TargetChildControl = "CheckBox1";
+                    var TargetChildControl1 = "txtNumber";
+                    var Inputs = TargetBaseControlcorr.getElementsByTagName("input");
+                    for (var n = 0; n < Inputs.length; ++n)
+
+                        if (Inputs[n].type == 'checkbox' && Inputs[n].id.indexOf(TargetChildControl, 0) >= 0 && Inputs[n].checked) {
+
+                            if (Inputs[n - 1].type == 'text' && Inputs[n - 1].id.indexOf(TargetChildControl1, 0) >= 0) {
+                                if (Inputs[n - 1].value.trim() == "" || Number(Inputs[n - 1].value) == "0") {
+                                    Inputs[n - 1].focus();
+                                    alert('Enter valid number!');
+                                    return false;
+
+                                }
+                                else {
+                                    flag = true;
+                                }
+
+                            }
+
+                        }
+
+                    if (!flag) {
+                        alert('Select at least one checkbox!');
+                        return false;
+                    } else {
+
+                    }
+                }
+                else {
+                    ddlweek.focus();
+                    alert("Please select an Week!");
+                    return false;
+                }
+            }
+            else {
+                ddlcategory.focus();
+                alert("Please select an Process!");
+                return false;
+
+            }
+        }
+      
+        
+    </script>
+</asp:Content>
