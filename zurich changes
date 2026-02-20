@@ -6,3 +6,25 @@
 246170	152132	Mohhammad	Iashak
 603237	152788	Shankar	Bannikoppa
 603674	210664	Floria	Pereira
+
+
+
+
+-- Check 1:
+SELECT COUNT(*) FROM userlist
+
+-- Check 2:
+SELECT TOP 5 userid, skill_set 
+FROM userlist
+
+-- Check 3 - Join check:
+SELECT TOP 5
+    b.Audit_No,
+    b.Cmb_hreid,
+    u.userid,
+    u.skill_set
+FROM audit_inputsummary_v2 b
+INNER JOIN Audit_input_V2 a ON a.audit_no = b.audit_no
+INNER JOIN userlist u ON a.cmb_hreid = u.userid
+WHERE b.Delete_Flag = 'N'
+AND b.IsMoved = 'Y'
