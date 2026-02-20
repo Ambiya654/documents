@@ -1,12 +1,1 @@
-SELECT TOP 1
-    b.Cmb_hreid,
-    b.Auditor_Id,
-    b.Phase_Name,
-    b.Audit_Type,
-    b.Audit_Date,
-    b.Delete_Flag,
-    b.IsMoved
-FROM audit_inputsummary_v2 b
-INNER JOIN Audit_input_V2 a ON a.audit_no = b.audit_no
-WHERE b.Delete_Flag = 'N'
-AND b.IsMoved = 'Y'
+235357	152788	Nurse Review	PostPay	2022-08-08 15:16:05.197	N	Y
