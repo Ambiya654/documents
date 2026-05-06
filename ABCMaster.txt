@@ -1,3 +1,95 @@
-D:\TFS Projects\Unified Apps\DNA\Web\DevBranch-Ambiya\DNA.Web\wwwroot\assets\js\module\aim-ideator.js
+CREATE PROCEDURE [dbo].[DNA_PRC_GetIdeaStatusCountByUser]  
+(  
+    @CreatedBy VARCHAR(200)  
+)  
+AS  
+BEGIN  
+    SET NOCOUNT ON;  
+  
+    SELECT   
+        S.IdeaStatusId,  
+        S.StatusName,  
+        COUNT(I.IdeaId) AS IdeaCount  
+    FROM DNA_IdeaStatusMaster S  
+    LEFT JOIN DNA_Idea I   
+        ON I.StatusID = S.IdeaStatusId  
+        AND I.CreatedBy = @CreatedBy  
+        AND I.IsActive = 1  
+        AND I.DeletedDateTime IS NULL  
+  
+    WHERE   
+        S.IsActive = 1  
+        AND S.DeletedDateTime IS NULL  
+  
+    GROUP BY   
+        S.IdeaStatusId,  
+        S.StatusName  
+  
+    ORDER BY   
+        CASE   
+            WHEN S.StatusName = 'Draft' THEN 0  
+            ELSE 1  
+        END,  
+        S.IdeaStatusId;  
+END  
 
-D:\TFS Projects\Unified Apps\DNA\Web\DevBranch-Ambiya\DNA.Web\Views\AIM\IdeaLanding.cshtml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER PROCEDURE [dbo].[DNA_PRC_GetIdeasByUser]
+(
+    @CreatedBy   VARCHAR(200),
+    @StatusID    INT = NULL,         -- optional
+    @FromDate    DATE = NULL,        -- NEW (optional)
+    @ToDate      DATE = NULL         -- NEW (optional)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT   
+        ROW_NUMBER() OVER (ORDER BY I.CreatedDateTime DESC) AS SrNo,
+        I.IdeaId,
+        I.IdeaTitle AS Title,
+        I.ProblemStatement AS Description,
+        S.StatusName AS StatusName,
+        I.CreatedDateTime
+    FROM DNA_Idea I
+    INNER JOIN DNA_IdeaStatusMaster S  
+        ON I.StatusID = S.IdeaStatusId  
+
+    WHERE   
+        I.CreatedBy = @CreatedBy  
+        AND I.IsActive = 1  
+        AND I.DeletedDateTime IS NULL  
+
+        AND S.IsActive = 1  
+        AND S.DeletedDateTime IS NULL  
+
+        -- OPTIONAL STATUS FILTER
+        AND (@StatusID IS NULL OR I.StatusID = @StatusID)
+
+        -- OPTIONAL DATE FILTER
+        AND (
+              @FromDate IS NULL 
+              OR CAST(I.CreatedDateTime AS DATE) >= @FromDate
+            )
+        AND (
+              @ToDate IS NULL 
+              OR CAST(I.CreatedDateTime AS DATE) <= @ToDate
+            )
+
+    ORDER BY I.CreatedDateTime DESC;
+END
