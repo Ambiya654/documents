@@ -1,257 +1,3 @@
-(function () {
-    'use strict';
-
-    // ─── Open popup: any .add-new click ──────────────────────────────────────────
-    $(document).on('click', '.add-new', function () {
-        openIdeaPopup();
-    });
-
-    function openIdeaPopup() {
-        resetIdeaForm();
-        $('#addIdeaOverlay').fadeIn(200);
-        $('.addIdeaPopup').addClass('open');
-    }
-
-    // ─── Close popup ─────────────────────────────────────────────────────────────
-    $(document).on('click', '.close-idea-popup', function () {
-        closeIdeaPopup();
-    });
-
-    $('#addIdeaOverlay').on('click', function () {
-        closeIdeaPopup();
-    });
-
-    function closeIdeaPopup() {
-        $('#addIdeaOverlay').fadeOut(200);
-        $('.addIdeaPopup').removeClass('open');
-    }
-
-    // ─── Reset entire form ───────────────────────────────────────────────────────
-    function resetIdeaForm() {
-        // Clear text fields
-        $('#ideaTitle').val('').removeClass('is-invalid');
-        $('#ideaProblemStatement').val('').removeClass('is-invalid');
-        $('#ideaCurrentSituation').val('').removeClass('is-invalid');
-
-        // Reset proposed ideas — inject one fresh row
-        $('#proposedIdeasContainer').empty().append(buildProposedIdeaRow(0, true));
-
-        // Populate read-only context fields from session
-        $('#ideaCompany').val(sessionStorage.getItem('Company') || '');
-        $('#ideaLocation').val(sessionStorage.getItem('LocationName') || '');
-        $('#ideaDepartment').val(sessionStorage.getItem('DepartmentName') || '');
-        $('#ideaSubProcess').val(sessionStorage.getItem('SubProcessName') || '');
-    }
-
-    // ─── Build one proposed idea row ─────────────────────────────────────────────
-    function buildProposedIdeaRow(index, isFirst) {
-        var deleteBtn = isFirst
-            ? ''
-            : '<span class="delete-idea-btn text-danger ms-2" style="cursor:pointer;" title="Remove this idea">'
-              + '<i class="bi bi-trash3"></i></span>';
-
-        return '<div class="idea-details mb-4 proposed-idea-item" data-index="' + index + '">'
-            + '<div class="row">'
-            +   '<div class="col-12">'
-            +     '<div class="mb-3">'
-            +       '<div class="d-flex justify-content-between align-items-center">'
-            +         '<label class="form-label mb-0">Proposed Idea <span class="required">*</span>'
-            +           '<span class="idea-number text-muted ms-1">#' + (index + 1) + '</span>'
-            +         '</label>'
-            +         deleteBtn
-            +       '</div>'
-            +       '<textarea class="form-control mt-2 proposed-idea-text" rows="2"'
-            +         ' placeholder="Describe the core objective, scope, and expected outcomes"></textarea>'
-            +     '</div>'
-            +   '</div>'
-            +   '<div class="col-12">'
-            +     '<label class="form-label">Detailed Explanation <span class="required">*</span></label>'
-            +     '<textarea class="form-control proposed-idea-detail" rows="3"'
-            +       ' placeholder="Provide a detailed explanation of this proposed idea"></textarea>'
-            +   '</div>'
-            + '</div>'
-            + '</div>';
-    }
-
-    // ─── Add More Ideas button ────────────────────────────────────────────────────
-    $('#btnAddMoreIdea').on('click', function () {
-        var count = $('#proposedIdeasContainer .proposed-idea-item').length;
-        $('#proposedIdeasContainer').append(buildProposedIdeaRow(count, false));
-        renumberRows();
-    });
-
-    // ─── Delete a proposed idea row ──────────────────────────────────────────────
-    $(document).on('click', '.delete-idea-btn', function () {
-        var items = $('#proposedIdeasContainer .proposed-idea-item');
-        if (items.length <= 1) {
-            new bootstrap.Modal(document.getElementById('minIdeaModal')).show();
-            return;
-        }
-        $(this).closest('.proposed-idea-item').remove();
-        renumberRows();
-    });
-
-    // ─── Renumber rows after add/delete ──────────────────────────────────────────
-    function renumberRows() {
-        $('#proposedIdeasContainer .proposed-idea-item').each(function (i) {
-            $(this).attr('data-index', i);
-            $(this).find('.idea-number').text('#' + (i + 1));
-
-            // First row must never have a delete button
-            if (i === 0) {
-                $(this).find('.delete-idea-btn').remove();
-            }
-        });
-    }
-
-    // ─── Collect proposed ideas from DOM ────────────────────────────────────────
-    function collectProposedIdeas() {
-        var ideas = [];
-        $('#proposedIdeasContainer .proposed-idea-item').each(function () {
-            ideas.push({
-                ProposedIdea: $(this).find('.proposed-idea-text').val().trim(),
-                DetailedExplanation: $(this).find('.proposed-idea-detail').val().trim()
-            });
-        });
-        return ideas;
-    }
-
-    // ─── Validate for full submit ────────────────────────────────────────────────
-    function validateSubmit() {
-        var valid = true;
-
-        // Title
-        if (!$('#ideaTitle').val().trim()) {
-            $('#ideaTitle').addClass('is-invalid');
-            valid = false;
-        } else {
-            $('#ideaTitle').removeClass('is-invalid');
-        }
-
-        // Current Situation
-        if (!$('#ideaCurrentSituation').val().trim()) {
-            $('#ideaCurrentSituation').addClass('is-invalid');
-            valid = false;
-        } else {
-            $('#ideaCurrentSituation').removeClass('is-invalid');
-        }
-
-        // All proposed idea rows
-        $('#proposedIdeasContainer .proposed-idea-item').each(function () {
-            var txtField = $(this).find('.proposed-idea-text');
-            var detField = $(this).find('.proposed-idea-detail');
-
-            if (!txtField.val().trim()) {
-                txtField.addClass('is-invalid');
-                valid = false;
-            } else {
-                txtField.removeClass('is-invalid');
-            }
-
-            if (!detField.val().trim()) {
-                detField.addClass('is-invalid');
-                valid = false;
-            } else {
-                detField.removeClass('is-invalid');
-            }
-        });
-
-        return valid;
-    }
-
-    // ─── Validate for draft (only title required) ────────────────────────────────
-    function validateDraft() {
-        if (!$('#ideaTitle').val().trim()) {
-            $('#ideaTitle').addClass('is-invalid');
-            return false;
-        }
-        $('#ideaTitle').removeClass('is-invalid');
-        return true;
-    }
-
-    // ─── Build payload ────────────────────────────────────────────────────────────
-    function buildPayload(isDraft) {
-        return {
-            Action: 'INSERT',
-            IdeaID: 0,
-            ThemeID: null,
-            IdeaTitle: $('#ideaTitle').val().trim(),
-            ProblemStatement: $('#ideaProblemStatement').val().trim() || null,
-            CurrentSituation: $('#ideaCurrentSituation').val().trim() || null,
-            StatusID: isDraft ? 7 : 2,   // 7 = Draft, 2 = Pending Review
-            IdeaTypeID: null,
-            FeasibilityID: null,
-            IsDraft: isDraft,
-            ProposedIdeas: collectProposedIdeas(),
-            LoginEmployee: sessionStorage.getItem('LoginEmployee') || '',
-            LoginIPAddress: sessionStorage.getItem('LoginIPAddress') || ''
-        };
-    }
-
-    // ─── Submit Idea ──────────────────────────────────────────────────────────────
-    $('#btnSubmitIdea').on('click', function () {
-        if (!validateSubmit()) return;
-        saveIdea(false);
-    });
-
-    // ─── Save as Draft ────────────────────────────────────────────────────────────
-    $('#btnSaveAsDraft').on('click', function () {
-        if (!validateDraft()) return;
-        saveIdea(true);
-    });
-
-    // ─── Core AJAX save ──────────────────────────────────────────────────────────
-    function saveIdea(isDraft) {
-        var payload = buildPayload(isDraft);
-        var $btn = isDraft ? $('#btnSaveAsDraft') : $('#btnSubmitIdea');
-        var originalHtml = $btn.html();
-
-        $btn.prop('disabled', true).html(
-            '<span class="spinner-border spinner-border-sm me-1"></span>'
-            + (isDraft ? 'Saving...' : 'Submitting...')
-        );
-
-        $.ajax({
-            url: '/Aim/SaveUpdateDeleteIdea',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(payload),
-            success: function (res) {
-                if (res.responseCode === 1) {
-                    closeIdeaPopup();
-                    showToast('success', res.responseMessage || 'Saved successfully');
-                } else {
-                    showToast('danger', res.responseMessage || 'Something went wrong.');
-                }
-            },
-            error: function () {
-                showToast('danger', 'Request failed. Please try again.');
-            },
-            complete: function () {
-                $btn.prop('disabled', false).html(originalHtml);
-            }
-        });
-    }
-
-    // ─── Toast helper ────────────────────────────────────────────────────────────
-    function showToast(type, message) {
-        if (typeof window.showGlobalToast === 'function') {
-            window.showGlobalToast(type, message);
-        } else {
-            alert(message);
-        }
-    }
-
-})();
-
-
-
-
-
-
-
-
-
 @{
     Layout = "_DNALayout";
 }
@@ -280,7 +26,7 @@
 
         <div class="idea-details-card mb-4">
             <div class="ideation-slider owl-carousel">
-                <div class="item" style="background-image: url(assets/images/banner-one.png);">
+                <div class="item" style="background-image: url('@Url.Content("~/assets/images/banner-one.png")');">
                     <div class="banner-text">
                         <h6>Be the reason for the next <span> big improvement,</span><br>
                             Share your <span>efficiency-boosting ideas</span> today.</h6>
@@ -291,7 +37,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="item" style="background-image: url(assets/images/banner-one.png);">
+                <div class="item" style="background-image: url('@Url.Content("~/assets/images/banner-one.png")');">
                     <div class="banner-text">
                         <h6>Be the reason for the next <span> big improvement,</span><br>
                             Share your <span>efficiency-boosting ideas</span> today.</h6>
@@ -302,7 +48,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="item" style="background-image: url(assets/images/banner-one.png);">
+                <div class="item" style="background-image: url('@Url.Content("~/assets/images/banner-one.png")');">
                     <div class="banner-text">
                         <h6>Be the reason for the next <span> big improvement,</span> <br>
                             Share your <span>efficiency-boosting ideas</span> today.</h6>
@@ -325,7 +71,7 @@
                                 <h2 class="card-num">07</h2>
                             </div>
                             <div class="card-icon">
-                                <img src="assets/images/iprofit-icon.png" alt="">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
                             </div>
                         </div>
                     </div>
@@ -336,7 +82,7 @@
                                 <h2 class="card-num">07</h2>
                             </div>
                             <div class="card-icon">
-                                <img src="assets/images/iprofit-icon.png" alt="">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
                             </div>
                         </div>
                     </div>
@@ -347,7 +93,7 @@
                                 <h2 class="card-num">07</h2>
                             </div>
                             <div class="card-icon">
-                                <img src="assets/images/iprofit-icon.png" alt="">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
                             </div>
                         </div>
                     </div>
@@ -358,7 +104,7 @@
                                 <h2 class="card-num">07</h2>
                             </div>
                             <div class="card-icon">
-                                <img src="assets/images/iprofit-icon.png" alt="">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
                             </div>
                         </div>
                     </div>
@@ -369,7 +115,7 @@
                                 <h2 class="card-num">07</h2>
                             </div>
                             <div class="card-icon">
-                                <img src="assets/images/iprofit-icon.png" alt="">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
                             </div>
                         </div>
                     </div>
@@ -380,7 +126,7 @@
                                 <h2 class="card-num">07</h2>
                             </div>
                             <div class="card-icon">
-                                <img src="assets/images/iprofit-icon.png" alt="">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
                             </div>
                         </div>
                     </div>
@@ -441,7 +187,7 @@
                             <div class="col-lg-4">
                                 <div class="listing-card">
                                     <div class="card-header">
-                                        <div><div class="card-icon"><img src="assets/images/blue-bulb.png" alt=""></div></div>
+                                        <div><div class="card-icon"><img src="@Url.Content("~/assets/images/blue-bulb.png")" alt=""></div></div>
                                         <div class="title-section">
                                             <div class="d-flex align-items-center gap-1">
                                                 <h6 class="card-title">Automated Feedback Loop for Product Features</h6>
@@ -472,7 +218,7 @@
                             <div class="col-lg-4">
                                 <div class="listing-card">
                                     <div class="card-header">
-                                        <div><div class="card-icon"><img src="assets/images/blue-bulb.png" alt=""></div></div>
+                                        <div><div class="card-icon"><img src="@Url.Content("~/assets/images/blue-bulb.png")" alt=""></div></div>
                                         <div class="title-section">
                                             <div class="d-flex align-items-center gap-1">
                                                 <h6 class="card-title">Automated Feedback Loop for Product Features</h6>
@@ -503,7 +249,7 @@
                             <div class="col-lg-4">
                                 <div class="listing-card">
                                     <div class="card-header">
-                                        <div><div class="card-icon"><img src="assets/images/blue-bulb.png" alt=""></div></div>
+                                        <div><div class="card-icon"><img src="@Url.Content("~/assets/images/blue-bulb.png")" alt=""></div></div>
                                         <div class="title-section">
                                             <div class="d-flex align-items-center gap-1">
                                                 <h6 class="card-title">Automated Feedback Loop for Product Features</h6>
@@ -534,7 +280,7 @@
                             <div class="col-lg-4">
                                 <div class="listing-card">
                                     <div class="card-header">
-                                        <div><div class="card-icon"><img src="assets/images/blue-bulb.png" alt=""></div></div>
+                                        <div><div class="card-icon"><img src="@Url.Content("~/assets/images/blue-bulb.png")" alt=""></div></div>
                                         <div class="title-section">
                                             <div class="d-flex align-items-center gap-1">
                                                 <h6 class="card-title">Automated Feedback Loop for Product Features</h6>
@@ -565,7 +311,7 @@
                             <div class="col-lg-4">
                                 <div class="listing-card">
                                     <div class="card-header">
-                                        <div><div class="card-icon"><img src="assets/images/blue-bulb.png" alt=""></div></div>
+                                        <div><div class="card-icon"><img src="@Url.Content("~/assets/images/blue-bulb.png")" alt=""></div></div>
                                         <div class="title-section">
                                             <div class="d-flex align-items-center gap-1">
                                                 <h6 class="card-title">Automated Feedback Loop for Product Features</h6>
@@ -596,7 +342,7 @@
                             <div class="col-lg-4">
                                 <div class="listing-card">
                                     <div class="card-header">
-                                        <div><div class="card-icon"><img src="assets/images/blue-bulb.png" alt=""></div></div>
+                                        <div><div class="card-icon"><img src="@Url.Content("~/assets/images/blue-bulb.png")" alt=""></div></div>
                                         <div class="title-section">
                                             <div class="d-flex align-items-center gap-1">
                                                 <h6 class="card-title">Automated Feedback Loop for Product Features</h6>
@@ -899,3 +645,269 @@
 @section Scripts {
     <script type="text/javascript" src="@Url.Content("~/assets/js/module/innovation-listing-ideas.js")?v=@DateTime.Now.Ticks"></script>
 }
+
+
+
+
+
+
+
+(function () {
+    'use strict';
+
+    // ─── Open popup: any .add-new click ──────────────────────────────────────────
+    $(document).on('click', '.add-new', function () {
+        openIdeaPopup();
+    });
+
+    function openIdeaPopup() {
+        resetIdeaForm();
+        $('#addIdeaOverlay').fadeIn(200);
+        $('.addIdeaPopup').addClass('open');
+    }
+
+    // ─── Close popup ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.close-idea-popup', function () {
+        closeIdeaPopup();
+    });
+
+    $('#addIdeaOverlay').on('click', function () {
+        closeIdeaPopup();
+    });
+
+    function closeIdeaPopup() {
+        $('#addIdeaOverlay').fadeOut(200);
+        $('.addIdeaPopup').removeClass('open');
+    }
+
+    // ─── Reset entire form ───────────────────────────────────────────────────────
+    function resetIdeaForm() {
+        // Clear text fields
+        $('#ideaTitle').val('').removeClass('is-invalid');
+        $('#ideaProblemStatement').val('').removeClass('is-invalid');
+        $('#ideaCurrentSituation').val('').removeClass('is-invalid');
+
+        // Reset proposed ideas — inject one fresh row
+        $('#proposedIdeasContainer').empty().append(buildProposedIdeaRow(0, true));
+
+        // Populate read-only context fields from session
+        $('#ideaCompany').val(sessionStorage.getItem('Company') || '');
+        $('#ideaLocation').val(sessionStorage.getItem('LocationName') || '');
+        $('#ideaDepartment').val(sessionStorage.getItem('DepartmentName') || '');
+        $('#ideaSubProcess').val(sessionStorage.getItem('SubProcessName') || '');
+    }
+
+    // ─── Build one proposed idea row ─────────────────────────────────────────────
+    function buildProposedIdeaRow(index, isFirst) {
+        var deleteBtn = isFirst
+            ? ''
+            : '<span class="delete-idea-btn text-danger ms-2" style="cursor:pointer;" title="Remove this idea">'
+              + '<i class="bi bi-trash3"></i></span>';
+
+        return '<div class="idea-details mb-4 proposed-idea-item" data-index="' + index + '">'
+            + '<div class="row">'
+            +   '<div class="col-12">'
+            +     '<div class="mb-3">'
+            +       '<div class="d-flex justify-content-between align-items-center">'
+            +         '<label class="form-label mb-0">Proposed Idea <span class="required">*</span>'
+            +           '<span class="idea-number text-muted ms-1">#' + (index + 1) + '</span>'
+            +         '</label>'
+            +         deleteBtn
+            +       '</div>'
+            +       '<textarea class="form-control mt-2 proposed-idea-text" rows="2"'
+            +         ' placeholder="Describe the core objective, scope, and expected outcomes"></textarea>'
+            +     '</div>'
+            +   '</div>'
+            +   '<div class="col-12">'
+            +     '<label class="form-label">Detailed Explanation <span class="required">*</span></label>'
+            +     '<textarea class="form-control proposed-idea-detail" rows="3"'
+            +       ' placeholder="Provide a detailed explanation of this proposed idea"></textarea>'
+            +   '</div>'
+            + '</div>'
+            + '</div>';
+    }
+
+    // ─── Add More Ideas button ────────────────────────────────────────────────────
+    $('#btnAddMoreIdea').on('click', function () {
+        var count = $('#proposedIdeasContainer .proposed-idea-item').length;
+        $('#proposedIdeasContainer').append(buildProposedIdeaRow(count, false));
+        renumberRows();
+    });
+
+    // ─── Delete a proposed idea row ──────────────────────────────────────────────
+    $(document).on('click', '.delete-idea-btn', function () {
+        var items = $('#proposedIdeasContainer .proposed-idea-item');
+        if (items.length <= 1) {
+            new bootstrap.Modal(document.getElementById('minIdeaModal')).show();
+            return;
+        }
+        $(this).closest('.proposed-idea-item').remove();
+        renumberRows();
+    });
+
+    // ─── Renumber rows after add/delete ──────────────────────────────────────────
+    function renumberRows() {
+        $('#proposedIdeasContainer .proposed-idea-item').each(function (i) {
+            $(this).attr('data-index', i);
+            $(this).find('.idea-number').text('#' + (i + 1));
+
+            // First row must never have a delete button
+            if (i === 0) {
+                $(this).find('.delete-idea-btn').remove();
+            }
+        });
+    }
+
+    // ─── Collect proposed ideas from DOM ────────────────────────────────────────
+    function collectProposedIdeas() {
+        var ideas = [];
+        $('#proposedIdeasContainer .proposed-idea-item').each(function () {
+            ideas.push({
+                ProposedIdea: $(this).find('.proposed-idea-text').val().trim(),
+                DetailedExplanation: $(this).find('.proposed-idea-detail').val().trim()
+            });
+        });
+        return ideas;
+    }
+
+    // ─── Validate for full submit ────────────────────────────────────────────────
+    function validateSubmit() {
+        var valid = true;
+
+        // Title
+        if (!$('#ideaTitle').val().trim()) {
+            $('#ideaTitle').addClass('is-invalid');
+            valid = false;
+        } else {
+            $('#ideaTitle').removeClass('is-invalid');
+        }
+
+        // Current Situation
+        if (!$('#ideaCurrentSituation').val().trim()) {
+            $('#ideaCurrentSituation').addClass('is-invalid');
+            valid = false;
+        } else {
+            $('#ideaCurrentSituation').removeClass('is-invalid');
+        }
+
+        // All proposed idea rows
+        $('#proposedIdeasContainer .proposed-idea-item').each(function () {
+            var txtField = $(this).find('.proposed-idea-text');
+            var detField = $(this).find('.proposed-idea-detail');
+
+            if (!txtField.val().trim()) {
+                txtField.addClass('is-invalid');
+                valid = false;
+            } else {
+                txtField.removeClass('is-invalid');
+            }
+
+            if (!detField.val().trim()) {
+                detField.addClass('is-invalid');
+                valid = false;
+            } else {
+                detField.removeClass('is-invalid');
+            }
+        });
+
+        return valid;
+    }
+
+    // ─── Validate for draft (only title required) ────────────────────────────────
+    function validateDraft() {
+        if (!$('#ideaTitle').val().trim()) {
+            $('#ideaTitle').addClass('is-invalid');
+            return false;
+        }
+        $('#ideaTitle').removeClass('is-invalid');
+        return true;
+    }
+
+    // ─── Build payload ────────────────────────────────────────────────────────────
+    function buildPayload(isDraft) {
+        return {
+            Action: 'INSERT',
+            IdeaID: 0,
+            ThemeID: null,
+            IdeaTitle: $('#ideaTitle').val().trim(),
+            ProblemStatement: $('#ideaProblemStatement').val().trim() || null,
+            CurrentSituation: $('#ideaCurrentSituation').val().trim() || null,
+            StatusID: isDraft ? 7 : 2,   // 7 = Draft, 2 = Pending Review
+            IdeaTypeID: null,
+            FeasibilityID: null,
+            IsDraft: isDraft,
+            ProposedIdeas: collectProposedIdeas(),
+            LoginEmployee: sessionStorage.getItem('LoginEmployee') || '',
+            LoginIPAddress: sessionStorage.getItem('LoginIPAddress') || ''
+        };
+    }
+
+    // ─── Submit Idea ──────────────────────────────────────────────────────────────
+    $('#btnSubmitIdea').on('click', function () {
+        if (!validateSubmit()) return;
+        saveIdea(false);
+    });
+
+    // ─── Save as Draft ────────────────────────────────────────────────────────────
+    $('#btnSaveAsDraft').on('click', function () {
+        if (!validateDraft()) return;
+        saveIdea(true);
+    });
+
+    // ─── Core AJAX save ──────────────────────────────────────────────────────────
+    function saveIdea(isDraft) {
+        var payload = buildPayload(isDraft);
+        var $btn = isDraft ? $('#btnSaveAsDraft') : $('#btnSubmitIdea');
+        var originalHtml = $btn.html();
+
+        // ── DEBUG: payload console me dekho ──
+        console.log('=== SaveUpdateDeleteIdea PAYLOAD ===');
+        console.log(JSON.stringify(payload, null, 2));
+
+        $btn.prop('disabled', true).html(
+            '<span class="spinner-border spinner-border-sm me-1"></span>'
+            + (isDraft ? 'Saving...' : 'Submitting...')
+        );
+
+        $.ajax({
+            url: '/Aim/SaveUpdateDeleteIdea',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (res) {
+                // ── DEBUG: API response console me dekho ──
+                console.log('=== API RESPONSE ===');
+                console.log(res);
+
+                if (res.responseCode === 1) {
+                    closeIdeaPopup();
+                    showToast('success', res.responseMessage || 'Saved successfully');
+                } else {
+                    showToast('danger', res.responseMessage || 'Something went wrong.');
+                }
+            },
+            error: function (xhr, status, err) {
+                // ── DEBUG: error details ──
+                console.error('=== API ERROR ===');
+                console.error('Status:', xhr.status);
+                console.error('Response:', xhr.responseText);
+                console.error('Error:', err);
+
+                showToast('danger', 'Request failed. Please try again.');
+            },
+            complete: function () {
+                $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    }
+
+    // ─── Toast helper ────────────────────────────────────────────────────────────
+    function showToast(type, message) {
+        if (typeof window.showGlobalToast === 'function') {
+            window.showGlobalToast(type, message);
+        } else {
+            alert(message);
+        }
+    }
+
+})();
