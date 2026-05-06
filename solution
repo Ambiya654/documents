@@ -1,4 +1,1698 @@
-  
+  @{
+    Layout = "_DNALayout";
+}
+<div class="content-body">
+    <div class="container-fluid permance-plns">
+        <div class="row">
+            <div class="col-12">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item active">Theme Management</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="idea-details-card mb-4">
+            <div class="theme-banner">
+                <div class="item" style="background-image: url('/assets/images/theme-banner.png');">
+                    <div class="banner-text">
+                        <h6>
+                            Be the reason for the next <span> big improvement,</span><br>
+                            Share your <span>efficiency-boosting ideas</span> today.
+                        </h6>
+                        <a href="javascript:;" class="add-section btn btn-lightblue initiate-btn add-user"
+                           title="Add Section">
+                            <i class="bi bi-plus icon-text normal-icon"></i>
+                            <i class="bi bi-rocket-takeoff-fill icon-text hover-icon"></i>
+                            Add Themes
+                        </a>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="my-3">
+                <h5 class="title">SPOC Analytics</h5>
+                <div class="row row-cols-lg-5 g-3">
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Total Themes</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Active Themes</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Total Idea Groups</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2 align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Ideas Pending Review</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Approved Ideas</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Total Ideas Submitted</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2 align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Rejected Ideas</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Implemented</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-module d-flex justify-content-between align-items-center gap-2">
+                            <div class="text-box">
+                                <p>Not Implemented</p>
+                                <h2 class="card-num">07</h2>
+                            </div>
+                            <div class="card-icon">
+                                <img src="@Url.Content("~/assets/images/iprofit-icon.png")" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="main-body-card blue-bg">
+                <div class="card-header mb-3">
+                    <h5 class="main-title">Ideas Pending Review</h5>
+                </div>
+                <div class="card-container">
+                    <div class="card-header justify-content-between mb-3">
+                        <div class="">
+                            <h2 class="main-title mb-3">
+                                Ideas Pending Review
+                            </h2>
+                            <p class="mb-2">
+                                Developing interactive training modules with gamified elements to
+                                increase engagement and knowledge retention.
+                            </p>
+                        </div>
+                        <div class="filter-btns">
+                            <a href="accept-reject-ideas.html" class="btn btn-outline-secondary ms-2">Review</a>
+                        </div>
+                    </div>
+                    <div class="card-header justify-content-between mb-3">
+                        <div class="">
+                            <h2 class="main-title mb-3">
+                                Energy Efficiency Upgrade for Data Centers
+                            </h2>
+                            <p class="mb-2">
+                                Plan to upgrade data center cooling systems and servers to more
+                                energy-efficient models, reducing operational costs and carbon footprint.
+                            </p>
+                        </div>
+                        <div class="filter-btns">
+                            <a href="idea-detail-2.html" class="btn btn-outline-secondary ms-2">Review</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="my-3">
+                <h5 class="title">Idea Listing</h5>
+                <div class="filter-header">
+                    <div class="row justify-content-between">
+                        <div class="col-md-9">
+                            <div class="row align-items-center gx-3">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="Search by title...">
+                                </div>
+                                <div class="col-md-3 dashboard-daterange">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control start-date" id="startDate" placeholder="Start Date">
+                                        <input type="text" class="form-control" id="endDate" placeholder="End Date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-center gap-2 filter-btns">
+                                    <a href="innovation-listing-ideas.html" class="btn btn-outline-secondary">All Ideas</a>
+                                    <button class="btn btn-outline-secondary">Ideas Drafts</button>
+                                    <a href="aim-spoc-dashboard.html" class="btn btn-outline-secondary">Pending for Review</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                <a href="javascript:;" class="btn btn-lightblue add-new">
+                                    <i class="bi bi-plus-lg me-1"></i> Add Ideas
+                                </a>
+                                <ul class="nav nav-tabs nav-tabs-style-1" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="nav-tab-1" data-bs-toggle="tab"
+                                                data-bs-target="#tab-1" type="button" role="tab"
+                                                aria-controls="tab-1" aria-selected="true">
+                                            <i class="bi bi-grid-fill"></i>
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="nav-tab-2" data-bs-toggle="tab"
+                                                data-bs-target="#tab-2" type="button" role="tab"
+                                                aria-controls="tab-2" aria-selected="false">
+                                            <i class="bi bi-grid-3x3"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade active show" id="tab-1" role="tabpanel"
+                         aria-labelledby="nav-tab-1" tabindex="0">
+                        <div class="row g-4 mb-4">
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-green">Approved</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and
+                                            themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-red">Rejected</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-orange">Pending Review</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-primary">Implemented</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and
+                                            themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-gray">Not Implemented</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-success">Approved</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-success">Approved</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and
+                                            themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-success">Approved</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="listing-card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-icon">
+                                                <img src="assets/images/blue-bulb.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="title-section">
+
+                                            <div class="d-flex align-items-center gap-1">
+                                                <h6 class="card-title">
+                                                    Automated Feedback Loop for Product
+                                                    Features
+                                                </h6>
+                                                <span class="badge badge-style-1 badge-success">Approved</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            A comprehensive idea for developing a scalable and
+                                            flexible design system using React, TypeScript, and
+                                            Tailwind CSS. Focuses on component reusability and themeability.
+                                        </p>
+                                        <div class="d-flex align-items-center justify-content-between ">
+                                            <div class="left">
+                                                <a href="idea-detail-2.html" class="btn btn-outline-secondary w-100">
+                                                    Quick View
+                                                    Details
+                                                </a>
+                                            </div>
+                                            <div class="right dropdown">
+                                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                        type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    Perform Actions
+                                                </button>
+                                                <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-download text-primary"></i>
+                                                            Download Certificate
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-eye text-primary"></i>
+                                                            View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-pencil text-primary"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                           href="#">
+                                                            <i class="bi bi-trash text-primary"></i>
+                                                            Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pagination-cntr mb-4">
+                            <!-- Results text -->
+                            <p class="mb-0 text-muted">
+                                Showing <strong>1</strong> to <strong>3</strong> out of
+                                <span class="text-success fw-semibold">483</span> results
+                            </p>
+
+                            <!-- Pagination -->
+                            <nav>
+                                <ul class="pagination mb-0">
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <!-- <span aria-hidden="true">&lsaquo;</span> -->
+                                            <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+
+                                    <li class="page-item active">
+                                        <a class="page-link" href="#">2</a>
+                                    </li>
+
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <!-- <span aria-hidden="true">&rsaquo;</span> -->
+                                            <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Last">
+                                            <!-- <span aria-hidden="true">&raquo;</span> -->
+                                            <span aria-hidden="true">
+                                                <i class="bi bi-chevron-double-right"></i>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="nav-tab-2"
+                         tabindex="0">
+                        <div class="main-body-card">
+                            <div class="card-header">
+                                <h2 class="main-title mb-2">Grid View</h2>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-style-1">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" width="60" class="text-center">Sr.No</th>
+                                            <th scope="col"> Title</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col" class="text-center" width="100">Quick View</th>
+                                            <th scope="col" class="text-center" width="160">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center">1</td>
+                                            <td>Automated Feedback Loop for Product Features</td>
+                                            <td>
+                                                Implementing a system to automatically gather
+                                                and categorize user feedback from various
+                                                channels, providing real-time insights for
+                                                product development.
+                                            </td>
+
+                                            <td>
+                                                <div class="roles-cntr">
+                                                    <span class="badge badge-green">Approved</span>
+                                                </div>
+                                            </td>
+                                            <td class="action-col text-center">
+                                                <a href="idea-detail-2.html" class="action-link">View Details</a>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="icon-btn" title="Download Certificate">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="View Details">
+                                                    <i class="bi bi-eye"></i></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">2</td>
+                                            <td>Automated Feedback Loop for Product Features</td>
+                                            <td>
+                                                Implementing a system to automatically gather
+                                                and categorize user feedback from various
+                                                channels, providing real-time insights for
+                                                product development.
+                                            </td>
+
+                                            <td>
+                                                <div class="roles-cntr">
+                                                    <span class="badge badge-red">Rejected</span>
+                                                </div>
+                                            </td>
+                                            <td class="action-col text-center">
+                                                <a href="idea-detail-2.html" class="action-link">View Details</a>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="icon-btn" title="Download Certificate">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="View Details">
+                                                    <i class="bi bi-eye"></i></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">3</td>
+                                            <td>Automated Feedback Loop for Product Features</td>
+                                            <td>
+                                                Implementing a system to automatically gather
+                                                and categorize user feedback from various
+                                                channels, providing real-time insights for
+                                                product development.
+                                            </td>
+
+                                            <td>
+                                                <div class="roles-cntr">
+                                                    <span class="badge badge-orange">Pending Review</span>
+                                                </div>
+                                            </td>
+                                            <td class="action-col text-center">
+                                                <a href="idea-detail-2.html" class="action-link">View Details</a>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="icon-btn" title="Download Certificate">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="View Details">
+                                                    <i class="bi bi-eye"></i></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">4</td>
+                                            <td>Automated Feedback Loop for Product Features</td>
+                                            <td>
+                                                Implementing a system to automatically gather
+                                                and categorize user feedback from various
+                                                channels, providing real-time insights for
+                                                product development.
+                                            </td>
+
+                                            <td>
+                                                <div class="roles-cntr">
+                                                    <span class="badge badge-primary">Implemented</span>
+                                                </div>
+                                            </td>
+                                            <td class="action-col text-center">
+                                                <a href="idea-detail-2.html" class="action-link">View Details</a>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="icon-btn" title="Download Certificate">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="View Details">
+                                                    <i class="bi bi-eye"></i></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">5</td>
+                                            <td>Automated Feedback Loop for Product Features</td>
+                                            <td>
+                                                Implementing a system to automatically gather
+                                                and categorize user feedback from various
+                                                channels, providing real-time insights for
+                                                product development.
+                                            </td>
+
+                                            <td>
+                                                <div class="roles-cntr">
+                                                    <span class="badge badge-gray">Not Implemented</span>
+                                                </div>
+                                            </td>
+                                            <td class="action-col text-center">
+                                                <a href="idea-detail-2.html" class="action-link">View Details</a>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="icon-btn" title="Download Certificate">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="View Details">
+                                                    <i class="bi bi-eye"></i></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="javascript:;" class="icon-btn ms-1" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="custom-pagination px-0">
+                                <div>
+                                    <button class="btn btn-outline-secondary">Previous</button>
+                                </div>
+                                <div class="page-select">
+                                    <span>Page</span>
+                                    <select class="form-select">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                    <span>of 5</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-secondary">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="my-3">
+                <h5 class="title">Ongoing Themes</h5>
+                <div class="filter-header">
+                    <div class="row justify-content-between">
+                        <div class="col-md-12">
+                            <div class="row align-items-center gx-3">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="Search by title...">
+                                </div>
+                                <div class="col-md-3 dashboard-daterange">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control start-date" id="startDate1"
+                                               placeholder="Start Date">
+                                        <input type="text" class="form-control" id="endDate1"
+                                               placeholder="End Date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-center gap-2 filter-btns">
+                                    <button class="btn btn-outline-secondary">All Themes</button>
+                                    <button class="btn btn-outline-secondary">Active</button>
+                                    <button class="btn btn-outline-secondary">Archived</button>
+                                    <a href="bulk-upload.html" class="btn btn-outline-secondary">Bulk Upload</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-4">
+                        <div class="listing-card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-icon">
+                                        <img src="assets/images/blue-bulb.png" alt="">
+                                    </div>
+                                </div>
+                                <div class="title-section">
+
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h6 class="card-title">
+                                            Automated Feedback Loop for Product
+                                            Features
+                                        </h6>
+                                        <span class="badge badge-style-1 btn-success">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    A comprehensive idea for developing a scalable and
+                                    flexible design system using React, TypeScript, and
+                                    Tailwind CSS. Focuses on component reusability and
+                                    themeability.
+                                </p>
+                                <div class="d-flex align-items-center justify-content-between ">
+                                    <div class="left">
+                                        <a href="javascript:;"
+                                           class="btn btn-outline-secondary w-100 quick-view">
+                                            Quick
+                                            View
+                                            Details
+                                        </a>
+                                    </div>
+                                    <div class="right dropdown">
+                                        <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            Perform Actions
+                                        </button>
+                                        <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-download text-primary"></i>
+                                                    Download Certificate
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-eye text-primary"></i>
+                                                    View Details
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-pencil text-primary"></i>
+                                                    Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-trash text-primary"></i>
+                                                    Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="listing-card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-icon">
+                                        <img src="assets/images/blue-bulb.png" alt="">
+                                    </div>
+                                </div>
+                                <div class="title-section">
+
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h6 class="card-title">
+                                            Automated Feedback Loop for Product
+                                            Features
+                                        </h6>
+                                        <span class="badge badge-style-1 badge-gray">Archived</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    A comprehensive idea for developing a scalable and
+                                    flexible design system using React, TypeScript, and
+                                    Tailwind CSS. Focuses on component reusability and themeability.
+                                </p>
+                                <div class="d-flex align-items-center justify-content-between ">
+                                    <div class="left">
+                                        <a href="javascript:;"
+                                           class="btn btn-outline-secondary w-100 quick-view">
+                                            Quick
+                                            View
+                                            Details
+                                        </a>
+                                    </div>
+                                    <div class="right dropdown">
+                                        <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            Perform Actions
+                                        </button>
+                                        <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-download text-primary"></i>
+                                                    Download Certificate
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-eye text-primary"></i>
+                                                    View Details
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-pencil text-primary"></i>
+                                                    Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-trash text-primary"></i>
+                                                    Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="listing-card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-icon">
+                                        <img src="assets/images/blue-bulb.png" alt="">
+                                    </div>
+                                </div>
+                                <div class="title-section">
+
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h6 class="card-title">
+                                            Automated Feedback Loop for Product
+                                            Features
+                                        </h6>
+                                        <span class="badge badge-style-1 btn-success">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    A comprehensive idea for developing a scalable and
+                                    flexible design system using React, TypeScript, and
+                                    Tailwind CSS. Focuses on component reusability and themeability.
+                                </p>
+                                <div class="d-flex align-items-center justify-content-between ">
+                                    <div class="left">
+                                        <a href="javascript:;"
+                                           class="btn btn-outline-secondary w-100 quick-view">
+                                            Quick
+                                            View
+                                            Details
+                                        </a>
+                                    </div>
+                                    <div class="right dropdown">
+                                        <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                                type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            Perform Actions
+                                        </button>
+                                        <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-download text-primary"></i>
+                                                    Download Certificate
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-eye text-primary"></i>
+                                                    View Details
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-pencil text-primary"></i>
+                                                    Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2"
+                                                   href="#">
+                                                    <i class="bi bi-trash text-primary"></i>
+                                                    Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="title">Idea Groups</h5>
+                    <a href="javascript:;" class="btn btn-lightblue initiate-btn add-group mb-2">
+                        <i class="bi bi-plus icon-text normal-icon"></i>
+                        <i class="bi bi-rocket-takeoff-fill icon-text hover-icon"></i>
+                        Add Group
+                    </a>
+                </div>
+
+                <div class="row g-4 mb-4 group-list-area"></div>
+
+                <div class="group-pagination mt-3"></div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<!----- new theme modal -->
+<div id="addUserOverlay"></div>
+<!-- Right-side Popup -->
+<div class="rightside-popup addUserPopup">
+    <div class="popup-header pb-2">
+        <div>
+            <h3 class="popup-title">Create New Theme</h3>
+            <p class="mb-0">Enter the basic details for your new Idea theme.</p>
+        </div>
+        <a class="close-popup" href="javascript:;" title="Close"><i class="bi bi-x-lg"></i></a>
+    </div>
+    <div class="popup-content">
+        <div class="form-content">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Theme Title<span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="" value="">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Company<span class="required">*</span></label>
+                        <select id="ddlcompany" class="form-select select2">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Department<span class="required">*</span></label>
+                        <select id="ddldepartment" class="form-select select2" multiple>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Sub Process<span class="required">*</span></label>
+                        <select id="ddlsubprocess" class="form-select select2" multiple>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">Problem Statement<span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="" value="">
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">Current Situation<span class="required">*</span></label>
+                        <textarea class="form-control"
+                                  placeholder="Describe the core objective, scope, and expected outcomes of the theme."></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Start Date<span class="required">*</span></label>
+                        <input type="text" class="form-control datepicker" value="">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">End Date<span class="required">*</span></label>
+                        <input type="text" class="form-control datepicker" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-buttons">
+            <button type="button" class="btn btn-outline-secondary close-popup">Cancel</button>
+            <button type="button" class="btn btn-success ms-2">Publish</button>
+        </div>
+    </div>
+</div>
+<!----- Add Group modal-->
+<div class="rightside-popup addGroupPopup">
+    <div class="popup-header">
+        <h3 class="popup-title">Create New Group</h3>
+        <a class="close-popup" href="javascript:;" title="Close"><i class="bi bi-x-lg"></i></a>
+    </div>
+    <div class="popup-content">
+        <div class="form-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">Group Name<span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="" value="">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">Group Detail<span class="required">*</span></label>
+                        <textarea class="form-control"
+                                  placeholder="Describe the core objective, scope, and expected outcomes of the theme."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-buttons">
+            <button type="button" class="btn btn-outline-secondary close-popup">Cancel</button>
+            <button type="button" class="btn btn-success ms-2">Save</button>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript" src="@Url.Content("~/assets/js/module/aim-spoc-dashboard.js")?v=@DateTime.Now.Ticks"></script>
+}
+
+
+
+
 CREATE PROCEDURE [dbo].[DNA_PRC_SaveUpdateDeleteIdea]  
 (  
     @Action              VARCHAR(20),  
