@@ -1,291 +1,960 @@
-USE [DUnifiedApps]
-GO
-
-/****** Object:  StoredProcedure [dbo].[ABC_PRC_Category_Delete]    Script Date: 19-02-2026 02:01:35 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER PROCEDURE [dbo].[ABC_PRC_Category_Delete]
-(
-    @CategoryId INT,
-    @DeletedBy VARCHAR(200) = NULL,
-    @DeletedIPAddress VARCHAR(50) = NULL
-)
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF EXISTS (
-        SELECT 1 
-        FROM ABC_CategoryMaster 
-        WHERE CategoryId = @CategoryId 
-        AND ISNULL(DeletedFlag,0) = 0
-    )
-    BEGIN
-        UPDATE ABC_CategoryMaster
-        SET 
-            DeletedFlag = 1,
-            DeletedDateTime = GETDATE(),
-            DeletedBy = @DeletedBy,
-            DeletedIPAddress = @DeletedIPAddress
-        WHERE CategoryId = @CategoryId;
-
-        SELECT 'SUCCESS' AS Status, 'Category deleted successfully' AS Message;
-    END
-    ELSE
-    BEGIN
-        SELECT 'FAILED' AS Status, 'Category not found or already deleted' AS Message;
-    END
-END
-GO
+// =====================================================
+// ADD THESE MODELS TO: DNA.core.Entities > AimModel.cs
+// (Append to existing file — don't replace existing models)
+// =====================================================
+ 
+// ─── GET IDEA STATUS COUNT ────────────────────────────────────────────────────
+public class GetIdeaStatusCountModel
+{
+    public string? CreatedBy { get; set; }
+}
+ 
+// ─── GET IDEAS BY USER ────────────────────────────────────────────────────────
+public class GetIdeasByUserModel
+{
+    public string? CreatedBy { get; set; }
+    public int? StatusID { get; set; }       // optional filter
+    public string? FromDate { get; set; }    // optional filter
+    public string? ToDate { get; set; }      // optional filter
+}
 
 
-USE [DUnifiedApps]
-GO
-
-/****** Object:  StoredProcedure [dbo].[ABC_PRC_Category_Update]    Script Date: 19-02-2026 01:58:03 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER PROCEDURE [dbo].[ABC_PRC_Category_Update]
-(
-    @CategoryId INT,
-    @CategoryName NVARCHAR(200),
-    @CategoryCode NVARCHAR(50) = NULL,
-    @CompanyCode VARCHAR(100) = NULL,
-    @DepartmentCode VARCHAR(100) = NULL,
-    @SubprocessCode VARCHAR(100) = NULL,
-    @ModifiedBy VARCHAR(200) = NULL,
-    @ModifiedIPAddress VARCHAR(50) = NULL
-)
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF EXISTS (
-        SELECT 1 
-        FROM ABC_CategoryMaster 
-        WHERE CategoryId = @CategoryId 
-        AND ISNULL(DeletedFlag,0) = 0
-    )
-    BEGIN
-        UPDATE ABC_CategoryMaster
-        SET 
-            CategoryName = @CategoryName,
-            CategoryCode = @CategoryCode,
-            CompanyCode = @CompanyCode,
-            DepartmentCode = @DepartmentCode,
-            SubprocessCode = @SubprocessCode,
-            ModifiedBy = @ModifiedBy,
-            ModifiedIPAddress = @ModifiedIPAddress,
-            ModifiedDateTime = GETDATE()
-        WHERE CategoryId = @CategoryId;
-
-        SELECT 'SUCCESS' AS Status, 'Category updated successfully' AS Message;
-    END
-    ELSE
-    BEGIN
-        SELECT 'FAILED' AS Status, 'Category not found or already deleted' AS Message;
-    END
-END
-GO
-
-USE [DUnifiedApps]
-GO
-
-/****** Object:  StoredProcedure [dbo].[ABC_PRC_Activity_Delete]    Script Date: 19-02-2026 02:02:54 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER PROCEDURE [dbo].[ABC_PRC_Activity_Delete]
-(
-    @ActivityId INT,
-    @DeletedBy VARCHAR(200) = NULL,
-    @DeletedIPAddress VARCHAR(50) = NULL
-)
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF EXISTS (
-        SELECT 1
-        FROM ABC_ActivityMaster
-        WHERE ActivityId = @ActivityId
-        AND ISNULL(DeletedFlag,0) = 0
-    )
-    BEGIN
-        UPDATE ABC_ActivityMaster
-        SET
-            DeletedFlag = 1,
-            DeletedDateTime = GETDATE(),
-            DeletedBy = @DeletedBy,
-            DeletedIPAddress = @DeletedIPAddress
-        WHERE ActivityId = @ActivityId;
-
-        SELECT 'SUCCESS' AS Status, 'Activity deleted successfully' AS Message;
-    END
-    ELSE
-    BEGIN
-        SELECT 'FAILED' AS Status, 'Activity not found or already deleted' AS Message;
-    END
-END
-GO
 
 
-USE [DUnifiedApps]
-GO
-
-/****** Object:  StoredProcedure [dbo].[ABC_PRC_Activity_Update]    Script Date: 19-02-2026 02:03:18 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER PROCEDURE [dbo].[ABC_PRC_Activity_Update]
-(
-    @ActivityId INT,
-    @ActivityName NVARCHAR(200),
-    @ActivityCode NVARCHAR(50) = NULL,
-    @CategoryCode NVARCHAR(100) = NULL,
-    @SubCategoryCode NVARCHAR(50) = NULL,
-    @ModifiedBy VARCHAR(200) = NULL,
-    @ModifiedIPAddress VARCHAR(50) = NULL
-)
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF EXISTS (
-        SELECT 1
-        FROM ABC_ActivityMaster
-        WHERE ActivityId = @ActivityId
-        AND ISNULL(DeletedFlag,0) = 0
-    )
-    BEGIN
-        UPDATE ABC_ActivityMaster
-        SET
-            ActivityName = @ActivityName,
-            ActivityCode = @ActivityCode,
-            CategoryCode = @CategoryCode,
-            SubCategoryCode = @SubCategoryCode,
-            ModifiedBy = @ModifiedBy,
-            ModifiedIPAddress = @ModifiedIPAddress,
-            ModifiedDateTime = GETDATE()
-        WHERE ActivityId = @ActivityId;
-
-        SELECT 'SUCCESS' AS Status, 'Activity updated successfully' AS Message;
-    END
-    ELSE
-    BEGIN
-        SELECT 'FAILED' AS Status, 'Activity not found or already deleted' AS Message;
-    END
-END
-GO
 
 
-USE [DUnifiedApps]
-GO
-
-/****** Object:  StoredProcedure [dbo].[ABC_PRC_SubCategory_Update]    Script Date: 19-02-2026 02:04:22 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER PROCEDURE [dbo].[ABC_PRC_SubCategory_Update]
-(
-    @SubCategoryId INT,
-    @SubCategoryName NVARCHAR(200),
-    @SubCategoryCode NVARCHAR(50) = NULL,
-    @CategoryCode NVARCHAR(50) = NULL,
-    @ModifiedBy VARCHAR(200) = NULL,
-    @ModifiedIPAddress VARCHAR(50) = NULL
-)
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF EXISTS (
-        SELECT 1 
-        FROM ABC_SubCategoryMaster
-        WHERE SubCategoryId = @SubCategoryId
-        AND ISNULL(DeletedFlag,0) = 0
-    )
-    BEGIN
-        UPDATE ABC_SubCategoryMaster
-        SET
-            SubCategoryName = @SubCategoryName,
-            SubCategoryCode = @SubCategoryCode,
-            CategoryCode = @CategoryCode,
-            ModifiedBy = @ModifiedBy,
-            ModifiedIPAddress = @ModifiedIPAddress,
-            ModifiedDateTime = GETDATE()
-        WHERE SubCategoryId = @SubCategoryId;
-
-        SELECT 'SUCCESS' AS Status, 'SubCategory updated successfully' AS Message;
-    END
-    ELSE
-    BEGIN
-        SELECT 'FAILED' AS Status, 'SubCategory not found or already deleted' AS Message;
-    END
-END
-GO
 
 
-USE [DUnifiedApps]
-GO
 
-/****** Object:  StoredProcedure [dbo].[ABC_PRC_SubCategory_Delete]    Script Date: 19-02-2026 02:04:33 ******/
-SET ANSI_NULLS ON
-GO
 
-SET QUOTED_IDENTIFIER ON
-GO
 
-ALTER PROCEDURE [dbo].[ABC_PRC_SubCategory_Delete]
-(
-    @SubCategoryId INT,
-    @DeletedBy VARCHAR(200) = NULL,
-    @DeletedIPAddress VARCHAR(50) = NULL
-)
-AS
-BEGIN
-    SET NOCOUNT ON;
+// =====================================================
+// ADD THESE METHODS TO: DNA.Infrastructure.Repositories > AimRepository.cs
+// (Append inside AimRepository class — don't replace existing methods)
+// =====================================================
 
-    IF EXISTS (
-        SELECT 1 
-        FROM ABC_SubCategoryMaster
-        WHERE SubCategoryId = @SubCategoryId
-        AND ISNULL(DeletedFlag,0) = 0
-    )
-    BEGIN
-        UPDATE ABC_SubCategoryMaster
-        SET
-            DeletedFlag = 1,
-            DeletedDateTime = GETDATE(),
-            DeletedBy = @DeletedBy,
-            DeletedIPAddress = @DeletedIPAddress
-        WHERE SubCategoryId = @SubCategoryId;
+        // ─── GET IDEA STATUS COUNT BY USER ───────────────────────────────────────────
+        public Task<ApiResponse> GetIdeaStatusCountByUser(GetIdeaStatusCountModel request)
+        {
+            try
+            {
+                var outParams = new List<OutParameter>();
 
-        SELECT 'SUCCESS' AS Status, 'SubCategory deleted successfully' AS Message;
-    END
-    ELSE
-    BEGIN
-        SELECT 'FAILED' AS Status, 'SubCategory not found or already deleted' AS Message;
-    END
-END
-GO
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@CreatedBy", request.CreatedBy ?? (object)DBNull.Value)
+                };
 
+                DataSet ds = _dbConnection.ExecuteDataSetSafe(
+                    "DNA_PRC_GetIdeaStatusCountByUser",
+                    parameters,
+                    outParams
+                );
+
+                string jsonResult = "";
+
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    jsonResult = JsonConvert.SerializeObject(ds.Tables[0]);
+
+                return Task.FromResult(new ApiResponse
+                {
+                    ResponseCode = 1,
+                    ResponseMessage = "Success",
+                    ResponseData = jsonResult
+                });
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new ApiResponse
+                {
+                    ResponseCode = 0,
+                    ResponseMessage = ex.Message
+                });
+            }
+        }
+
+        // ─── GET IDEAS BY USER ────────────────────────────────────────────────────────
+        public Task<ApiResponse> GetIdeasByUser(GetIdeasByUserModel request)
+        {
+            try
+            {
+                var outParams = new List<OutParameter>();
+
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@CreatedBy",  request.CreatedBy  ?? (object)DBNull.Value),
+                    new SqlParameter("@StatusID",   request.StatusID.HasValue ? (object)request.StatusID.Value : DBNull.Value),
+                    new SqlParameter("@FromDate",   string.IsNullOrEmpty(request.FromDate)  ? (object)DBNull.Value : request.FromDate),
+                    new SqlParameter("@ToDate",     string.IsNullOrEmpty(request.ToDate)    ? (object)DBNull.Value : request.ToDate)
+                };
+
+                DataSet ds = _dbConnection.ExecuteDataSetSafe(
+                    "DNA_PRC_GetIdeasByUser",
+                    parameters,
+                    outParams
+                );
+
+                string jsonResult = "";
+
+                if (ds != null && ds.Tables.Count > 0)
+                    jsonResult = JsonConvert.SerializeObject(ds.Tables[0]);
+
+                return Task.FromResult(new ApiResponse
+                {
+                    ResponseCode = 1,
+                    ResponseMessage = "Success",
+                    ResponseData = jsonResult
+                });
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new ApiResponse
+                {
+                    ResponseCode = 0,
+                    ResponseMessage = ex.Message
+                });
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =====================================================
+// ADD THESE METHODS TO: DNA.Api.Controllers > AimController.cs
+// (Append inside AimController class — don't replace existing methods)
+// =====================================================
+
+        [HttpPost]
+        [Route("GetIdeaStatusCountByUser")]
+        public async Task<IActionResult> GetIdeaStatusCountByUser([FromBody] GetIdeaStatusCountModel request)
+        {
+            var response = await _service.GetIdeaStatusCountByUser(request);
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("GetIdeasByUser")]
+        public async Task<IActionResult> GetIdeasByUser([FromBody] GetIdeasByUserModel request)
+        {
+            var response = await _service.GetIdeasByUser(request);
+            return Ok(response);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =====================================================
+// ADD THESE MODELS TO: DNA.Models > AimModel.cs
+// (Append to existing file — don't replace existing models)
+// =====================================================
+
+public class GetIdeaStatusCountModel
+{
+    public string? CreatedBy { get; set; }
+}
+
+public class GetIdeasByUserModel
+{
+    public string? CreatedBy { get; set; }
+    public int? StatusID { get; set; }
+    public string? FromDate { get; set; }
+    public string? ToDate { get; set; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =====================================================
+// ADD THESE METHODS TO: DNA.Web.Services > AimService.cs
+// (Append inside AimService class — don't replace existing methods)
+// =====================================================
+
+        public async Task<ApiResponse> GetIdeaStatusCountByUser(GetIdeaStatusCountModel request)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/Aim/GetIdeaStatusCountByUser", request);
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return apiResponse ?? new ApiResponse { ResponseCode = 0, ResponseMessage = "Empty response" };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse { ResponseCode = 0, ResponseMessage = ex.Message };
+            }
+        }
+
+        public async Task<ApiResponse> GetIdeasByUser(GetIdeasByUserModel request)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/Aim/GetIdeasByUser", request);
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return apiResponse ?? new ApiResponse { ResponseCode = 0, ResponseMessage = "Empty response" };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse { ResponseCode = 0, ResponseMessage = ex.Message };
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =====================================================
+// ADD THESE METHODS TO: DNA.Web.Services > AimService.cs
+// (Append inside AimService class — don't replace existing methods)
+// =====================================================
+
+        public async Task<ApiResponse> GetIdeaStatusCountByUser(GetIdeaStatusCountModel request)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/Aim/GetIdeaStatusCountByUser", request);
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return apiResponse ?? new ApiResponse { ResponseCode = 0, ResponseMessage = "Empty response" };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse { ResponseCode = 0, ResponseMessage = ex.Message };
+            }
+        }
+
+        public async Task<ApiResponse> GetIdeasByUser(GetIdeasByUserModel request)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/Aim/GetIdeasByUser", request);
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return apiResponse ?? new ApiResponse { ResponseCode = 0, ResponseMessage = "Empty response" };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse { ResponseCode = 0, ResponseMessage = ex.Message };
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =====================================================
+// ADD THESE METHODS TO: DNA.Web > AimController.cs (Web)
+// (Append inside Web AimController class)
+// =====================================================
+
+        [HttpPost]
+        public async Task<IActionResult> GetIdeaStatusCountByUser([FromBody] GetIdeaStatusCountModel request)
+        {
+            var response = await _service.GetIdeaStatusCountByUser(request);
+            return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetIdeasByUser([FromBody] GetIdeasByUserModel request)
+        {
+            var response = await _service.GetIdeasByUser(request);
+            return Ok(response);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(function () {
+    'use strict';
+
+    // ─── Globals ─────────────────────────────────────────────────────────────────
+    var appUrl        = '';
+    var currentIdeaPage = 1;
+    var ideaPageSize    = 6;
+    var activeStatusFilter = null;   // null = All
+    var currentEditIdeaId  = 0;      // 0 = INSERT mode, >0 = UPDATE mode
+    var deleteIdeaId       = 0;
+
+    // ─── Init ─────────────────────────────────────────────────────────────────────
+    $(document).ready(function () {
+        appUrl = setAppUrl();
+        loadStatusCounts();
+        loadIdeaListing(1);
+    });
+
+    // =====================================================
+    // STATUS COUNT CARDS
+    // =====================================================
+    function loadStatusCounts() {
+        $.ajax({
+            url: appUrl + 'AIM/GetIdeaStatusCountByUser',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ CreatedBy: getLoginEmployee() }),
+            success: function (res) {
+                if (res.responseCode === 1 && res.responseData) {
+                    var data = JSON.parse(res.responseData);
+                    bindStatusCards(data);
+                }
+            },
+            error: function () {
+                console.error('Failed to load status counts');
+            }
+        });
+    }
+
+    function bindStatusCards(data) {
+        // Map StatusName → card selector using data-status attribute
+        $.each(data, function (i, item) {
+            $('[data-status-name="' + item.StatusName + '"] .card-num').text(item.IdeaCount || 0);
+        });
+    }
+
+    // =====================================================
+    // IDEA LISTING
+    // =====================================================
+    function loadIdeaListing(pageNo) {
+        currentIdeaPage = pageNo;
+
+        var fromDate = $('#startDate').val() || null;
+        var toDate   = $('#endDate').val()   || null;
+
+        $.ajax({
+            url: appUrl + 'AIM/GetIdeasByUser',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                CreatedBy: getLoginEmployee(),
+                StatusID:  activeStatusFilter,
+                FromDate:  fromDate,
+                ToDate:    toDate
+            }),
+            success: function (res) {
+                if (res.responseCode === 1 && res.responseData) {
+                    var allData = JSON.parse(res.responseData);
+
+                    // Client-side search
+                    var searchText = $('#ideaSearchInput').val().toLowerCase().trim();
+                    if (searchText) {
+                        allData = allData.filter(function (item) {
+                            return (item.Title || '').toLowerCase().includes(searchText);
+                        });
+                    }
+
+                    // Client-side pagination
+                    var totalRecords = allData.length;
+                    var start = (currentIdeaPage - 1) * ideaPageSize;
+                    var pagedData = allData.slice(start, start + ideaPageSize);
+
+                    bindIdeaCards(pagedData);
+                    bindIdeaTable(pagedData);
+                    bindIdeaPagination(totalRecords);
+                } else {
+                    bindIdeaCards([]);
+                    bindIdeaTable([]);
+                    bindIdeaPagination(0);
+                }
+            },
+            error: function () {
+                showError('Failed to load ideas');
+            }
+        });
+    }
+
+    // ─── Badge class map ──────────────────────────────────────────────────────────
+    function getStatusBadgeClass(statusName) {
+        var map = {
+            'Approved':       'badge-green',
+            'Rejected':       'badge-red',
+            'Pending Review': 'badge-orange',
+            'Implemented':    'badge-primary',
+            'Not Implemented':'badge-gray',
+            'Draft':          'badge-secondary'
+        };
+        return map[statusName] || 'badge-secondary';
+    }
+
+    // ─── Action buttons HTML — controlled by status ───────────────────────────────
+    function getActionButtons(item) {
+        // Edit only allowed on Draft (StatusID=7)
+        var editBtn = '';
+        var deleteBtn = '';
+
+        if (item.StatusName === 'Draft') {
+            editBtn = `<li>
+                <a class="dropdown-item d-flex align-items-center gap-2 edit-idea-btn"
+                   href="javascript:;" data-id="${item.IdeaId}">
+                    <i class="bi bi-pencil text-primary"></i> Edit
+                </a>
+            </li><li><hr class="dropdown-divider"></li>`;
+
+            deleteBtn = `<li>
+                <a class="dropdown-item d-flex align-items-center gap-2 delete-idea-btn"
+                   href="javascript:;" data-id="${item.IdeaId}">
+                    <i class="bi bi-trash text-danger"></i> Delete
+                </a>
+            </li>`;
+        } else if (item.StatusName === 'Pending Review') {
+            // SP allows delete only on Pending Review (StatusID=2)
+            deleteBtn = `<li>
+                <a class="dropdown-item d-flex align-items-center gap-2 delete-idea-btn"
+                   href="javascript:;" data-id="${item.IdeaId}">
+                    <i class="bi bi-trash text-danger"></i> Delete
+                </a>
+            </li>`;
+        }
+
+        return `
+        <ul class="dropdown-menu shadow border-0 mt-2 p-2">
+            <li>
+                <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                    <i class="bi bi-download text-primary"></i> Download Certificate
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                    <i class="bi bi-eye text-primary"></i> View Details
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            ${editBtn}
+            ${deleteBtn}
+        </ul>`;
+    }
+
+    // ─── Bind Card View ───────────────────────────────────────────────────────────
+    function bindIdeaCards(list) {
+        var html = '';
+
+        if (!list || list.length === 0) {
+            html = '<div class="col-12"><div class="alert alert-warning">No ideas found.</div></div>';
+            $('#ideaCardArea').html(html);
+            return;
+        }
+
+        $.each(list, function (i, item) {
+            var badgeClass = getStatusBadgeClass(item.StatusName);
+            html += `
+            <div class="col-lg-4">
+                <div class="listing-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-icon">
+                                <img src="/assets/images/blue-bulb.png" alt="">
+                            </div>
+                        </div>
+                        <div class="title-section">
+                            <div class="d-flex align-items-center gap-1">
+                                <h6 class="card-title">${item.Title || ''}</h6>
+                                <span class="badge badge-style-1 ${badgeClass}">${item.StatusName || ''}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p>${item.Description || ''}</p>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="left">
+                                <a href="javascript:;" class="btn btn-outline-secondary w-100">Quick View Details</a>
+                            </div>
+                            <div class="right dropdown">
+                                <button class="btn btn-success dropdown-toggle px-4 py-2"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Perform Actions
+                                </button>
+                                ${getActionButtons(item)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        $('#ideaCardArea').html(html);
+    }
+
+    // ─── Bind Table View ──────────────────────────────────────────────────────────
+    function bindIdeaTable(list) {
+        var html = '';
+
+        if (!list || list.length === 0) {
+            html = '<tr><td colspan="6" class="text-center">No ideas found.</td></tr>';
+            $('#ideaTableBody').html(html);
+            return;
+        }
+
+        $.each(list, function (i, item) {
+            var badgeClass = getStatusBadgeClass(item.StatusName);
+
+            var editIcon = '';
+            var deleteIcon = '';
+
+            if (item.StatusName === 'Draft') {
+                editIcon   = `<a href="javascript:;" class="icon-btn ms-1 edit-idea-btn" title="Edit" data-id="${item.IdeaId}"><i class="bi bi-pencil"></i></a>`;
+                deleteIcon = `<a href="javascript:;" class="icon-btn ms-1 delete-idea-btn" title="Delete" data-id="${item.IdeaId}"><i class="bi bi-trash"></i></a>`;
+            } else if (item.StatusName === 'Pending Review') {
+                deleteIcon = `<a href="javascript:;" class="icon-btn ms-1 delete-idea-btn" title="Delete" data-id="${item.IdeaId}"><i class="bi bi-trash"></i></a>`;
+            }
+
+            html += `
+            <tr>
+                <td class="text-center">${item.SrNo}</td>
+                <td>${item.Title || ''}</td>
+                <td>${item.Description || ''}</td>
+                <td><div class="roles-cntr"><span class="badge ${badgeClass}">${item.StatusName || ''}</span></div></td>
+                <td class="action-col text-center"><a href="javascript:;" class="action-link">View Details</a></td>
+                <td>
+                    <a href="javascript:;" class="icon-btn" title="Download Certificate"><i class="bi bi-download"></i></a>
+                    <a href="javascript:;" class="icon-btn ms-1" title="View Details"><i class="bi bi-eye"></i></a>
+                    ${editIcon}
+                    ${deleteIcon}
+                </td>
+            </tr>`;
+        });
+
+        $('#ideaTableBody').html(html);
+    }
+
+    // ─── Pagination ───────────────────────────────────────────────────────────────
+    function bindIdeaPagination(totalRecords) {
+        var totalPages  = Math.ceil(totalRecords / ideaPageSize) || 1;
+        var startRecord = totalRecords === 0 ? 0 : ((currentIdeaPage - 1) * ideaPageSize) + 1;
+        var endRecord   = Math.min(currentIdeaPage * ideaPageSize, totalRecords);
+
+        var html = `
+        <div class="pagination-cntr mb-4">
+            <p class="mb-0 text-muted">
+                Showing <strong>${startRecord}</strong> to <strong>${endRecord}</strong> out of
+                <span class="text-success fw-semibold">${totalRecords}</span> results
+            </p>
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item ${currentIdeaPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link idea-page-click" href="javascript:;" data-page="${currentIdeaPage - 1}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>`;
+
+        for (var i = 1; i <= totalPages; i++) {
+            html += `<li class="page-item ${currentIdeaPage === i ? 'active' : ''}">
+                <a class="page-link idea-page-click" href="javascript:;" data-page="${i}">${i}</a>
+            </li>`;
+        }
+
+        html += `
+                    <li class="page-item ${currentIdeaPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link idea-page-click" href="javascript:;" data-page="${currentIdeaPage + 1}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item ${currentIdeaPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link idea-page-click" href="javascript:;" data-page="${totalPages}">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>`;
+
+        $('#ideaPaginationArea').html(html);
+    }
+
+    // ─── Pagination click ─────────────────────────────────────────────────────────
+    $(document).on('click', '.idea-page-click', function () {
+        if ($(this).closest('.page-item').hasClass('disabled')) return;
+        loadIdeaListing(parseInt($(this).data('page')));
+    });
+
+    // ─── Filter buttons (All Ideas / Drafts / Pending Review) ────────────────────
+    $(document).on('click', '.idea-filter-btn', function () {
+        $('.idea-filter-btn').removeClass('active btn-secondary').addClass('btn-outline-secondary');
+        $(this).removeClass('btn-outline-secondary').addClass('active btn-secondary');
+        activeStatusFilter = $(this).data('status') || null;
+        loadIdeaListing(1);
+    });
+
+    // ─── Search ───────────────────────────────────────────────────────────────────
+    var searchTimer;
+    $(document).on('keyup', '#ideaSearchInput', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () {
+            loadIdeaListing(1);
+        }, 400);
+    });
+
+    // ─── Date filter ─────────────────────────────────────────────────────────────
+    $(document).on('change', '#startDate, #endDate', function () {
+        loadIdeaListing(1);
+    });
+
+    // =====================================================
+    // ADD IDEA POPUP — OPEN
+    // =====================================================
+    $(document).on('click', '.add-new', function () {
+        currentEditIdeaId = 0;
+        openIdeaPopup('Create New Idea');
+    });
+
+    function openIdeaPopup(title) {
+        resetIdeaForm();
+        $('.addIdeaPopup .popup-title').text(title);
+        $('#addIdeaOverlay').fadeIn(200);
+        $('.addIdeaPopup').addClass('open');
+    }
+
+    // ─── Close popup ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.close-idea-popup', function () {
+        closeIdeaPopup();
+    });
+
+    $('#addIdeaOverlay').on('click', function () {
+        closeIdeaPopup();
+    });
+
+    function closeIdeaPopup() {
+        $('#addIdeaOverlay').fadeOut(200);
+        $('.addIdeaPopup').removeClass('open');
+    }
+
+    // ─── Reset form ───────────────────────────────────────────────────────────────
+    function resetIdeaForm() {
+        currentEditIdeaId = 0;
+        $('#ideaTitle').val('').removeClass('is-invalid');
+        $('#ideaProblemStatement').val('').removeClass('is-invalid');
+        $('#ideaCurrentSituation').val('').removeClass('is-invalid');
+        $('#proposedIdeasContainer').empty().append(buildProposedIdeaRow(0, true));
+
+        $('#ideaCompany').val(sessionStorage.getItem('Company') || '');
+        $('#ideaLocation').val(sessionStorage.getItem('LocationName') || '');
+        $('#ideaDepartment').val(sessionStorage.getItem('DepartmentName') || '');
+        $('#ideaSubProcess').val(sessionStorage.getItem('SubProcessName') || '');
+    }
+
+    // =====================================================
+    // EDIT IDEA
+    // =====================================================
+    $(document).on('click', '.edit-idea-btn', function () {
+        var ideaId = $(this).data('id');
+        currentEditIdeaId = ideaId;
+
+        // Get idea data from listing (already loaded) — reload from API
+        $.ajax({
+            url: appUrl + 'AIM/GetIdeasByUser',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ CreatedBy: getLoginEmployee() }),
+            success: function (res) {
+                if (res.responseCode === 1 && res.responseData) {
+                    var data = JSON.parse(res.responseData);
+                    var idea = data.find(function (x) { return x.IdeaId === ideaId; });
+
+                    if (!idea) {
+                        showError('Idea not found');
+                        return;
+                    }
+
+                    // Populate form
+                    $('#ideaTitle').val(idea.Title || '');
+                    $('#ideaProblemStatement').val(idea.Description || '');
+                    $('#ideaCurrentSituation').val('');  // SP listing doesn't return CurrentSituation — will be blank on edit
+
+                    // Reset proposed ideas container with one blank row (SP doesn't return proposed ideas in listing)
+                    $('#proposedIdeasContainer').empty().append(buildProposedIdeaRow(0, true));
+
+                    openIdeaPopup('Edit Idea');
+                }
+            },
+            error: function () {
+                showError('Failed to load idea details');
+            }
+        });
+    });
+
+    // =====================================================
+    // DELETE IDEA
+    // =====================================================
+    $(document).on('click', '.delete-idea-btn', function () {
+        deleteIdeaId = $(this).data('id');
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteIdeaConfirmModal')).show();
+    });
+
+    $(document).on('click', '#btnConfirmIdeaDelete', function () {
+        if (!deleteIdeaId) return;
+
+        $.ajax({
+            url: appUrl + 'AIM/SaveUpdateDeleteIdea',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                Action: 'DELETE',
+                IdeaID: deleteIdeaId,
+                LoginEmployee:  getLoginEmployee(),
+                LoginIPAddress: ''
+            }),
+            success: function (res) {
+                bootstrap.Modal.getInstance(document.getElementById('deleteIdeaConfirmModal')).hide();
+
+                if (res.responseCode === 1) {
+                    showSuccess(res.responseMessage || 'Idea deleted successfully');
+                    loadStatusCounts();
+                    loadIdeaListing(currentIdeaPage);
+                } else {
+                    showError(res.responseMessage || 'Delete failed');
+                }
+            },
+            error: function () {
+                bootstrap.Modal.getInstance(document.getElementById('deleteIdeaConfirmModal')).hide();
+                showError('Something went wrong');
+            }
+        });
+    });
+
+    // =====================================================
+    // PROPOSED IDEA ROWS — BUILD / ADD / DELETE / RENUMBER
+    // =====================================================
+    function buildProposedIdeaRow(index, isFirst) {
+        var deleteBtn = isFirst
+            ? ''
+            : '<span class="delete-idea-btn-row text-danger ms-2" style="cursor:pointer;" title="Remove">'
+              + '<i class="bi bi-trash3"></i></span>';
+
+        return '<div class="idea-details mb-4 proposed-idea-item" data-index="' + index + '">'
+            + '<div class="row">'
+            + '<div class="col-12"><div class="mb-3">'
+            + '<div class="d-flex justify-content-between align-items-center">'
+            + '<label class="form-label mb-0">Proposed Idea <span class="required">*</span>'
+            + '<span class="idea-number text-muted ms-1">#' + (index + 1) + '</span></label>'
+            + deleteBtn
+            + '</div>'
+            + '<textarea class="form-control mt-2 proposed-idea-text" rows="2"'
+            + ' placeholder="Describe the core objective, scope, and expected outcomes"></textarea>'
+            + '</div></div>'
+            + '<div class="col-12">'
+            + '<label class="form-label">Detailed Explanation <span class="required">*</span></label>'
+            + '<textarea class="form-control proposed-idea-detail" rows="3"'
+            + ' placeholder="Provide a detailed explanation of this proposed idea"></textarea>'
+            + '</div>'
+            + '</div></div>';
+    }
+
+    $('#btnAddMoreIdea').on('click', function () {
+        var count = $('#proposedIdeasContainer .proposed-idea-item').length;
+        $('#proposedIdeasContainer').append(buildProposedIdeaRow(count, false));
+        renumberRows();
+    });
+
+    $(document).on('click', '.delete-idea-btn-row', function () {
+        var items = $('#proposedIdeasContainer .proposed-idea-item');
+        if (items.length <= 1) {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('minIdeaModal')).show();
+            return;
+        }
+        $(this).closest('.proposed-idea-item').remove();
+        renumberRows();
+    });
+
+    function renumberRows() {
+        $('#proposedIdeasContainer .proposed-idea-item').each(function (i) {
+            $(this).attr('data-index', i);
+            $(this).find('.idea-number').text('#' + (i + 1));
+            if (i === 0) $(this).find('.delete-idea-btn-row').remove();
+        });
+    }
+
+    // =====================================================
+    // COLLECT / VALIDATE / PAYLOAD
+    // =====================================================
+    function collectProposedIdeas() {
+        var ideas = [];
+        $('#proposedIdeasContainer .proposed-idea-item').each(function () {
+            ideas.push({
+                ProposedIdea:       $(this).find('.proposed-idea-text').val().trim(),
+                DetailedExplanation: $(this).find('.proposed-idea-detail').val().trim()
+            });
+        });
+        return ideas;
+    }
+
+    function validateSubmit() {
+        var valid = true;
+
+        function check($el) {
+            if (!$el.val().trim()) { $el.addClass('is-invalid'); valid = false; }
+            else $el.removeClass('is-invalid');
+        }
+
+        check($('#ideaTitle'));
+        check($('#ideaCurrentSituation'));
+
+        $('#proposedIdeasContainer .proposed-idea-item').each(function () {
+            check($(this).find('.proposed-idea-text'));
+            check($(this).find('.proposed-idea-detail'));
+        });
+
+        return valid;
+    }
+
+    function validateDraft() {
+        if (!$('#ideaTitle').val().trim()) {
+            $('#ideaTitle').addClass('is-invalid');
+            return false;
+        }
+        $('#ideaTitle').removeClass('is-invalid');
+        return true;
+    }
+
+    function buildPayload(isDraft) {
+        var isUpdate = currentEditIdeaId > 0;
+        return {
+            Action:           isUpdate ? 'UPDATE' : 'INSERT',
+            IdeaID:           currentEditIdeaId,
+            ThemeID:          null,
+            IdeaTitle:        $('#ideaTitle').val().trim(),
+            ProblemStatement: $('#ideaProblemStatement').val().trim() || null,
+            CurrentSituation: $('#ideaCurrentSituation').val().trim() || null,
+            StatusID:         isDraft ? 7 : 2,
+            IdeaTypeID:       null,
+            FeasibilityID:    null,
+            IsDraft:          isDraft,
+            ProposedIdeas:    collectProposedIdeas(),
+            LoginEmployee:    getLoginEmployee(),
+            LoginIPAddress:   ''
+        };
+    }
+
+    // =====================================================
+    // SUBMIT / DRAFT
+    // =====================================================
+    $('#btnSubmitIdea').on('click', function () {
+        if (!validateSubmit()) return;
+        saveIdea(false);
+    });
+
+    $('#btnSaveAsDraft').on('click', function () {
+        if (!validateDraft()) return;
+        saveIdea(true);
+    });
+
+    function saveIdea(isDraft) {
+        var payload      = buildPayload(isDraft);
+        var $btn         = isDraft ? $('#btnSaveAsDraft') : $('#btnSubmitIdea');
+        var originalHtml = $btn.html();
+
+        console.log('=== PAYLOAD ===', JSON.stringify(payload, null, 2));
+
+        $btn.prop('disabled', true).html(
+            '<span class="spinner-border spinner-border-sm me-1"></span>'
+            + (isDraft ? 'Saving...' : 'Submitting...')
+        );
+
+        $.ajax({
+            url: appUrl + 'AIM/SaveUpdateDeleteIdea',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (res) {
+                console.log('=== RESPONSE ===', res);
+                if (res.responseCode === 1) {
+                    closeIdeaPopup();
+                    showSuccess(res.responseMessage || 'Saved successfully');
+                    loadStatusCounts();
+                    loadIdeaListing(currentIdeaPage);
+                } else {
+                    showError(res.responseMessage || 'Something went wrong');
+                }
+            },
+            error: function (xhr) {
+                console.error('=== ERROR ===', xhr.status, xhr.responseText);
+                showError('Request failed. Please try again.');
+            },
+            complete: function () {
+                $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    }
+
+    // ─── Helper: get employee from session ───────────────────────────────────────
+    function getLoginEmployee() {
+        return window._loginEmployee || sessionStorage.getItem('LoginEmployee') || '';
+    }
+
+})();
 
 
