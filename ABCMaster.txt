@@ -1,5 +1,3 @@
-Failed to load resource: the server responded with a status of 404 ()Understand this error
-$('#btnSubmitIdea').length
-1
-typeof $
-'function'
+$('#btnSubmitIdea').on('click', function () {
+    console.log('button clicked');
+});
