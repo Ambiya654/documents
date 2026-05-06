@@ -1,3 +1,18 @@
+responded with a status of 404 ()Understand this error
+$('#btnSubmitIdea').length
+1
+typeof $
+'function'
+typeof saveIdea
+'undefined'
 $('#btnSubmitIdea').on('click', function () {
     console.log('button clicked');
 });
+S {0: button#btnSubmitIdea.btn.btn-success.ms-2, length: 1}
+
+
+
+D:\TFS Projects\Unified Apps\DNA\Web\DevBranch-Ambiya\DNA.Web\Views\AIM\IdeaLanding.cshtml
+
+
+D:\TFS Projects\Unified Apps\DNA\Web\DevBranch-Ambiya\DNA.Web\wwwroot\assets\js\module\aim-ideator.js
